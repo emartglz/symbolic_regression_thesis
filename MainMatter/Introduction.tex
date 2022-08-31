@@ -3,23 +3,62 @@
 
 \qquad
 
-Aquí va la introducción
+La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una variable dependiente y una o más variables independientes. La forma más común de análisis de regresión es la regresión lineal, en la que se encuentra la línea o una combinación lineal más compleja que se ajusta más a los datos de acuerdo con un criterio matemático específico. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos dados y ese hiperplano. Por razones matemáticas específicas, esto le permite al investigador estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores.
 
+El análisis de regresión se utiliza principalmente para dos propósitos conceptualmente distintos.
 
+\begin{itemize}
+    \item Primero, el análisis de regresión se usa ampliamente para la predicción y el pronóstico de datos.
+    \item En segundo lugar, en algunas situaciones se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes.
+\end{itemize}
+
+La primera forma de regresión fue el método de mínimos cuadrados, que fue publicado por Legendre en 1805, y por Gauss en 1809. Legendre y Gauss aplicaron el método al problema de determinar, a partir de observaciones astronómicas, las órbitas de los cuerpos alrededor del Sol, en su mayoría cometas, pero también más tarde los planetas menores recién descubiertos.
+
+En las décadas de 1950 y 1960, los economistas utilizaron "calculadoras" de escritorio electromecánicas para calcular las regresiones. Antes de 1970, a veces tomaba hasta 24 horas recibir el resultado de una regresión.
+
+Los métodos de regresión continúan siendo un área de investigación activa. En las últimas décadas, se han desarrollado nuevos métodos para la regresión robusta, regresión que involucra respuestas correlacionadas como series de tiempo y curvas de crecimiento, regresión en la que el predictor o las variables de respuesta son curvas, imágenes, gráficos u otros objetos de datos complejos, métodos de regresión que acomodan varios tipos de datos faltantes, regresión no paramétrica, métodos bayesianos para la regresión, regresión en la que las variables predictoras se miden con error, regresión con más variables predictoras que observaciones e inferencia causal con regresión.
+
+Si se tiene un conjunto de puntos de la forma $<t_i, y_i>$ y se desea determinar automáticamente el sistema de ecuaciones diferenciales ordinarias que mejor describe el conjunto de datos y que además, sea lineal en los parámetros, se pudiese utilizar regresión para resolver este problema.
+
+A continuación se describirá brevemente qué significa que la ecuación diferencial sea lineal en los parámetros y que mejor describa los datos.
+
+Que el sistema sea lineal en los parámetros significa que cada componente de la parte derecha de la ecuación diferencial es una función de la forma:
+
+$$f_j(t,y) = \sum_{i=1}^{n} a_i * g_i(t, y)$$
+
+donde los $a_i$ son parámetros y todas las funciones $g_i(t,y)$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro.
+
+Si se plantea que $y(t_i)$ es la solución de la ecuación diferencial evaluada en el punto $t_i$, entonces un indicador de cuán bien este sistema describe los datos pudiera ser el valor $L$, donde:
+
+$$L = \sum_{i=1}^{n} (y(t_i) - y_i)^2$$
+
+Cuando se usa un valor como $L$ en el que se considera la suma de cuadrados de las diferencias, se dice que estamos en presencia de un problema de mínimos cuadrados, porque lo que se quiere es minimizar esa suma de cuadrados.
+
+Entonces, buscar el sistema de ecuaciones diferenciales que mejor describe los datos, se reduce a buscar el sistema de ecuaciones diferenciales que haga que el valor de $L$ sea lo más pequeño posible.
+
+Al aplicar regresión se pudiese obtener el conjunto de curvas y predecir valores de esta en función de la investigación que se desee realizar.
 
 
 \subsection*{Objetivos}
-Aquí van los objetivos
+
+La investigación tiene como \textbf{objetivo general} la creación de una herramienta que permita encontrar de forma automática el sistema de ecuaciones diferenciales lineales en los parámetros que mejor ajuste un conjunto de datos dados. Para dar cumplimiento a la idea anterior se trazaron los siguientes objetivos específicos:
+
 
 \subsubsection*{Objetivos específicos}
 
 \begin{enumerate}
-    \item subobjetivo 1
-    \item subobjetivo 2
+    \item Consultar literatura especializada sobre el estado del arte de los problemas de regresión en sistemas de ecuaciones, específicamente las propuestas existentes para encontrar sistemas que cumplan las características antes mencionadas.
+    \item Investigar sobre las diferencias que plantea la regresión simbólica
+    \item Estudiar acerca de metaheurísticas, específicamente los algoritmos genéticos.
+    \item Crear un marco experimental que permita evaluar la calidad de la herramienta implementada ante distintos modelos de ecuaciones diferenciales
+    \item Analizar los resultados obtenidos a través de un conjunto de métricas y técnicas de visualización.
 \end{enumerate}
-
 
 \subsection*{Organización de la tesis}
 
-Lo que hay en cada capítulo
+El presente documento está organizado en 4 capítulos que recogen las
+distintas etapas por las que transitó la investigación.
 
+En el capítulo 1 \textbf{Elementos de la regresión simbólica} se realiza una
+introducción a los elementos y conceptos de esta área abordados a lo largo
+del trabajo.

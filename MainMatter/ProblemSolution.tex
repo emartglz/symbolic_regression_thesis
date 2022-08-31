@@ -1,0 +1,169 @@
+\chapter{Propuesta de solución}\label{chapter:solution_proposal}
+
+\section{Cómo representar una solución}
+
+Teniendo los datos de la forma $<ti, yi>$, se puede extraer información relevante. Por ejemplo, si cada elemento de los datos es de la forma:
+
+$$(t_i, y_{1_i}, y_{2_i}, y_{3_i})$$
+
+Entonces se tiene la certeza de que el sistema tiene tres ecuaciones, y que se buscan una expresión de la forma:
+
+$$y_1’ = f_1(t, y_1, y_2, y_3)$$
+$$y_2’ = f_2(t, y_1, y_2, y_3)$$
+$$y_3’ = f_3(t, y_1, y_2, y_3)$$
+
+Ahora solo faltaría determinar cómo representar $f_1$, $f_2$ y $f_3$.
+
+A partir de los datos se puede decir que las soluciones candidatas son una lista de tres elementos, donde en la posición $i$ está codificada la función $fi(t,y_1,y_2,y_3)$.
+
+Por ejemplo, en el sistema de ecuaciones diferenciales:
+
+$$S’ = - a*I*S$$
+$$I’ = a*I*S - b*I $$
+$$R’ = b*I$$
+
+La lista estaría formada por
+
+$$[-a*I*S, a*I*S - b*I, b*I]$$
+
+Conociendo que una expresión aritmética (como cada una de las funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables.  Se representa cada elemento como un árbol: en cada posición de la lista tendríamos un árbol que representa a la parte derecha de la ecuación diferencial.
+
+Sin embargo, esta representación no es la mejor opción posible, porque no se plantea de forma explícita la linealidad de las ecuaciones diferencialels con respecto a los parámetros.
+
+Una ecuación lineal con respecto a los parámetros es de la forma:
+
+$$f_j(t,y) = \sum_{i=1}^{n} a_i * g_i(t, y)$$
+
+donde cada una de las funciones $g_i(t,y1,y2,y3)$ son funciones que no dependen de los parámetros.
+
+Retomando el sistema visto anteriormente:
+
+$$f_S (t,S,I,R) = a_1 * g_{S_1} (t,S,I,R)$$
+
+donde:
+
+$$g_{S_1}(t,S,I,R) = -I*S$$,
+
+$$f_I (t,S,I,R) = b_1 * g_{I_1} (t,S,I,R) + b_2 * g_{I_2} (t,S,I,R)$$
+
+donde:
+
+$$g_{I_1}(t,S,I,R) = I*S$$
+
+y
+
+$$g_{I_2}(t,S,I,R) = -I$$
+
+y finalmente
+
+$$f_R (t,S,I,R) = b_1 * g_{R_1} (t,S,I,R)$$
+
+donde:
+
+$$g_{R_1}(t,S,I,R) = I$$
+
+Como cada una de las las partes derechas de la ecuación diferencial es una suma de funciones, cada una de ellas se puede representar como un diccionario con una operación especial suma, que contiene una lista, donde en la posición i de la lista estaría una operación especial de multiplicación que contendría como hijos al parámetro $a_i$ y la función que acompaña al parámetro $a_i$ en la suma de parámetros y funciones. Estas funciones igualmente se pueden representar como un árbol.
+
+\section{Determinar costo de un sistema}
+
+Se define el costo de una solución como la sumatoria de la diferencia al cuadrado de los datos evaluados en el sistema analizado con los datos objtivos. Esta sumatoria mientras más pequeña sea es mejor, dado que si es 0 es que hemos encontrado un sistema que ajusta perfectamente a los datos presentes. Resaltar que a esta sumatoria se le agrega un factor de peso que este aumenta con respecto al tamaño del sistema obtenido garantizando que el sistema tienda a ser lo más pequeño posible.
+
+El sistema presenta parámetros en cada uno de los términos de las ecuaciones, Estos valores pueden ser ajustados para mejorar el costo en dependencia del sistema, en vez de solo colocar números aleatorios. Para esto se puede crear por cada ecuación del sistema, un sistema de ecuaciones de la forma $A * x = B$ en el que el vector de incógnitas $x$ sean los parámetros, $A$ sean las expresiones que acompañan a cada parámetro evaluadas en el datos analizados, y $B$ sea el dato objetivo.
+
+Por ejemplo, la segunda ecuación del sistema analizado anteriormente es:
+
+$$f_I (t,S,I,R) = b_1 * g_{I_1} (t,S,I,R) + b_2 * g_{I_2} (t,S,I,R)$$
+
+donde:
+
+$$g_{I_1}(t,S,I,R) = I*S$$
+
+y
+
+$$g_{I_2}(t,S,I,R) = -I$$
+
+suponiendo que tenemos de entrada los datos
+
+$$f_I(0, 1, 2, 3) = 4$$
+$$f_I(5, 6, 7, 8) = 9$$
+
+entonces se puede encontrar los valores de $b_1$ y $b_2$ que mejor ajusten esta ecuación con los datos planteados formando el sistema de ecuaciones
+
+$$b1 * g_{I_1}(0, 1, 2, 3) + b_2 * g_{I_2}(0, 1, 2, 3) = 4$$
+$$b1 * g_{I_1}(5, 6, 7, 8) + b_2 * g_{I_2}(5, 6, 7, 8) = 9$$
+
+$$b_1 * (2 * 1) + b_2 * (- 2) = 4$$
+$$b_1 * (7 * 6) + b_2 * (- 7) = 9$$
+
+$$b_1 = -10/63$$
+$$b_2 = -47/21$$
+
+De esta forma se encuentran los mejores parámetros para cada ecuación del sistema y se obtiene finalmente un sistema de ecuaciones con los parámetros lo mejor ajustados que pueden estar dado los datos de entrada.
+
+\section{Mutación}
+
+Una mutación es una operación que toma un individuo y genera uno nuevo a partir de este pero con características cambiadas, aunque sigue teniendo similaridad con el individuo inicial. Para esto se realiza un recorrido aleatorio de los distintos niveles en el árbol que representa una solución antes mencionado, escogiendo uno de estos para realizar una modificación en el, esta modificación es distinta en dependencia de su altura en la representación del sistema.
+
+Si se tiene el sistema:
+
+$$S’ = 1 * I + 0.0 * S$$
+$$I’ = 2 * (I + S)$$
+$$R’ = 3.33 * S$$
+
+Se puede realizar la mutación de eliminar el segundo sumando del primer término de la segunda ecuación. Esto resultaría en el sistema:
+
+$$S’ = 1 * I + 0.0 * S$$
+$$I’ = 2 * I$$
+$$R’ = 3.33 * S$$
+
+Esta mutación fue el resultado de la eliminación de un nodo en el árbol de la expresión de un término en una de las ecuaciones. Todas las operaciones de mutación que se han implementado son:
+
+\begin{itemize}
+    \item Eliminar un término de una ecuación en el sistema
+    \item Añadir un término a una ecuación en el sistema
+    \item Mutar un término en una ecuación en el sistema
+\end{itemize}
+
+Esta mutación de un término de una ecuación en el sistema escoge un nodo aleatorio en el árbol que representa la expresión derecha de la multiplicación y en caso de que el nodo sea una operación:
+
+\begin{itemize}
+    \item Cambia la operación en el nodo por una de la misma aridad
+    \item Elimina el nodo, colocando en su lugar su primer hijo
+    \item Agrega un nuevo nodo de operación colocando como hijos nuevos árboles de expresiones aleatorios y colocando como último hijo el nodo original seleccionado.
+\end{itemize}
+
+En caso de que el nodo seleccionado sea una variable:
+
+\begin{itemize}
+    \item Cambia la variable por otra permitida dentro de la ecuación
+    \item Cambia la varibale por una nueva expresión aleatoria que tenga altura 2
+\end{itemize}
+
+
+\section{Cruzamiento}
+
+Un cruzamiento es una operación que toma características de dos individuos de la población y retorna un nuevo individuo que posee caráterísticas de ambos padres. Para esto se decide primeramente que sitio se desea cruzar, cuando se plantea sitio se refiere a qué parte del sistema se desea cruzar, por ejemplo se podría cruzar a nivel de la lista de las ecuaciones, o a nivel de las expresiones que se encuentran en uno de los términos de una de las ecuaciones del sistema. Es importante que se tenga en cuenta esta organización de los individuos por niveles. En donde, la raiz es una lista de ecuaciones, el segundo nivel sería la sumatoria de términos y el tercer nivel sería las expresiones pertenecientes a cada término.
+
+En dependencia del sitio que se desee cruzar, se toma un nodo correspondiente a cada padre y se intercambian de posición retornando el resultado de la sustitución del nodo seleccionado en el padre 2, dentro del padre 1. Resaltar que la elección del sitio a cruzar se realiza de manera aleatoria. Si se decide cruzar en algún nivel distinto de la raiz, se toman nodos de la misma ecuación del sistema de ambos padres.
+
+Por ejemplo, podemos tomar los sistemas:
+
+$$S’ = 1 * I + 0.0 * S$$
+$$I’ = 2 * I$$
+$$R’ = 3.33 * S$$
+
+y
+
+$$S’ = 5 * R$$
+$$I’ = 3 * (R * I) + 4 * S$$
+$$R’ = 7 * I$$
+
+e intercambiar las ecuaciones correspondientes a I’ resultando:
+
+$$S’ = 1 * I + 0.0 * S$$
+$$I’ = 3 * (R * I) + 4 * S$$
+$$R’ = 3.33 * S$$
+
+\section{Determinación de las soluciones que pasan a la siguiente generación}
+
+Dada una población en una generación, se toma un conjunto de individuos de esta y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. Todos estos individuos son seleccionados de forma aleatoria. Este nuevo subconjunto formado por la población inicial de la generación, los individuos resultantes de la mutación y los individuos resultantes de los cruzamientos tienen que ser filtrados para tomar una cantidad igual a la población inicial presente en la generación con el objetivo de poder repetir este proceso múltiples veces para poder realizar numerosas generaciones. Para poder filtrar este subconjunto se toman los individuos que mejor puntuaciones obtuvieron con respecto a los datos iniciales, o sea, se toman los sistemas que mejor ajustan a los datos

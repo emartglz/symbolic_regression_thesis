@@ -1,0 +1,66 @@
+\chapter{Elementos de la regresión simbólica}\label{chapter:symbolic_regression}
+
+En la sección anterior definimos los términos necesarios para entender el problema que consiste en:
+
+Dado un conjunto de puntos de la forma $<t_i, y_i>$ encontrar un sistema de ecuaciones diferenciales lineal con respecto a los parámetros que mejor describa los datos (en el sentido de los mínimos cuadrados).
+
+En este capítulo se tratarán varios elementos: regresión simbólica y algoritmos genéticos.  Para usar un algoritmo genético es necesario definir cuáles son las posibles soluciones y para esas soluciones definir en qué consiste el cruzamiento, la mutación y cómo se puede saber cuán buena es una solución dada.
+
+\section{Regresión simbólica}
+
+La regresión simbólica es un tipo de regresión que busca dentro de un espacio de expresiones matemáticas el modelo que mejor se ajuste a un conjunto de datos dados. En esta ningún modelo en particular es utilizado en el comienzo, en su lugar se generan expresiones que se forman de manera aleatoria combinando operaciones matemáticas, funciones analíticas, constantes y variables. Normalmente la regresión simbólica para funciones matemáticas es atacado con una variedad de métodos, uno de ellos es la recombinación de ecuaciones usando algoritmos evolutivos y uno de estos puede ser un algoritmo genético.
+
+Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el sesgo humano o las brechas desconocidas en el conocimiento del dominio. Intenta descubrir las relaciones intrínsecas del conjunto de datos, al permitir que los patrones en los propios datos revelen los modelos apropiados, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana. La función de ajuste que impulsa la evolución de los modelos tiene en cuenta no solo las métricas de error (para garantizar que los modelos predigan los datos con precisión), sino también medidas especiales de complejidad, lo que garantiza que los modelos resultantes revelen la estructura subyacente de los datos en un manera que sea comprensible desde una perspectiva humana. Esto facilita el razonamiento y favorece las probabilidades de obtener información sobre el sistema de generación de datos.
+
+Se ha demostrado que la regresión simbólica es un problema NP-difícil, en el sentido de que no siempre se puede encontrar la mejor expresión matemática posible para ajustarse a un conjunto de datos dado en tiempo polinomial.
+
+Mientras que las técnicas de regresión convencionales buscan optimizar los parámetros para una estructura de modelo preespecificada, la regresión simbólica evita imponer suposiciones previas y, en cambio, infiere el modelo a partir de los datos. En otras palabras, intenta descubrir tanto las estructuras del modelo como los parámetros del modelo.
+
+Este enfoque tiene la desventaja de tener un espacio mucho más grande para buscar, porque no solo el espacio de búsqueda en la regresión simbólica es infinito, sino que hay un número infinito de modelos que encajarán perfectamente en un conjunto de datos finito. Esto significa que posiblemente un algoritmo de regresión simbólica tarde más en encontrar un modelo y una parametrización apropiados que las técnicas de regresión tradicionales. Esto se puede atenuar limitando el conjunto de componentes básicos proporcionados al algoritmo, en función del conocimiento existente del sistema que produjo los datos.
+
+Sin embargo, esta característica de la regresión simbólica también tiene ventajas: debido a que el algoritmo evolutivo requiere diversidad para explorar efectivamente el espacio de búsqueda, es probable que el resultado sea una selección de modelos y su correspondiente conjunto de parámetros de alta puntuación. Examinar esta colección podría proporcionar una mejor comprensión del proceso subyacente y permite al usuario identificar una aproximación que se ajuste mejor a sus necesidades en términos de precisión y simplicidad.
+
+\section{Algoritmos genéticos}
+
+En ciencias de la computación un algoritmo genético es una metaheurística inspirada en el proceso natural de selección. Estos usualmente son utilizados para generar soluciones de alta calidad en problemas de optimización y búsqueda haciendo uso de los conocimientos de la biología, utilizando las acciones de mutación, cruzamiento y selección para modificar una población de individuos con el objetivo de obtener la solución deseada.
+
+En un algoritmo genético, una población de soluciones candidatas, llamadas individuos, a un problema de optimización evoluciona hacia mejores soluciones. Cada solución candidata tiene un conjunto de propiedades que se pueden mutar y alterar.
+
+La evolución generalmente comienza a partir de una población de individuos generados aleatoriamente y es un proceso iterativo, con la población en cada iteración llamada generación. En cada generación se evalúa la aptitud de cada individuo de la población; la aptitud suele ser el valor de la función objetivo en el problema de optimización que se está resolviendo. Los individuos más aptos se seleccionan estocásticamente de la población actual y las propiedades de cada individuo se modifican para formar una nueva generación. La nueva generación de soluciones candidatas se utiliza luego en la siguiente iteración del algoritmo. Comúnmente, el algoritmo termina cuando se ha producido un número máximo de generaciones o se ha alcanzado un nivel de aptitud satisfactorio para la población.
+
+El tamaño de la población depende de la naturaleza del problema, pero normalmente contiene varios cientos o miles de posibles soluciones. A menudo, la población inicial se genera aleatoriamente, lo que permite toda la gama de posibles soluciones en el espacio de búsqueda. Ocasionalmente, las soluciones pueden iniciarse en áreas donde es probable que se encuentren soluciones óptimas.
+
+Durante cada generación sucesiva, se selecciona una parte de la población existente para criar una nueva generación. Las soluciones individuales se seleccionan a través de un proceso basado en la aptitud, donde las soluciones más adecuadas medidas por una función de aptitud, suelen tener más probabilidades de ser seleccionadas. Ciertos métodos de selección califican la aptitud de cada solución y seleccionan preferentemente las mejores soluciones. Otros métodos califican solo una muestra aleatoria de la población, ya que el primer proceso puede llevar mucho tiempo.
+
+Para generar una población de soluciones de una generación a otra se parte de los individuos seleccionados, a través de una combinación de operadores genéticos: mutación y cruzamiento.
+
+Para cada nueva solución que se va a producir, se selecciona un par de soluciones "padres" para reproducirlas del grupo seleccionado previamente. Al producir una solución "hija" utilizando los métodos anteriores de cruce y mutación, se crea una nueva solución que normalmente comparte muchas de las características de sus "padres". Se seleccionan nuevos padres para cada nuevo niño y el proceso continúa hasta que se genera una nueva población de soluciones de tamaño apropiado.
+
+Estos procesos finalmente dan como resultado la población de soluciones de la próxima generación que es diferente de la generación inicial. Generalmente, la aptitud promedio habrá aumentado con este procedimiento para la población, ya que solo los mejores organismos de la primera generación son seleccionados para reproducción, junto con una pequeña proporción de soluciones menos aptas. Estas soluciones menos aptas aseguran la diversidad genética dentro del acervo genético de los padres y, por lo tanto, aseguran la diversidad genética de la siguiente generación de niños.
+
+La opinión está dividida sobre la importancia del cruce frente a la mutación. Hay muchas referencias en Fogel (2006) que respaldan la importancia de la búsqueda basada en mutaciones.
+
+Vale la pena ajustar parámetros como la probabilidad de mutación, la probabilidad de cruce y el tamaño de la población para encontrar configuraciones razonables para la clase de problema en la que se trabaja. Una tasa de mutación muy pequeña puede conducir a la deriva genética. Una tasa de recombinación demasiado alta puede conducir a una convergencia prematura del algoritmo genético. Una tasa de mutación demasiado alta puede conducir a la pérdida de buenas soluciones, a menos que se emplee una selección elitista. Un tamaño de población adecuado asegura suficiente diversidad genética para el problema en cuestión, pero puede conducir a un desperdicio de recursos computacionales si se establece en un valor mayor que el requerido.
+
+Este proceso generacional se repite hasta que se alcanza una condición de terminación. Las condiciones de terminación comunes son:
+
+\begin{itemize}
+    \item Se encuentra una solución que satisface los criterios mínimos.
+    \item Número fijo de generaciones alcanzadas
+    \item Cantidad de tiempo o cómputo asignado alcanzado
+    \item La idoneidad de la solución con la clasificación más alta está alcanzando o ha alcanzado un nivel tal que las iteraciones sucesivas ya no producen mejores resultados
+    \item Inspección manual
+    \item Combinaciones de lo anterior
+\end{itemize}
+
+Para usar un algoritmo genético es necesario entonces definir varios elementos:
+
+\begin{itemize}
+    \item Cuáles son las posibles soluciones
+    \item Cómo aplicar un operador de cruzamiento
+    \item Cómo aplicar un operador de mutación
+    \item Cómo determinar cuán buena es una solución
+    \item Cómo determinar qué soluciones pasan a las próximas generaciones
+\end{itemize}
+
+Estos se defininen en el próximo capítulo.
