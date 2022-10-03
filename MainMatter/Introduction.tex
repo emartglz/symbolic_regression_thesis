@@ -3,16 +3,14 @@
 
 \qquad
 
-La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. La variable dependiente es la que es explicada mientras que la independiente es la que se utiliza para explicar la variación de la variable independiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple. Si como resultado de la regresión se obtiene un hiperplano entonces obtiene el nombre de regresión lineal \cite{mann2007introductory}. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos dados y ese hiperplano, este es un tipo de regresión. Este método se puede expresar como encontrar los valores de $\beta$ que minizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
+Tengo que ver que pongo aqui de regresión porque todo lo moví para los preliminares
+% La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. La variable dependiente es la que es explicada mientras que la independiente es la que se utiliza para explicar la variación de la variable independiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple. Si como resultado de la regresión se obtiene un hiperplano entonces obtiene el nombre de regresión lineal \cite{mann2007introductory}. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos dados y ese hiperplano, este es un tipo de regresión. Este método se puede expresar como encontrar los valores de $\beta$ que minizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
 
-$$S = \sum_{i=1}^{n}(y_i - f(x_i, \beta))^2$$
+% $$S = \sum_{i=1}^{n}(y_i - f(x_i, \beta))^2$$
 
-Teniendo este hiperplano, el investigador puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores.
+% Teniendo este hiperplano, el investigador puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores.
 
-El análisis de regresión se puede utilizar para la predicción y el pronóstico de datos y en algunas situaciones, se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes \cite{mann2007introductory}.
-
-% Luego veré donde meto este párrafo
-% La primera forma de regresión fue el método de mínimos cuadrados, que fue publicado por Legendre en 1805, y por Gauss en 1809. Legendre y Gauss aplicaron el método al problema de determinar, a partir de observaciones astronómicas, las órbitas de los cuerpos alrededor del Sol, en su mayoría cometas, pero también más tarde los planetas menores recién descubiertos.
+% El análisis de regresión se puede utilizar para la predicción y el pronóstico de datos y en algunas situaciones, se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes \cite{mann2007introductory}.
 
 Teniendo en cuenta que la regresión permite encontrar los valores que mejor ajustan un modelo dado conjunto de datos, se puede intentar utilizar la regresión para determinar de forma automática el sistema de ecuaciones diferenciales ordinarias lineal en los parámetros que mejor describe un conjunto de puntos de la forma $(t_i, y_i)$.
 
@@ -26,7 +24,10 @@ Esta definición se puede extender a sistemas de ecuaciones si todas las funcion
 
 Un ejemplo de una función lineal con respecto a los parámetros sería:
 
-$$I` = a * I^2$$
+\begin{equation}
+    \label{eqn:ode_example}
+    I` = a * I^2
+\end{equation}
 
 Si se plantea que $y(t_i)$ es la solución de la ecuación diferencial evaluada en el punto $t_i$, entonces un indicador de cuán bien el sistema describe los valores de $(ti, yi)$ pudiera ser el valor $L$, donde:
 

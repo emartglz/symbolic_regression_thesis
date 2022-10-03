@@ -1,0 +1,108 @@
+\chapter{Preliminares}\label{chapter:preliminaries}
+
+En el capítulo anterior se definen los términos necesarios para entender el problema que consiste en:
+
+Dado un conjunto de puntos de la forma $(t_i, y_i)$ retornar un sistema de ecuaciones diferenciales lineal con respecto a los parámetros que mejor describa los datos (en el sentido de los mínimos cuadrados).
+
+En este capítulo se tratan varios elementos: ecuaciones diferenciales, ecuaciones diferenciales lineales con respecto a los parámetros, regresión, regresión simbólica, regresión simbólica en sistemas de ecuaciones diferenciales y algoritmos genéticos. Para usar un algoritmo genético es necesario definir cuáles son las posibles soluciones y para esas soluciones definir en qué consiste el cruzamiento, la mutación y cómo se puede saber cuán buena es una solución dada.
+
+Para aclarar el contexto de nuestro trabajo, se resume brevemente algunos conceptos básicos relacionados con la solución planteada en el siguiente capítulo.
+
+\section{Ecuaciones diferenciales}
+
+Una ecuación diferencial se define como una ecuación que contiene las derivadas de una o más variables dependientes, con respecto a una o más variables independientes \cite{gaucel2014learning}. Una ecuación diferencial ordinaria (EDO) es una que contiene derivadas en función de una sola variable (por ejemplo, el tiempo). Ún clásico ejemplo de una ecuación diferencial ordinaria es
+
+$$y'(t)=f(t, y(t)) \qquad y(t_0) = y_0$$
+
+donde $y(t)$ es una función y $y_0$ es una condición inicial.
+
+Resolver un conjunto de ecuaciones diferenciales para producir sus funciones equivalentes es relativamente fácil. En el otro lado, es decir, la inferencia del sistema de EDO a partir de los datos de series de tiempo observados, no es necesariamente fácil, aunque muy importante para muchos campos. Esto se debe a que no se conoce la forma adecuada, es decir, el orden y los términos de las EDO de antemano \cite{iba2008inference}.
+
+\section{Ecuaciones diferenciales lineales con respecto a los parámetros}
+
+Una ecuación diferencial es lineal con respecto a los parámetro si es de la forma
+
+$$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t))$$
+
+donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro.
+
+Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad. Un ejemplo de una ecuación diferencial ordinal lineal en los parámetros se puede ver en la ecuación \ref{eqn:ode_example}
+
+\section{Regresión}
+
+La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. La variable dependiente es la que es explicada mientras que la independiente es la que se utiliza para explicar la variación de la variable independiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple \cite{mann2007introductory}.
+
+El análisis de regresión se puede utilizar para la predicción y el pronóstico de datos y en algunas situaciones, se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes \cite{mann2007introductory}.
+
+La primera forma de regresión fue el método de mínimos cuadrados, que fue publicado por Legendre en 1805, y por Gauss en 1809. Legendre y Gauss aplicaron el método al problema de determinar, a partir de observaciones astronómicas, las órbitas de los cuerpos alrededor del Sol, en su mayoría cometas, pero también más tarde los planetas menores recién descubiertos.
+
+\section{Regresión lineal}
+
+Si como resultado de la regresión se obtiene un hiperplano entonces obtiene el nombre de regresión lineal \cite{mann2007introductory}. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos utilizados con entrada del algoritmo y el hiperplano obtenido, este es un tipo de regresión. Este método se puede expresar como encontrar los valores de $\beta$ que minimizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
+
+$$S = \sum_{i=1}^{n}(y_i - f(x_i, \beta))^2$$
+
+Teniendo este hiperplano, el investigador puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores.
+
+\section{Regresión simbólica}
+
+La regresión simbólica es un tipo de regresión que se utiliza para estimar dentro un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos dados. En este tipo de regresión, ningún modelo en particular se utiliza como punto de partida en la estimación del modelo que se desea encontrar, en su lugar se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables. Para funciones matemáticas, se utilizan diversos métodos en la regresión simbólica, uno de ellos es la recombinación de ecuaciones usando algoritmos evolutivos y uno de estos puede ser un algoritmo genético.
+
+Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el sesgo humano. Intenta descubrir las relaciones intrínsecas del conjunto de datos, probando múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
+
+La función de ajuste que hace que los modelos obtenidos a lo largo de la regresión sean cada vez mejores tiene en cuenta no solo las métricas de error (para garantizar que los modelos predigan los datos con precisión), sino cualquier métrica que desee definir el usuario con el objetivo de obtener un resultado con características específicas, lo que garantiza que los modelos resultantes revelen la estructura subyacente de los datos de una manera que sea comprensible desde una perspectiva humana. Esto facilita el posterior análisis de los resultados al permitir asociar valores semánticos a algunas características presentes en el modelo obtenido.
+
+El 11 de julio del año 2022, Marco Virgolin y Solon P. Pissis demostraron que la regresión simbólica es un problema NP-difícil \cite{virgolin2022symbolic}, en el sentido de que no siempre se puede encontrar la mejor expresión matemática posible para ajustarse a un conjunto de datos dado en tiempo polinomial.
+
+Este enfoque tiene la desventaja de tener un espacio de búsqueda mucho más grande que otros tipos de regresión, ya que se pueden explorar todas las funciones que van de $R^m$ a $R^n$ (en la regresión lineal el espacio de búsqueda es $R^m$). Esto se puede atenuar limitando el conjunto de funciones en las que buscará el algoritmo, en función del conocimiento existente del sistema que produjo los datos.
+
+Sin embargo, esta característica de poseer un espacio de búsqueda tan grande también tiene ventajas: debido a que el algoritmo evolutivo requiere diversidad para explorar efectivamente el espacio de búsqueda, es probable que el resultado puedan ser múltiples modelos y su correspondientes conjuntos de parámetros y que estos posean un valor deseado en las métricas seleccionadas. Examinar esta colección permite al usuario identificar una aproximación que se ajuste mejor a las características que se desean en el modelo obtenido, por ejemplo simplicidad o precisión.
+
+La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza demostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema un problema de optimización pero esto es costoso.
+
+
+\section{Regresión simbólica para EDOs}
+
+\section{Algoritmos genéticos}
+
+Un algoritmo genético es una metaheurística inspirada en el proceso natural de selección \cite{mitchell1998introduction}. Son utilizados fundamentalmente para generar soluciones de alta calidad en problemas de optimización y búsqueda. Es un método para pasar de una población de "cromosomas" (por ejemplo, cadenas de unos y ceros, o "bits") a una nueva población mediante el uso de una especie de "selección natural" junto con los operadores inspirados en la genética de cruce, mutación y selección. Cada cromosoma consta de "genes" (por ejemplo, bits).
+
+Los algoritmos genéticos son cómodos para resolver problemas de optimizacióon de la forma $min f(x)$, donde $x$ pertenece a un conjunto $C$ dado. Se le llama solución a cualquier $x$ de $C$. En dependencia de la estructura de $C$, las soluciones pueden tener distintas formas, por ejemplo vectores de números reales como en los problemas de optimización tradicionales o puedes ser árboles como en el caso de la regresión simbólica.
+
+La evolución generalmente comienza a partir de una población de individuos generados aleatoriamente y es un proceso iterativo, se le llama generación a la población en cada iteración. En cada generación se evalúa la aptitud, o lo que quiere decir, el valor de la función objetivo en el problema de optimización que se está resolviendo de cada individuo de la población.
+
+Los individuos más aptos se seleccionan de manera aleatoria de la población actual y las propiedades de estos se modifican utilizando las operaciones de mutación y cruzamiento para formar una nueva población. Esta nueva población toma el lugar de la población origen formando así una nueva generación de soluciones candidatas que se utiliza luego en la siguiente iteración del algoritmo. Comúnmente, el algoritmo termina cuando se ha producido un número máximo de generaciones o se ha alcanzado un nivel de aptitud satisfactorio para la población, también se puede detener el algoritmo en otras situaciones, por ejemplo que se haya recorrido todo el espacio de búsqueda, pero esto es poco usual debido al tamaño tan grande que suele tener este espacio.
+
+El tamaño de la población depende de la naturaleza del problema, por ejemplo si intentamos minimizar el valor de una función convexa bastará con una población con una pequeña cantidad de individuos. Normalmente las poblaciones contiene varios cientos o miles de posibles soluciones ya el espacio de búsqueda suele ser grande. Como se menciona anteriormente, la población inicial suele generarse aleatoriamente, lo que permite explorar toda la gama de posibles soluciones en el espacio de búsqueda. Ocasionalmente, las soluciones pueden iniciarse en áreas donde es probable que se encuentren soluciones óptimas, por ejemplo si se desea encontrar el mínimo de una función, se pueden generar soluciones iniciales en donde la pendiente de la función evaluada en estas soluciones sea $0$ ya que esto es una condición necesaria para ser mínimo.
+
+Durante cada generación, se selecciona una parte de la población para generar nuevos individuos. Las soluciones se seleccionan a través de un proceso basado en la aptitud, donde las soluciones más adecuadas medidas por una función de aptitud, suelen tener más probabilidades de ser seleccionadas, a este proceso se le llama selección. Algunos métodos de selección califican la aptitud de cada solución y seleccionan preferentemente las mejores soluciones asignando una mayor probabilidad de ser escogidas a estas, otros métodos califican solo una muestra aleatoria de la población, ya que el primer proceso puede llevar mucho tiempo.
+
+Para generar una población de soluciones de una generación a otra se parte de los individuos seleccionados, a través de una combinación de operadores genéticos: mutación y cruzamiento. La mutación realiza cambios aleatorios en algún sitio del individuo seleccionado, por ejemplo si el individuo es la cadena 00000100, este puede ser mutado en su segunda posición para obtener 01000100. El cruzamiento intercambia subpartes aleatorias de dos individuos, obteniendo dos nuevos cromosomas. Por ejemplo, las cadenas 10000100 y 11111111 puedes ser cruzadas a partir de su tercera posición en cada una para producir 10011111 y 10011111. Resaltar que existen operaciones de cruzamiento en la que solo se obtiene un nuevo individuo como resultado de la operación.
+
+Estas operaciones de cruzamiento, mutación y selección finalmente dan como resultado la población de soluciones de la próxima generación que es diferente de la generación inicial. Generalmente, la aptitud promedio habrá aumentado con este procedimiento para la población, ya que solo los mejores organismos de la primera generación junto con una pequeña proporción de soluciones menos aptas son seleccionados para reproducción. Estas soluciones menos aptas aseguran la diversidad genética dentro del acervo de características de los padres y, por lo tanto, aseguran la diversidad de propiedades de la siguiente generación de cromosomas.
+
+La opinión sobre la importancia del cruzamiento frente a la mutación está dividida. Existen referencias en \cite{fogel2006evolutionary} que respaldan la importancia de la búsqueda basada en mutaciones.
+
+Con el fin de recorrer de maneras distintas el espacio de búsqueda, vale la pena ajustar parámetros como la probabilidad de mutación, la probabilidad de cruzamiento y el tamaño de la población para encontrar configuraciones adecuadas para la clase de problema en la que se trabaja, por ejemplo una tasa de mutación muy pequeña puede conducir a la deriva genética, que es que desaparecen por completo algunos genes y se fijan los más frecuentes en las siguientes generaciones, resultando en una disminución en la diversidad genética de la población. Una tasa de cruzamiento demasiado alta puede conducir a una convergencia prematura del algoritmo genético. Un tamaño de población proporcional al espacio de búsqueda asegura suficiente diversidad genética para el problema que se desea solucionar, pero puede conducir a que la ejecución del algoritmo tome más tiempo y realice más cómpuntos.
+
+Este proceso de creación de nuevas generaciones se repite hasta que se alcanza una condición de parada. Las condiciones de parada comunes son:
+
+\begin{itemize}
+    \item Se encuentra una solución que satisface criterios definidos por el usuario, pueden ser una cantidad de ajuste mínimo, o haber alcanzado un modelo más corto.
+    \item Se alcanza el número máximo fijado de generaciones.
+    \item Se alcanza la cantidad de tiempo o cómputo máximo asignado
+    \item La aptitud de la solución con la clasificación más alta está alcanzando o ha alcanzado un nivel tal que las iteraciones sucesivas ya no producen mejores resultados.
+    \item Combinaciones de lo anterior.
+\end{itemize}
+
+Para usar un algoritmo genético es necesario entonces definir varios elementos:
+
+\begin{itemize}
+    \item Cuáles son las posibles soluciones
+    \item Cómo aplicar un operador de cruzamiento
+    \item Cómo aplicar un operador de mutación
+    \item Cómo determinar cuán buena es una solución
+    \item Cómo determinar qué soluciones pasan a las próximas generaciones
+\end{itemize}
+
+Estos se defininen en el próximo capítulo.
