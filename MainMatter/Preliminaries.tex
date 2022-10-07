@@ -1,22 +1,29 @@
 \chapter{Preliminares}\label{chapter:preliminaries}
 
-En el capítulo anterior se definen los términos necesarios para entender el problema que consiste en:
+En el capítulo anterior se definió el objetivo de este trabajo, para ello se plantearon los conceptos de sistema de ecuaciones diferenciales lineales en los parámetros y la relación que existe entre ajustar un conjunto de datos y el algoritmo de mínimos cuadrados.
 
-Dado un conjunto de puntos de la forma $(t_i, y_i)$ retornar un sistema de ecuaciones diferenciales lineal con respecto a los parámetros que mejor describa los datos (en el sentido de los mínimos cuadrados).
+En la sección 1.1 de este capítulo se plantea lo que es una ecuación diferencial, en la sección siguiente se define de forma más detallada qué es una ecuación diferencial con respecto a los parámetros. Una técnica importante que se utilizó para el desarrollo de este trabajo es la regresión, los detalles se pueden encontrar en la sección 1.3. Las características ajuste cuadrático y regresión simbólica aparecen en las dos secciones siguientes respectivamente. A continuación en el capítulo se puede ver cómo se utiliza la regresión simbólica directamente en un sistema de ecuaciones diferenciales. En la última sección de este capítulo se detalla qué es un algoritmo genético y se plantean ejemplos de situaciones en las que es útil esta metaheurística.
 
-En este capítulo se tratan varios elementos: ecuaciones diferenciales, ecuaciones diferenciales lineales con respecto a los parámetros, regresión, regresión simbólica, regresión simbólica en sistemas de ecuaciones diferenciales y algoritmos genéticos. Para usar un algoritmo genético es necesario definir cuáles son las posibles soluciones y para esas soluciones definir en qué consiste el cruzamiento, la mutación y cómo se puede saber cuán buena es una solución dada.
-
-Para aclarar el contexto de nuestro trabajo, se resume brevemente algunos conceptos básicos relacionados con la solución planteada en el siguiente capítulo.
+A continuación se plantea que es una ecuación diferencial y se muestra un ejemplo de esta.
 
 \section{Ecuaciones diferenciales}
 
-Una ecuación diferencial se define como una ecuación que contiene las derivadas de una o más variables dependientes, con respecto a una o más variables independientes \cite{gaucel2014learning}. Una ecuación diferencial ordinaria (EDO) es una que contiene derivadas en función de una sola variable (por ejemplo, el tiempo). Ún clásico ejemplo de una ecuación diferencial ordinaria es
+Una ecuación diferencial se define como una ecuación que contiene las derivadas de una o más variables dependientes, con respecto a una o más variables independientes \cite{gaucel2014learning}. Una ecuación diferencial ordinaria (EDO) es una que contiene derivadas en función de una sola variable (por ejemplo, el tiempo). La forma general de una ecuación diferencial ordinaria es:
 
 $$y'(t)=f(t, y(t)) \qquad y(t_0) = y_0$$
 
 donde $y(t)$ es una función y $y_0$ es una condición inicial.
 
-Resolver un conjunto de ecuaciones diferenciales para producir sus funciones equivalentes es relativamente fácil. En el otro lado, es decir, la inferencia del sistema de EDO a partir de los datos de series de tiempo observados, no es necesariamente fácil, aunque muy importante para muchos campos. Esto se debe a que no se conoce la forma adecuada, es decir, el orden y los términos de las EDO de antemano \cite{iba2008inference}.
+La solución de una ecuación diferencial es una función que al ser sustituida en la ecuación diferencial hace que se satisfaga dicha ecuación. Si además la ecuación diferencial es ordinaria, continua en un intervalo cerrado y se tienen condiciones iniciales, entonces la solución de dicha ecuación diferencial existe y es única. \cite{coddington1955theory}
+
+Un ejemplo de ecuación diferencial ordinaria es:
+
+$$y' = \frac{x^2}{y^3}$$
+
+en donde la solución sería:
+
+$$y = \sqrt[4]{\frac{4x}{3} + 4c}$$
+
 
 \section{Ecuaciones diferenciales lineales con respecto a los parámetros}
 
@@ -24,46 +31,55 @@ Una ecuación diferencial es lineal con respecto a los parámetro si es de la fo
 
 $$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t))$$
 
-donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro.
+donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro $a_i$.
 
-Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad. Un ejemplo de una ecuación diferencial ordinal lineal en los parámetros se puede ver en la ecuación \ref{eqn:ode_example}
+Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad. Que el sistema sea lineal con repecto a los paráemtros permite modelar múltiples sistemas dinámicos poblaciones como el sistema de lotka volterra:
+
+$$X' = \alpha * X - \beta * X * Y$$
+$$Y' = \delta * X * Y - \gamma * Y$$
+
+Para encontrar estos sistemas se utilizan diversas técnicas ya que muchas veces solo se poseen muestras de algún fenómeno físico en concreto y no se conoce las ecuaciones que lo describen, una de estas técnicas es la regresión.
 
 \section{Regresión}
 
-La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. La variable dependiente es la que es explicada mientras que la independiente es la que se utiliza para explicar la variación de la variable independiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple \cite{mann2007introductory}.
+La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. Se explica la variable dependiente mientras que la independiente es la que se utiliza para explicar la variación de la variable dependiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple \cite{mann2007introductory}.
 
 El análisis de regresión se puede utilizar para la predicción y el pronóstico de datos y en algunas situaciones, se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes \cite{mann2007introductory}.
 
 La primera forma de regresión fue el método de mínimos cuadrados, que fue publicado por Legendre en 1805, y por Gauss en 1809. Legendre y Gauss aplicaron el método al problema de determinar, a partir de observaciones astronómicas, las órbitas de los cuerpos alrededor del Sol, en su mayoría cometas, pero también más tarde los planetas menores recién descubiertos.
 
-\section{Regresión lineal}
+\section{Ajuste mínimo cuadrático de datos}
 
-Si como resultado de la regresión se obtiene un hiperplano entonces obtiene el nombre de regresión lineal \cite{mann2007introductory}. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos utilizados con entrada del algoritmo y el hiperplano obtenido, este es un tipo de regresión. Este método se puede expresar como encontrar los valores de $\beta$ que minimizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
+El método de mínimos cuadrados es un tipo de regresión que se utiliza para aproximar la solución de modelos en los que se conoce la función pero no sus parámetros. También se puede ver como un algoritmo para aproximar la solución de sistemas sobredeterminados, estos sistemas son conjuntos de ecuaciones en los que hay más ecuaciones que incógnitas.
+
+Este método funciona minimizando la suma de los cuadrados de la diferencia entre un valor observado y el valor ajustado proporcionado por la función. Se puede expresar como resolver el problema de optimización de encontrar los valores de $\beta$ que minimizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
 
 $$S = \sum_{i=1}^{n}(y_i - f(x_i, \beta))^2$$
 
-Teniendo este hiperplano, el investigador puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores.
+Teniendo estos parámetros, se puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores. Este método se utiliza cuando la función es conocida, pero hay ocasiones en la práctica en las que esto no ocurre, para encontrar la función se puede utilizar un método llamado regresión simbólica.
 
 \section{Regresión simbólica}
 
-La regresión simbólica es un tipo de regresión que se utiliza para estimar dentro un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos dados. En este tipo de regresión, ningún modelo en particular se utiliza como punto de partida en la estimación del modelo que se desea encontrar, en su lugar se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables. Para funciones matemáticas, se utilizan diversos métodos en la regresión simbólica, uno de ellos es la recombinación de ecuaciones usando algoritmos evolutivos y uno de estos puede ser un algoritmo genético.
+La regresión simbólica se utiliza para encontrar dentro de un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos planteados. En este método, ningún modelo en particular se utiliza como punto de partida para la búsqueda del modelo que se desea encontrar. En su lugar se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables.
 
-Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el sesgo humano. Intenta descubrir las relaciones intrínsecas del conjunto de datos, probando múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
+La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza mostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema de optimización pero esto es costoso.
 
-La función de ajuste que hace que los modelos obtenidos a lo largo de la regresión sean cada vez mejores tiene en cuenta no solo las métricas de error (para garantizar que los modelos predigan los datos con precisión), sino cualquier métrica que desee definir el usuario con el objetivo de obtener un resultado con características específicas, lo que garantiza que los modelos resultantes revelen la estructura subyacente de los datos de una manera que sea comprensible desde una perspectiva humana. Esto facilita el posterior análisis de los resultados al permitir asociar valores semánticos a algunas características presentes en el modelo obtenido.
+Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el desconocimiento de la estructura del modelo. Este método intenta descubrir las relaciones presentes en el conjunto de datos. Para lograr este fin, se prueban múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
 
-El 11 de julio del año 2022, Marco Virgolin y Solon P. Pissis demostraron que la regresión simbólica es un problema NP-difícil \cite{virgolin2022symbolic}, en el sentido de que no siempre se puede encontrar la mejor expresión matemática posible para ajustarse a un conjunto de datos dado en tiempo polinomial.
+Para evaluar que tan cercano está el modelo obtenido con respecto al modelo original se define una función de ajuste. Esta hace que los resultados obtenidos a lo largo de la regresión simbólica sean cada vez mejores ya que tiene en cuenta no solo las métricas de error (valores que definen cuan cerca están los resultados obtenidos a los resultados deseados), sino cualquier métrica que desee definir el usuario con el objetivo de obtener un resultado con características específicas, por ejemplo modelos más pequeños o con menor cantidad de parámetros. Esto facilita el análisis posterior de los resultados al permitir asociar en el modelo obtenido algunos parámetros a significados de la vida real, por ejemplo la cantidad de individuos que mueren en cada instante de tiempo en el sistema de lotka volterra.
 
-Este enfoque tiene la desventaja de tener un espacio de búsqueda mucho más grande que otros tipos de regresión, ya que se pueden explorar todas las funciones que van de $R^m$ a $R^n$ (en la regresión lineal el espacio de búsqueda es $R^m$). Esto se puede atenuar limitando el conjunto de funciones en las que buscará el algoritmo, en función del conocimiento existente del sistema que produjo los datos.
+La regresión simbólica tiene la desventaja de además de ser un problema NP-difícil \cite{virgolin2022symbolic}, tener un espacio de búsqueda mucho más grande que otros tipos de problemas de ajustes de datos. Por ejemplo, tanto en la regresión lineal como no lineal, el espacio de búsqueda es $R^m$ y en la regresión simbólica se pueden explorar todas las funciones que van de $R^m$ a $R^n$.
 
-Sin embargo, esta característica de poseer un espacio de búsqueda tan grande también tiene ventajas: debido a que el algoritmo evolutivo requiere diversidad para explorar efectivamente el espacio de búsqueda, es probable que el resultado puedan ser múltiples modelos y su correspondientes conjuntos de parámetros y que estos posean un valor deseado en las métricas seleccionadas. Examinar esta colección permite al usuario identificar una aproximación que se ajuste mejor a las características que se desean en el modelo obtenido, por ejemplo simplicidad o precisión.
-
-La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza demostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema un problema de optimización pero esto es costoso.
+Sin embargo, esta característica de poseer un espacio de búsqueda tan grande también tiene ventajas ya que el resultado pueden ser múltiples modelos y su correspondientes conjuntos de parámetros. Examinar esta colección de modelos resultantes permite al usuario identificar una solución que se ajuste mejor a alguna características en particular. Por ejemplo que el modelo posea ecuaciones con poca cantidad de parámetros o que la diferencia entre los datos evaluados en el modelo y los datos originales sea menor que un error específico.
 
 
 \section{Regresión simbólica para EDOs}
 
 La regresión simbólica ha sido utilizada de diversas maneras para encontrar sistemas de ecuaciones diferenciales, por ejemplo en el año 2014, un grupo de investigadores utilizaron esta técnica para encontrar sistemas dinámicos, generando para cada ecuación del sistema un grupo de ecuaciones. Luego probaban distintas combinaciones de las ecuaciones de estos subconjuntos hasta encontrar una que satisfaciera las condiciones de su investigación \cite{gaucel2014learning}. En el año 2008 se utilizó la regresión simbólica junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parametros que mejor ajustase un conjunto de datos \cite{iba2008inference}
+
+ver donde pongo esto:
+
+Para funciones matemáticas, se utilizan diversos métodos en la regresión simbólica, uno de ellos es la recombinación de ecuaciones usando algoritmos evolutivos y uno de estos puede ser un algoritmo genético.
 
 \section{Algoritmos genéticos}
 

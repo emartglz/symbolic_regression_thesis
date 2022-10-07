@@ -3,6 +3,9 @@
 
 \qquad
 
+Poner esto por algún sitio:
+Resolver un conjunto de ecuaciones diferenciales para producir sus funciones equivalentes es relativamente fácil \cite{iba2008inference}. Sin embargo, la inferencia del sistema de EDO a partir de los datos de series de tiempo observados, resulta más complejo ya que no se conoce el orden y los términos de las EDO de antemano.
+
 Tengo que ver que pongo aqui de regresión porque todo lo moví para los preliminares
 % La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. La variable dependiente es la que es explicada mientras que la independiente es la que se utiliza para explicar la variación de la variable independiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple. Si como resultado de la regresión se obtiene un hiperplano entonces obtiene el nombre de regresión lineal \cite{mann2007introductory}. Por ejemplo, el método de los mínimos cuadrados ordinarios calcula el único hiperplano que minimiza la suma de las diferencias al cuadrado entre los datos dados y ese hiperplano, este es un tipo de regresión. Este método se puede expresar como encontrar los valores de $\beta$ que minizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
 
@@ -24,10 +27,7 @@ Esta definición se puede extender a sistemas de ecuaciones si todas las funcion
 
 Un ejemplo de una función lineal con respecto a los parámetros sería:
 
-\begin{equation}
-    \label{eqn:ode_example}
-    I` = a * I^2
-\end{equation}
+$$I` = a * I^2$$
 
 Si se plantea que $y(t_i)$ es la solución de la ecuación diferencial evaluada en el punto $t_i$, entonces un indicador de cuán bien el sistema describe los valores de $(ti, yi)$ pudiera ser el valor $L$, donde:
 
