@@ -1,50 +1,152 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
+En este capitulo se plantea una forma de obtener un sistema de ecuaciones diferenciales lineales en los parámetros mediante el uso de la regresión simbólica utilizando un algoritmo genético. De esta forma se obtiene un modelo que aproxima un conjunto de datos.
+
+La primera sección del capítulo detalla como se puede representar una solución mediante un árbol computacional. En la sección siguiente se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones 3, 4 y 5 se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección respectivamente.
+
 \section{Cómo representar una solución}
 
-Teniendo los datos de la forma $<ti, yi>$, se puede extraer información relevante. Por ejemplo, si cada elemento de los datos es de la forma:
+Teniendo los datos de la forma $(ti, yi)$, se puede extraer información útil para conocer la forma que debe tener el modelo que se intenta encontrar con el algoritmo. Por ejemplo, si cada elemento de los datos es de la forma:
 
-$$(t_i, y_{1_i}, y_{2_i}, y_{3_i})$$
+$$(t_i, y_{1_i}, y_{2_i}, y_{3_i})$$,
 
-Entonces se tiene la certeza de que el sistema tiene tres ecuaciones, y que se buscan una expresión de la forma:
+entonces se tiene la certeza de que el sistema de ecuaciones diferenciales que se desea tiene tres ecuaciones, y que los sistemas de ecuaciones en el espacio de búsqueda del método deben tener la forma:
 
-$$y_1’ = f_1(t, y_1, y_2, y_3)$$
-$$y_2’ = f_2(t, y_1, y_2, y_3)$$
-$$y_3’ = f_3(t, y_1, y_2, y_3)$$
+$$y_1' = f_1(t, y_1, y_2, y_3)$$
+$$y_2' = f_2(t, y_1, y_2, y_3)$$
+$$y_3' = f_3(t, y_1, y_2, y_3)$$
 
-Ahora solo faltaría determinar cómo representar $f_1$, $f_2$ y $f_3$.
+A partir de los datos se puede decir que las soluciones candidatas a solución son una lista de tres elementos, donde en la posición $i$ está representada la función $fi(t,y_1,y_2,y_3)$.
 
-A partir de los datos se puede decir que las soluciones candidatas son una lista de tres elementos, donde en la posición $i$ está codificada la función $fi(t,y_1,y_2,y_3)$.
+Por ejemplo, en el modelo poblacional SIR:
 
-Por ejemplo, en el sistema de ecuaciones diferenciales:
+\begin{align*}
+    S' & = - a*I*S     \\
+    I' & = a*I*S - b*I \\
+    R' & = b*I,
+\end{align*}
 
-$$S’ = - a*I*S$$
-$$I’ = a*I*S - b*I $$
-$$R’ = b*I$$
+la lista estaría formada por
 
-La lista estaría formada por
+$$[-a*I*S, a*I*S - b*I, b*I].$$
 
-$$[-a*I*S, a*I*S - b*I, b*I]$$
+Una expresión aritmética (como cada una de las funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces se puede representar en cada posición de la lista el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a esa posición.
 
-Conociendo que una expresión aritmética (como cada una de las funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables.  Se representa cada elemento como un árbol: en cada posición de la lista tendríamos un árbol que representa a la parte derecha de la ecuación diferencial.
+Sin embargo con esta representación no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Por lo que no es útil ya que en el espacio de búsqueda del algoritmo no deben aparecer modelos que incumplan esta propiedad. Para que esta forma de representar las funciones en forma de árboles computacionales no permita la no linealidad con respecto a los parámetros se modifica la estructura del árbol de la siguiente manera.
 
-Sin embargo, esta representación no es la mejor opción posible, porque no se plantea de forma explícita la linealidad de las ecuaciones diferencialels con respecto a los parámetros.
+Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una sumatoria de multiplicaciones de parámetros con funciones que no dependen de parámetros, entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raiz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos).
 
-Una ecuación lineal con respecto a los parámetros es de la forma:
+Cada uno de estos hijos es un subárbol que representa la multiplicación de un parámetro con una función que no depende de parámetros. Estos subárboles poseen como raiz un nodo con una operación de multiplicación y dos nodos hijos. El primero de ellos sería un nodo hoja representando el parámetro. El segundo de ellos sería un nodo que representa el subárbol computacional correspondiente a la función utilizando la misma representación planteada por Koza pero con la peculiaridad de que sus hojas solo podrán almacenar variables, no parámetros.
 
-$$f_j(t,y) = \sum_{i=1}^{n} a_i * g_i(t, y)$$
+Cada ecuación diferencial sería un hijo de un nodo que representa al sistema de ecuaciones diferenciales. Como ejemplo se puede utilizar el modelo poblacional SIR que es lineal con respecto a sus parámetros, por lo que su represetación con la estructura planteada anteriormente sería:
 
-donde cada una de las funciones $g_i(t,y1,y2,y3)$ son funciones que no dependen de los parámetros.
+\begin{tikzpicture}[roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm}, squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}]
+    % Nodes
+    \node[roundnode]        (system)                            {$SYSTEM$};
 
-Retomando el sistema visto anteriormente:
+    \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
+    \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
+    \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$a$};
+    \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
+    \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
+    \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
+    \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-$$f_S (t,S,I,R) = a_1 * g_{S_1} (t,S,I,R)$$
+    \node[roundnode]        (plus_I)     [below=of system]        {$+$};
+    \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
+    \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a$};
+    \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
+    \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
+    \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
 
-donde:
+    \node[roundnode]        (star_I_3)    [below right=of plus_I]    {$*$};
+    \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$b$};
+    \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
+    \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
 
-$$g_{S_1}(t,S,I,R) = -I*S$$,
+    \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
+    \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
+    \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$b$};
+    \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
 
-$$f_I (t,S,I,R) = b_1 * g_{I_1} (t,S,I,R) + b_2 * g_{I_2} (t,S,I,R)$$
+    %Lines
+    \draw [->] (system.south) -- (plus_S.north);
+    \draw[->] (system.south) -- (plus_I.north);
+    \draw[->] (system.south) -- (plus_R.north);
+
+    \draw[->] (plus_S.south) -- (star_S_1.north);
+    \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
+    \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
+    \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
+    \draw[->] (star_S_2.south) -- (S_star_S.north);
+    \draw[->] (star_S_2.south) -- (I_star_S.north);
+
+    \draw[->] (plus_I.south) -- (star_I_1.north);
+    \draw[->] (plus_I.south) -- (star_I_3.north);
+    \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
+    \draw[->] (star_I_1.south) -- (star_I_2.north);
+    \draw[->] (star_I_2.south) -- (S_star_I.north);
+    \draw[->] (star_I_2.south) -- (I_star_I_1.north);
+
+    \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
+    \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
+    \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
+
+    \draw[->] (plus_R.south) -- (star_R_1.north);
+    \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
+    \draw[->] (star_R_1.south) -- (I_star_R.north);
+\end{tikzpicture}
+
+Con esta nueva representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros. Por esta razón es la estructura que se utiliza para la representación de los modelos generados por el algoritmo de regresión simbólica detallado en este capítulo.
+
+En un método de regresión simbólica es necesario una función de ajuste que permita conocer que tan cercano es el modelo obtenido con respecto al modelo original, para esto se define el costo de un sistema que se explica en la sección siguiente.
+
+\section{Determinar costo de una solución}
+
+Se define el costo de una solución obtenida durante el método de la regresión simbólica como:
+
+$$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y_{i_j} - f_i(x_j))^2}{m}}{n},$$
+
+con:
+
+$$f_i(x_j) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(x_j),$$
+
+donde $f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones que conforman la solución obtenida dados los puntos $(x_j, (y_{1_j}, y_{2_j}, \dots, y_{n_j}))$  con $1 < j < m$ siendo $m$ la cantidad de puntos, $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema.
+
+Mientras más pequeño es el valor del costo, más se asemeja el sistema obtenido al sistema original ya que si es 0 significa que se ha encontrado un sistema que ajusta perfectamente los puntos.
+
+Al valor de $C$ se le agrega un factor de peso, el cual es directamente propociornal a la cantidad de términos que posean las ecuaciones de la solución. Esto garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos posea menos peso.
+
+Para que la diferencia $y_{i_j} - f_i(x_j)$ se la menor posible se ajustan los parámetros $a_{i_k}$ por cada una de las $f_i$. Para esto se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
+
+\begin{align*}
+    A_i & = \begin{pmatrix}
+        g_{i_1}(x_1) & g_{i_2}(x_1) & \dots  & g_{i_k}(x_1) \\
+        g_{i_1}(x_2) & g_{i_2}(x_2) &        & g_{i_k}(x_2) \\
+        \vdots       & \vdots       & \ddots & \vdots       \\
+        g_{i_1}(x_m) & g_{i_2}(x_m) &        & g_{i_k}(x_m)
+    \end{pmatrix}
+    \qquad
+    x_i = \begin{bmatrix}
+        a_{i_1} \\
+        a_{i_2} \\
+        \vdots  \\
+        a_{i_k}
+    \end{bmatrix}
+    \qquad
+    B_i = \begin{bmatrix}
+        y_{i_1} \\
+        y_{i_2} \\
+        \vdots  \\
+        y_{i_m}
+    \end{bmatrix}.
+\end{align*}
+
+Este sistema se resuelve utilizando el método de ajuste mínimo cuadrático de datos, explicado en el capítulo anterior.
+
+Por ejemplo, la segunda ecuación del modelo poblacional SIR analizado anteriormente es:
+
+$$f_I (t,S,I,R) = a_{I_1} * g_{I_1}(t,S,I,R) + a_{I_2} * g_{I_2}(t,S,I,R),$$
 
 donde:
 
@@ -52,57 +154,328 @@ $$g_{I_1}(t,S,I,R) = I*S$$
 
 y
 
-$$g_{I_2}(t,S,I,R) = -I$$
+$$g_{I_2}(t,S,I,R) = -I.$$
 
-y finalmente
+Suponiendo que tenemos de entrada los puntos:
 
-$$f_R (t,S,I,R) = b_1 * g_{R_1} (t,S,I,R)$$
+$$f_I(1, 4, 9, 6) = 5 $$
+$$f_I(2, 6, 8, 2) = 4 $$
+$$f_I(3, 3, 6, 8) = 10$$
+$$f_I(4, 5, 9, 8) = 1 $$
+$$f_I(5, 6, 3, 10) =7 $$
+$$f_I(6, 8, 5, 7) = 6 $$
 
-donde:
+entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten esta ecuación con los puntos vistos anteriormente formando el sistema de ecuaciones:
 
-$$g_{R_1}(t,S,I,R) = I$$
+\begin{align*}
+    A_I & = \begin{pmatrix}
+        36 & -9 \\
+        48 & -8 \\
+        18 & -6 \\
+        45 & -9 \\
+        18 & -3 \\
+        40 & -5
+    \end{pmatrix}
+    \qquad
+    x_I = \begin{bmatrix}
+        a_{I_1} \\
+        a_{I_2}
+    \end{bmatrix}
+    \qquad
+    B_I = \begin{bmatrix}
+        5  \\
+        4  \\
+        10 \\
+        1  \\
+        7  \\
+        6
+    \end{bmatrix}.
+\end{align*}
 
-Como cada una de las las partes derechas de la ecuación diferencial es una suma de funciones, cada una de ellas se puede representar como un diccionario con una operación especial suma, que contiene una lista, donde en la posición i de la lista estaría una operación especial de multiplicación que contendría como hijos al parámetro $a_i$ y la función que acompaña al parámetro $a_i$ en la suma de parámetros y funciones. Estas funciones igualmente se pueden representar como un árbol.
+Al resolver este sistema de ecuaciones sobredeterminados se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. De esta forma se encuentran los mejores parámetros para cada ecuación del sistema.
 
-\section{Determinar costo de un sistema}
-
-Se define el costo de una solución como la sumatoria de la diferencia al cuadrado de los datos evaluados en el sistema analizado con los datos objtivos. Esta sumatoria mientras más pequeña sea es mejor, dado que si es 0 es que hemos encontrado un sistema que ajusta perfectamente a los datos presentes. Resaltar que a esta sumatoria se le agrega un factor de peso que este aumenta con respecto al tamaño del sistema obtenido garantizando que el sistema tienda a ser lo más pequeño posible.
-
-El sistema presenta parámetros en cada uno de los términos de las ecuaciones, Estos valores pueden ser ajustados para mejorar el costo en dependencia del sistema, en vez de solo colocar números aleatorios. Para esto se puede crear por cada ecuación del sistema, un sistema de ecuaciones de la forma $A * x = B$ en el que el vector de incógnitas $x$ sean los parámetros, $A$ sean las expresiones que acompañan a cada parámetro evaluadas en el datos analizados, y $B$ sea el dato objetivo.
-
-Por ejemplo, la segunda ecuación del sistema analizado anteriormente es:
-
-$$f_I (t,S,I,R) = b_1 * g_{I_1} (t,S,I,R) + b_2 * g_{I_2} (t,S,I,R)$$
-
-donde:
-
-$$g_{I_1}(t,S,I,R) = I*S$$
-
-y
-
-$$g_{I_2}(t,S,I,R) = -I$$
-
-suponiendo que tenemos de entrada los datos
-
-$$f_I(0, 1, 2, 3) = 4$$
-$$f_I(5, 6, 7, 8) = 9$$
-
-entonces se puede encontrar los valores de $b_1$ y $b_2$ que mejor ajusten esta ecuación con los datos planteados formando el sistema de ecuaciones
-
-$$b1 * g_{I_1}(0, 1, 2, 3) + b_2 * g_{I_2}(0, 1, 2, 3) = 4$$
-$$b1 * g_{I_1}(5, 6, 7, 8) + b_2 * g_{I_2}(5, 6, 7, 8) = 9$$
-
-$$b_1 * (2 * 1) + b_2 * (- 2) = 4$$
-$$b_1 * (7 * 6) + b_2 * (- 7) = 9$$
-
-$$b_1 = -10/63$$
-$$b_2 = -47/21$$
-
-De esta forma se encuentran los mejores parámetros para cada ecuación del sistema y se obtiene finalmente un sistema de ecuaciones con los parámetros lo mejor ajustados que pueden estar dado los datos de entrada.
+Como se plantea al inicio del capítulo, se propone como solución utilizar el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Entonces se necesitan definir las operaciones de mutación, cruzamiento y selección para poder utilizar esta metaheurística.
 
 \section{Mutación}
 
-Una mutación es una operación que toma un individuo y genera uno nuevo a partir de este pero con características cambiadas, aunque sigue teniendo similaridad con el individuo inicial. Para esto se realiza un recorrido aleatorio de los distintos niveles en el árbol que representa una solución antes mencionado, escogiendo uno de estos para realizar una modificación en el, esta modificación es distinta en dependencia de su altura en la representación del sistema.
+La operación de mutación selecciona el subárbol representante de una ecuación aleatoria del sistema y luego se escoge una de las siguientes modificaciones:
+
+\begin{itemize}
+    \item Eliminar un término de la ecuación:
+
+          \begin{center}
+              \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]           (star1)   [below left=of plus]    {$*$};
+                      \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+                      \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
+                      \node[roundnode_yellow]           (star2)   [below right=of plus]   {$*$};
+                      \node[squarednode]         (a_2)    [below left=of star2]    {$a_2$};
+                      \node[roundnode]           (neg)     [below=of star2]         {$-$};
+                      \node[roundnode]           (star3)   [below=of neg]         {$*$};
+                      \node[squarednode]         (y_1_2)   [below=of star3]   {$y_1$};
+                      \node[squarednode]         (y_2)     [below right=of star3]   {$y_2$};
+
+                      %Lines
+                      \draw[->] (plus.south) -- (star1.north);
+                      \draw[->] (plus.south) -- (star2.north);
+                      \draw[->] (star1.south) -- (a_1.north);
+                      \draw[->] (star1.south) -- (y_1.north);
+                      \draw[->] (star2.south) -- (a_2.north);
+                      \draw[->] (star2.south) -- (neg.north);
+                      \draw[->] (neg.south) -- (star3.north);
+                      \draw[->] (star3.south) -- (y_1_2.north);
+                      \draw[->] (star3.south) -- (y_2.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.20\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]           (star1)   [below =of plus]    {$*$};
+                      \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+                      \node[squarednode]         (y_1)     [below right=of star1]         {$y_1$};
+
+                      %Lines
+                      \draw[->] (plus.south) -- (star1.north);
+                      \draw[->] (star1.south) -- (a_1.north);
+                      \draw[->] (star1.south) -- (y_1.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+    \item Añadir un término a la ecuación:
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]           (star1)   [below =of plus]    {$*$};
+                      \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+                      \node[squarednode]         (y_1)     [below right=of star1]         {$y_1$};
+
+                      %Lines
+                      \draw[->] (plus.south) -- (star1.north);
+                      \draw[->] (star1.south) -- (a_1.north);
+                      \draw[->] (star1.south) -- (y_1.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]           (star1)   [below left=of plus]    {$*$};
+                      \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+                      \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
+                      \node[roundnode_yellow]           (star2)   [below right=of plus]   {$*$};
+                      \node[squarednode]         (a_2)    [below=of star2]    {$a_2$};
+                      \node[squarednode]           (y_2)     [below right=of star2]         {$y_2$};
+
+                      %Lines
+                      \draw[->] (plus.south) -- (star1.north);
+                      \draw[->] (plus.south) -- (star2.north);
+                      \draw[->] (star1.south) -- (a_1.north);
+                      \draw[->] (star1.south) -- (y_1.north);
+                      \draw[->] (star2.south) -- (a_2.north);
+                      \draw[->] (star2.south) -- (y_2.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+    \item Mutar un término de la ecuación.
+\end{itemize}
+
+Si se escoge la mutación de un término de la ecuación en las opciones anteriores se pasa a seleccionar un nodo aleatorio dentro del subárbol que representa a $g_{i_k}$ y se aplica una de las siguientes modificaciones.
+
+Si el nuevo nodo representa una operación:
+
+\begin{itemize}
+    \item Cambia la operación en el nodo por uno que posea la misma cantidad de parámetros del operador.
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[roundnode_yellow]      (plus_2)     [below right=of plus]   {$+$}
+                      \node[squarednode]    (y_2)     [below left=of plus_2]     {$a_1$};
+                      \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (plus_2.north);
+                      \draw[->] (plus_2.south) -- (y_2.north);
+                      \draw[->] (plus_2.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+    \item Elimina el nodo, colocando en su lugar su primer hijo.
+
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[squarednode]    (y_2)     [below right=of plus]     {$a_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (y_2.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+    \item Agrega un nuevo nodo de operación colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado.
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
+                      \node[roundnode]    (star)  [below right=of plus]   {$*$}
+                      \node[squarednode]  (y_1_2)   [below left=of star]        {$y_1$}
+                      \node[roundnode_yellow]      (sub)     [below right=of star]   {$+$}
+                      \node[squarednode]    (y_2)     [below left=of plus_2]     {$a_1$};
+                      \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (star.north);
+                      \draw[->] (star.south) -- (y_1_2.north);
+                      \draw[->] (star.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+\end{itemize}
+
+Si el nodo representa una variable:
+
+\begin{itemize}
+    \item Cambia la variable por otra permitida dentro de la ecuación
+    \item Cambia la varibale por una nueva expresión aleatoria que tenga altura 2
+\end{itemize}
+
+
 
 Si se tiene el sistema:
 
@@ -118,33 +491,16 @@ $$R’ = 3.33 * S$$
 
 Esta mutación fue el resultado de la eliminación de un nodo en el árbol de la expresión de un término en una de las ecuaciones. Todas las operaciones de mutación que se han implementado son:
 
-\begin{itemize}
-    \item Eliminar un término de una ecuación en el sistema
-    \item Añadir un término a una ecuación en el sistema
-    \item Mutar un término en una ecuación en el sistema
-\end{itemize}
 
-Esta mutación de un término de una ecuación en el sistema escoge un nodo aleatorio en el árbol que representa la expresión derecha de la multiplicación y en caso de que el nodo sea una operación:
 
-\begin{itemize}
-    \item Cambia la operación en el nodo por una de la misma aridad
-    \item Elimina el nodo, colocando en su lugar su primer hijo
-    \item Agrega un nuevo nodo de operación colocando como hijos nuevos árboles de expresiones aleatorios y colocando como último hijo el nodo original seleccionado.
-\end{itemize}
 
-En caso de que el nodo seleccionado sea una variable:
-
-\begin{itemize}
-    \item Cambia la variable por otra permitida dentro de la ecuación
-    \item Cambia la varibale por una nueva expresión aleatoria que tenga altura 2
-\end{itemize}
 
 
 \section{Cruzamiento}
 
 Un cruzamiento es una operación que toma características de dos individuos de la población y retorna un nuevo individuo que posee caráterísticas de ambos padres. Para esto se decide primeramente que sitio se desea cruzar, cuando se plantea sitio se refiere a qué parte del sistema se desea cruzar, por ejemplo se podría cruzar a nivel de la lista de las ecuaciones, o a nivel de las expresiones que se encuentran en uno de los términos de una de las ecuaciones del sistema. Es importante que se tenga en cuenta esta organización de los individuos por niveles. En donde, la raiz es una lista de ecuaciones, el segundo nivel sería la sumatoria de términos y el tercer nivel sería las expresiones pertenecientes a cada término.
 
-En dependencia del sitio que se desee cruzar, se toma un nodo correspondiente a cada padre y se intercambian de posición retornando el resultado de la sustitución del nodo seleccionado en el padre 2, dentro del padre 1. Resaltar que la elección del sitio a cruzar se realiza de manera aleatoria. Si se decide cruzar en algún nivel distinto de la raiz, se toman nodos de la misma ecuación del sistema de ambos padres.
+En dependencia del sitio que se desee cruzar, se toma un nodo correspondiente a cada padre y se intercambian de posición retornando el resultado de la sustitución del nodo seleccionado en el padre 2, dentro del padre 1. La elección del sitio a cruzar se realiza de manera aleatoria. Si se decide cruzar en algún nivel distinto de la raiz, se toman nodos de la misma ecuación del sistema de ambos padres.
 
 Por ejemplo, podemos tomar los sistemas:
 
