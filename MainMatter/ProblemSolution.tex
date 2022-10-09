@@ -1173,8 +1173,18 @@ que representa el sistema:
     R' & = a_4 * I
 \end{align*}
 
+Con las operaciones de mutación y cruzamiento solo faltaría detallar la operación de selección para poder finalmente implementar un algoritmo genético. Los detalles de esta última operación se ven en la siguiente sección.
 
 
 \section{Determinación de las soluciones que pasan a la siguiente generación}
 
-Dada una población en una generación, se toma un conjunto de individuos de esta y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. Todos estos individuos son seleccionados de forma aleatoria. Este nuevo subconjunto formado por la población inicial de la generación, los individuos resultantes de la mutación y los individuos resultantes de los cruzamientos tienen que ser filtrados para tomar una cantidad igual a la población inicial presente en la generación con el objetivo de poder repetir este proceso múltiples veces para poder realizar numerosas generaciones. Para poder filtrar este subconjunto se toman los individuos que mejor puntuaciones obtuvieron con respecto a los datos iniciales, o sea, se toman los sistemas que mejor ajustan a los datos
+Dada una población inicial en una generación, se selecciona un subconjunto de individuos de esta y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. Luego estos nuevo subconjuntos se suman a la población inicial de la generación formando un nuevo conjunto de individuos el cual se define como población total de la generación.
+
+De esta población total de la generación se seleccionan los sistemas que mejor ajustan los datos. Son seleccionados también algunos individuos aleatorios con el fin de no caer en mínimos locales en la búsqueda del mejor sistema. La cantidad de soluciones seleccionadas en este proceso es igual a la cantidad presente en la población inicial.
+
+Como resultado de esta selección se obtiene una nueva población la cuál será la población inicial para la siguiente generación. Estas operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se pueden repetir múltiples veces con el fin de realizar numerosas generaciones obteniendo mejores soluciones cada vez.
+
+
+Una vez definida la forma de representar una solución como un árbol computacional, se pueden definir las operaciones de mutación y cruzamiento sobre estos árboles. Conociendo la forma de determinar que tan cercanos son los puntos obtenidos de una solución con respecto a los puntos originales se puede crear un proceso de selección de individuos. Con estas operaciones definidas se puede implementar un algoritmo genético y con este algoritmo se puede definir una regresión simbólica con el fin de obtener el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajuste un conjunto de datos.
+
+En el siguiente capítulo se muestran los resultados obtenidos al utilizar la regresión simbólica planteada para encontrar los sistemas de ecuaciones difenciales originales de varios conjuntos de puntos.
