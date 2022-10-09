@@ -40,62 +40,67 @@ Cada uno de estos hijos es un subárbol que representa la multiplicación de un 
 
 Cada ecuación diferencial sería un hijo de un nodo que representa al sistema de ecuaciones diferenciales. Como ejemplo se puede utilizar el modelo poblacional SIR que es lineal con respecto a sus parámetros, por lo que su represetación con la estructura planteada anteriormente sería:
 
-\begin{tikzpicture}[roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm}, squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}]
-    % Nodes
-    \node[roundnode]        (system)                            {$SYSTEM$};
+\begin{center}
+    \begin{tikzpicture}[
+            roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+            squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}
+        ]
+        % Nodes
+        \node[roundnode]        (system)                            {$SYSTEM$};
 
-    \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
-    \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
-    \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$a$};
-    \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
-    \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
-    \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
-    \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
+        \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
+        \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
+        \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$a$};
+        \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
+        \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
+        \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
+        \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-    \node[roundnode]        (plus_I)     [below=of system]        {$+$};
-    \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
-    \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a$};
-    \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
-    \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
-    \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
+        \node[roundnode]        (plus_I)     [below=of system]        {$+$};
+        \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
+        \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a$};
+        \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
+        \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
+        \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
 
-    \node[roundnode]        (star_I_3)    [below right=of plus_I]    {$*$};
-    \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$b$};
-    \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
-    \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
+        \node[roundnode]        (star_I_3)    [below right=of plus_I]    {$*$};
+        \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$b$};
+        \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
+        \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
 
-    \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
-    \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
-    \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$b$};
-    \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
+        \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
+        \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
+        \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$b$};
+        \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
 
-    %Lines
-    \draw [->] (system.south) -- (plus_S.north);
-    \draw[->] (system.south) -- (plus_I.north);
-    \draw[->] (system.south) -- (plus_R.north);
+        %Lines
+        \draw [->] (system.south) -- (plus_S.north);
+        \draw[->] (system.south) -- (plus_I.north);
+        \draw[->] (system.south) -- (plus_R.north);
 
-    \draw[->] (plus_S.south) -- (star_S_1.north);
-    \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
-    \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
-    \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
-    \draw[->] (star_S_2.south) -- (S_star_S.north);
-    \draw[->] (star_S_2.south) -- (I_star_S.north);
+        \draw[->] (plus_S.south) -- (star_S_1.north);
+        \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
+        \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
+        \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
+        \draw[->] (star_S_2.south) -- (S_star_S.north);
+        \draw[->] (star_S_2.south) -- (I_star_S.north);
 
-    \draw[->] (plus_I.south) -- (star_I_1.north);
-    \draw[->] (plus_I.south) -- (star_I_3.north);
-    \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
-    \draw[->] (star_I_1.south) -- (star_I_2.north);
-    \draw[->] (star_I_2.south) -- (S_star_I.north);
-    \draw[->] (star_I_2.south) -- (I_star_I_1.north);
+        \draw[->] (plus_I.south) -- (star_I_1.north);
+        \draw[->] (plus_I.south) -- (star_I_3.north);
+        \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
+        \draw[->] (star_I_1.south) -- (star_I_2.north);
+        \draw[->] (star_I_2.south) -- (S_star_I.north);
+        \draw[->] (star_I_2.south) -- (I_star_I_1.north);
 
-    \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
-    \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
-    \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
+        \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
+        \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
+        \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
 
-    \draw[->] (plus_R.south) -- (star_R_1.north);
-    \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
-    \draw[->] (star_R_1.south) -- (I_star_R.north);
-\end{tikzpicture}
+        \draw[->] (plus_R.south) -- (star_R_1.north);
+        \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
+        \draw[->] (star_R_1.south) -- (I_star_R.north);
+    \end{tikzpicture}
+\end{center}
 
 Con esta nueva representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros. Por esta razón es la estructura que se utiliza para la representación de los modelos generados por el algoritmo de regresión simbólica detallado en este capítulo.
 
@@ -315,7 +320,7 @@ Si se escoge la mutación de un término de la ecuación en las opciones anterio
 Si el nuevo nodo representa una operación:
 
 \begin{itemize}
-    \item Cambia la operación en el nodo por uno que posea la misma cantidad de parámetros del operador.
+    \item Cambia la operación en el nodo por uno que posea la misma cantidad de parámetros del operador:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -325,12 +330,12 @@ Si el nuevo nodo representa una operación:
                           roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
                           squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
                       ]
-                      %Nodes
+                      %               %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
-                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
-                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
@@ -350,10 +355,10 @@ Si el nuevo nodo representa una operación:
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[roundnode_yellow]      (plus_2)     [below right=of plus]   {$+$}
-                      \node[squarednode]    (y_2)     [below left=of plus_2]     {$a_1$};
-                      \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode_yellow]      (plus_2)     [below right=of plus]   {$+$};
+                      \node[squarednode]    (y_2)     [below left=of plus_2]     {$y_2$};
+                      \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_3$};
 
 
                       %   %Lines
@@ -365,8 +370,7 @@ Si el nuevo nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Elimina el nodo, colocando en su lugar su primer hijo.
-
+    \item Elimina el nodo, colocando en su lugar su primer hijo:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -378,10 +382,10 @@ Si el nuevo nodo representa una operación:
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
-                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
-                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
@@ -401,8 +405,8 @@ Si el nuevo nodo representa una operación:
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[squarednode]    (y_2)     [below right=of plus]     {$a_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[squarednode]    (y_2)     [below right=of plus]     {$y_2$};
 
 
                       %   %Lines
@@ -412,7 +416,7 @@ Si el nuevo nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Agrega un nuevo nodo de operación colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado.
+    \item Cambia el nodo por un nuevo representando una operación aletoria colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -424,10 +428,10 @@ Si el nuevo nodo representa una operación:
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$}
-                      \node[squarednode]    (y_2)     [below left=of sub]     {$a_1$};
-                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
@@ -447,18 +451,18 @@ Si el nuevo nodo representa una operación:
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
-                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$}
-                      \node[roundnode]    (star)  [below right=of plus]   {$*$}
-                      \node[squarednode]  (y_1_2)   [below left=of star]        {$y_1$}
-                      \node[roundnode_yellow]      (sub)     [below right=of star]   {$+$}
-                      \node[squarednode]    (y_2)     [below left=of plus_2]     {$a_1$};
-                      \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_1$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode]    (star)  [below right=of plus]   {$*$};
+                      \node[squarednode]  (y_4)   [below left=of star]        {$y_4$};
+                      \node[roundnode_yellow]      (sub)     [below right=of star]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
                       \draw[->] (plus.south) -- (y_1.north);
                       \draw[->] (plus.south) -- (star.north);
-                      \draw[->] (star.south) -- (y_1_2.north);
+                      \draw[->] (star.south) -- (y_4.north);
                       \draw[->] (star.south) -- (sub.north);
                       \draw[->] (sub.south) -- (y_2.north);
                       \draw[->] (sub.south) -- (y_3.north);
@@ -471,29 +475,252 @@ Si el nuevo nodo representa una operación:
 Si el nodo representa una variable:
 
 \begin{itemize}
-    \item Cambia la variable por otra permitida dentro de la ecuación
-    \item Cambia la varibale por una nueva expresión aleatoria que tenga altura 2
+    \item Cambia la variable por otra permitida dentro de la ecuación:
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode_yellow]    (y_3)     [below right=of sub]    {$y_3$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode_yellow]    (y_1_2)     [below right=of sub]    {$y_1$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_1_2.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
+    \item Cambiar la variable por un nodo que represente una operación aleatoria colocando como hijos variables que puedan existir en la ecuación y colocando como primer hijo la variable original seleccionada:
+
+          \begin{center}
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode]      (sub)     [below right=of plus]   {$-$};
+                      \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
+                      \node[squarednode_yellow]    (y_3)     [below right=of sub]    {$y_3$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (y_3.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+              \qquad
+              \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
+                  \begin{tikzpicture}[
+                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                      ]
+                      %Nodes
+                      \node[roundnode]      (plus)                            {$+$};
+                      \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
+                      \node[roundnode]    (sub)  [below right=of plus]   {$-$};
+                      \node[squarednode]  (y_2)   [below left=of sub]        {$y_2$};
+                      \node[roundnode]      (star)     [below right=of sub]   {$*$};
+                      \node[squarednode_yellow]    (y_3)     [below left=of star]    {$y_3$};
+                      \node[squarednode]    (y_2_2)     [below right=of star]     {$y_2$};
+
+
+                      %   %Lines
+                      \draw[->] (plus.south) -- (y_1.north);
+                      \draw[->] (plus.south) -- (sub.north);
+                      \draw[->] (sub.south) -- (y_2.north);
+                      \draw[->] (sub.south) -- (star.north);
+                      \draw[->] (star.south) -- (y_3.north);
+                      \draw[->] (star.south) -- (y_2_2.north);
+                  \end{tikzpicture}%
+              \end{adjustbox}
+          \end{center}
+
 \end{itemize}
 
+Por ejemplo si se tiene el árbol
+
+\begin{center}
+    \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
+        \begin{tikzpicture}[
+                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+            ]
+            % Nodes
+            \node[roundnode]        (system)                            {$SYSTEM$};
+
+            \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
+            \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
+            \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$1$};
+            \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
+            \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
+            \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
+            \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
+
+            \node[roundnode]        (plus_I)     [below=of system]        {$+$};
+            \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
+            \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$1$};
+            \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
+            \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
+            \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
+
+            \node[roundnode_yellow]        (star_I_3)    [below right=of plus_I]    {$*$};
+            \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$2$};
+            \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
+            \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
+
+            \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
+            \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
+            \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$2$};
+            \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
+
+            %Lines
+            \draw [->] (system.south) -- (plus_S.north);
+            \draw[->] (system.south) -- (plus_I.north);
+            \draw[->] (system.south) -- (plus_R.north);
+
+            \draw[->] (plus_S.south) -- (star_S_1.north);
+            \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
+            \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
+            \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
+            \draw[->] (star_S_2.south) -- (S_star_S.north);
+            \draw[->] (star_S_2.south) -- (I_star_S.north);
+
+            \draw[->] (plus_I.south) -- (star_I_1.north);
+            \draw[->] (plus_I.south) -- (star_I_3.north);
+            \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
+            \draw[->] (star_I_1.south) -- (star_I_2.north);
+            \draw[->] (star_I_2.south) -- (S_star_I.north);
+            \draw[->] (star_I_2.south) -- (I_star_I_1.north);
+
+            \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
+            \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
+            \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
+
+            \draw[->] (plus_R.south) -- (star_R_1.north);
+            \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
+            \draw[->] (star_R_1.south) -- (I_star_R.north);
+        \end{tikzpicture}
+    \end{adjustbox}
+\end{center}
+
+que representa al modelo
+
+\begin{align*}
+    S' & = - 1 * I * S       \\
+    I' & = 1 * I * S - 2 * I \\
+    R' & = 2 * S,
+\end{align*}
 
 
-Si se tiene el sistema:
+se puede realizar la mutación de eliminar el segundo término de la segunda ecuación quedando como resultado el árbol:
 
-$$S’ = 1 * I + 0.0 * S$$
-$$I’ = 2 * (I + S)$$
-$$R’ = 3.33 * S$$
+\begin{center}
+    \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
+        \begin{tikzpicture}[
+                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+            ]
+            % Nodes
+            \node[roundnode]        (system)                            {$SYSTEM$};
 
-Se puede realizar la mutación de eliminar el segundo sumando del primer término de la segunda ecuación. Esto resultaría en el sistema:
+            \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
+            \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
+            \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$1$};
+            \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
+            \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
+            \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
+            \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-$$S’ = 1 * I + 0.0 * S$$
-$$I’ = 2 * I$$
-$$R’ = 3.33 * S$$
+            \node[roundnode]        (plus_I)     [below=of system]        {$+$};
+            \node[roundnode]        (star_I_1)    [below=of plus_I]    {$*$};
+            \node[squarednode]      (alpha_star_I_1)      [below left=of star_I_1]    {$1$};
+            \node[roundnode]        (star_I_2)    [below right=of star_I_1]    {$*$};
+            \node[squarednode]      (S_star_I)       [below left=of star_I_2]   {$S$};
+            \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
 
-Esta mutación fue el resultado de la eliminación de un nodo en el árbol de la expresión de un término en una de las ecuaciones. Todas las operaciones de mutación que se han implementado son:
+            \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
+            \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
+            \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$2$};
+            \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
 
+            %Lines
+            \draw [->] (system.south) -- (plus_S.north);
+            \draw[->] (system.south) -- (plus_I.north);
+            \draw[->] (system.south) -- (plus_R.north);
 
+            \draw[->] (plus_S.south) -- (star_S_1.north);
+            \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
+            \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
+            \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
+            \draw[->] (star_S_2.south) -- (S_star_S.north);
+            \draw[->] (star_S_2.south) -- (I_star_S.north);
 
+            \draw[->] (plus_I.south) -- (star_I_1.north);
+            \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
+            \draw[->] (star_I_1.south) -- (star_I_2.north);
+            \draw[->] (star_I_2.south) -- (S_star_I.north);
+            \draw[->] (star_I_2.south) -- (I_star_I_1.north);
 
+            \draw[->] (plus_R.south) -- (star_R_1.north);
+            \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
+            \draw[->] (star_R_1.south) -- (I_star_R.north);
+        \end{tikzpicture}
+    \end{adjustbox}
+\end{center}
+
+que representa al sistema:
+
+\begin{align*}
+    S' & = - 1 * I * S \\
+    I' & = 1 * I * S   \\
+    R' & = 2 * S.
+\end{align*}
 
 
 \section{Cruzamiento}
