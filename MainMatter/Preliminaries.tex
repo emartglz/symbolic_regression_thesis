@@ -62,7 +62,43 @@ Teniendo estos parámetros, se puede estimar la variable dependiente cuando las 
 
 La regresión simbólica se utiliza para encontrar dentro de un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos planteados. En este método, ningún modelo en particular se utiliza como punto de partida para la búsqueda del modelo que se desea encontrar. En su lugar se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables.
 
-La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza mostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema de optimización pero esto es costoso. TENGO QUE PONER UN EJEMPLO DE UN ÁRBOL AQUÍ
+La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza mostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema de optimización pero esto es costoso. Un ejemplo de un árbol computacional planteado por Koza es:
+
+\begin{center}
+    \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
+        \begin{tikzpicture}[
+                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+            ]
+            %Nodes
+            \node[roundnode]      (plus)                             {$+$};
+            \node[roundnode]           (star1)   [below left=of plus]    {$*$};
+            \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+            \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
+            \node[roundnode]           (star2)   [below right=of plus]   {$*$};
+            \node[squarednode]         (a_2)    [below left=of star2]    {$a_2$};
+            \node[roundnode]           (neg)     [below=of star2]         {$-$};
+            \node[roundnode]           (star3)   [below=of neg]         {$*$};
+            \node[squarednode]         (y_1_2)   [below=of star3]   {$y_1$};
+            \node[squarednode]         (y_2)     [below right=of star3]   {$y_2$};
+
+            %Lines
+            \draw[->] (plus.south) -- (star1.north);
+            \draw[->] (plus.south) -- (star2.north);
+            \draw[->] (star1.south) -- (a_1.north);
+            \draw[->] (star1.south) -- (y_1.north);
+            \draw[->] (star2.south) -- (a_2.north);
+            \draw[->] (star2.south) -- (neg.north);
+            \draw[->] (neg.south) -- (star3.north);
+            \draw[->] (star3.south) -- (y_1_2.north);
+            \draw[->] (star3.south) -- (y_2.north);
+        \end{tikzpicture}%
+    \end{adjustbox}
+\end{center}
+
+que representa la expresión:
+
+$$a_1 * y_1 + a_2 * -(y_1 * y_2)$$
 
 Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el desconocimiento de la estructura del modelo. Este método intenta descubrir las relaciones presentes en el conjunto de datos. Para lograr este fin, se prueban múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
 
@@ -72,14 +108,19 @@ La regresión simbólica tiene la desventaja de además de ser un problema NP-di
 
 Sin embargo, esta característica de poseer un espacio de búsqueda tan grande también tiene ventajas ya que el resultado pueden ser múltiples modelos y su correspondientes conjuntos de parámetros. Examinar esta colección de modelos resultantes permite al usuario identificar una solución que se ajuste mejor a alguna características en particular. Por ejemplo que el modelo posea ecuaciones con poca cantidad de parámetros o que la diferencia entre los datos evaluados en el modelo y los datos originales sea menor que un error específico.
 
+En la siguiente sección se ponen ejemplos de como se ha utilizado la regresión simbólica para encontrar sistemas de ecuaciones diferenciales.
 
 \section{Regresión simbólica para EDOs}
 
-La regresión simbólica ha sido utilizada de diversas maneras para encontrar sistemas de ecuaciones diferenciales, por ejemplo en el año 2014, un grupo de investigadores utilizaron esta técnica para encontrar sistemas dinámicos, generando para cada ecuación del sistema un grupo de ecuaciones. Luego probaban distintas combinaciones de las ecuaciones de estos subconjuntos hasta encontrar una que satisfaciera las condiciones de su investigación \cite{gaucel2014learning}. En el año 2008 se utilizó la regresión simbólica junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parametros que mejor ajustase un conjunto de datos \cite{iba2008inference}
+En el año 1994, John R. Koza planteó que la regresión simbólica se podía utilizar con múltiples objetivos como generar programas de forma autmática, crear árboles de desición de clasificación y crear funciones que generen números aleatorios de alta entropía. También Koza definió que se podía utilizar la regresión simbólica para encontrar sistemas de ecuaciones diferenciales de forma automática.\cite{koza1994genetic}
 
-ver donde pongo esto:
+Se utilizó la regresión simbólica en el año 2008 junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parametros que mejor ajustase un conjunto de datos \cite{iba2008inference}.
 
-Para funciones matemáticas, se utilizan diversos métodos en la regresión simbólica, uno de ellos es la recombinación de ecuaciones usando algoritmos evolutivos y uno de estos puede ser un algoritmo genético.
+Luego en el año 2014, un grupo de investigadores utilizaron este tipo de regresión para encontrar sistemas dinámicos, generando para cada ecuación del sistema un grupo de ecuaciones. Luego probaban distintas combinaciones de las ecuaciones de estos subconjuntos hasta encontrar la que mejor aproximase el conjunto de datos. \cite{gaucel2014learning}.
+
+La investigación realizada en el año 2008 fue utilizada en otro estudio correspondiente al año 2019. Los objetivos de ambas investigaciones son el mismo, en estudio más reciente se sustituye el método de mínimos cuadrados para encontrar los parámetros por un algoritmo de descenso por gradientes. \cite{kronberger2019identification}
+
+Por un largo tiempo, la regresión simbólica sólo era de dominio de los seres humanos, pero estos estudios muestran cómo en las últimas décadas también se ha convertido en el dominio de los ordenadores. Hoy en día existen dos bien conocidos métodos para ser utilizados en la regresión simbólica por medio de ordenadores \cite{zelinka2005analytic}. El primero se llama evolución gramatical y el segundo algoritmos genéticos. Este último se explicará en la siguiente sección.
 
 \section{Algoritmos genéticos}
 
