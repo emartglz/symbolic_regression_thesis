@@ -1,14 +1,14 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
-En este capitulo se plantea una forma de obtener un sistema de ecuaciones diferenciales lineales en los parámetros mediante el uso de la regresión simbólica utilizando un algoritmo genético. De esta forma se obtiene un modelo que aproxima un conjunto de datos.
+En este capitulo se plantea una forma de obtener, a partir de un conjunto de datos, un sistema de ecuaciones diferenciales lineales en los parámetros que se ajuste a estos datos. Este sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético.
 
-La primera sección del capítulo detalla como se puede representar una solución mediante un árbol computacional. En la sección siguiente se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones 3, 4 y 5 se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección respectivamente.
+La primera sección del capítulo detalla como se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En la sección siguiente se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección respectivamente.
 
 \section{Cómo representar una solución}
 
-Teniendo los datos de la forma $(ti, yi)$, se puede extraer información útil para conocer la forma que debe tener el modelo que se intenta encontrar con el algoritmo. Por ejemplo, si cada elemento de los datos es de la forma:
+Teniendo un conjunto de datos de la forma $\{(t_i, y_i)\}$, se puede conocer la forma que debe tener el modelo que se intenta encontrar con el algoritmo. Por ejemplo, si cada elemento de los datos es de la forma:
 
-$$(t_i, y_{1_i}, y_{2_i}, y_{3_i})$$,
+$$(t_i, y_{1_i}, y_{2_i}, y_{3_i}),$$
 
 entonces se tiene la certeza de que el sistema de ecuaciones diferenciales que se desea tiene tres ecuaciones, y que los sistemas de ecuaciones en el espacio de búsqueda del método deben tener la forma:
 
@@ -16,7 +16,7 @@ $$y_1' = f_1(t, y_1, y_2, y_3)$$
 $$y_2' = f_2(t, y_1, y_2, y_3)$$
 $$y_3' = f_3(t, y_1, y_2, y_3)$$
 
-A partir de los datos se puede decir que las soluciones candidatas a solución son una lista de tres elementos, donde en la posición $i$ está representada la función $fi(t,y_1,y_2,y_3)$.
+Conociendo la cantidad de ecuaciones presentes en el sistema se puede decir que las soluciones candidatas a solución son una lista de $n$ elementos, siendo $n$ la cantidad de ecuaciones. La posición $i$ de esta lista representa la función $f_i(t,y_1,y_2,y_3)$.
 
 Por ejemplo, en el modelo poblacional SIR:
 
@@ -26,24 +26,75 @@ Por ejemplo, en el modelo poblacional SIR:
     R' & = b*I,
 \end{align*}
 
-la lista estaría formada por
+se puede decir que:
 
-$$[-a*I*S, a*I*S - b*I, b*I].$$
+\begin{align*}
+    S'(t) & = f_S(t, S, I, R)  \\
+    I'(t) & = f_I(t, S, I, R)  \\
+    R'(t) & = f_R(t, S, I, R).
+\end{align*}
+
+Entonces se puede representar con la lista:
+
+$$[f_S(t, S, I, R), f_I(t, S, I, R), f_R(t, S, I, R)]$$
+$$= [-a*I*S, a*I*S - b*I, b*I].$$
 
 Una expresión aritmética (como cada una de las funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces se puede representar en cada posición de la lista el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a esa posición.
 
-Sin embargo con esta representación no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Por lo que no es útil ya que en el espacio de búsqueda del algoritmo no deben aparecer modelos que incumplan esta propiedad. Para que esta forma de representar las funciones en forma de árboles computacionales no permita la no linealidad con respecto a los parámetros se modifica la estructura del árbol de la siguiente manera.
+Sin embargo con esta representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Por lo que no resulta útil ya que en el algoritmo no deben aparecer modelos que incumplan esta propiedad de linealidad. Para que esta forma de representar las funciones en forma de árboles computacionales impida la no linealidad con respecto a los parámetros se modifica la estructura del árbol de la siguiente manera.
 
-Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una sumatoria de multiplicaciones de parámetros con funciones que no dependen de parámetros, entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raiz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos).
+Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una sumatoria de multiplicaciones de parámetros con funciones que no dependen de parámetros
 
-Cada uno de estos hijos es un subárbol que representa la multiplicación de un parámetro con una función que no depende de parámetros. Estos subárboles poseen como raiz un nodo con una operación de multiplicación y dos nodos hijos. El primero de ellos sería un nodo hoja representando el parámetro. El segundo de ellos sería un nodo que representa el subárbol computacional correspondiente a la función utilizando la misma representación planteada por Koza pero con la peculiaridad de que sus hojas solo podrán almacenar variables, no parámetros.
+$$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t)),$$
 
-Cada ecuación diferencial sería un hijo de un nodo que representa al sistema de ecuaciones diferenciales. Como ejemplo se puede utilizar el modelo poblacional SIR que es lineal con respecto a sus parámetros, por lo que su represetación con la estructura planteada anteriormente sería:
+entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raiz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos).
 
 \begin{center}
     \begin{tikzpicture}[
-            roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-            squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm}
+            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+            roundnode_transparent/.style={circle, very thick, minimum size=5mm}
+        ]
+        % Nodes
+        \node[roundnode]        (plus)                            {$+$};
+        \node[roundnode]        (term_1)     [below left=of plus]        {$a_1 * f_1(t, y(t))$};
+        \node[roundnode_transparent]        (term_dots)     [below =of plus]        {$\dots$};
+        \node[roundnode]        (term_n)     [below right=of plus]        {$a_n * f_n(t, y(t))$};
+
+
+        %Lines
+        \draw [->] (plus.south) -- (term_1.north);
+        % \draw [->] (plus.south) -- (term_dots.north);
+        \draw [->] (plus.south) -- (term_n.north);
+    \end{tikzpicture}
+\end{center}
+
+
+Cada uno de estos hijos es un subárbol que representa la multiplicación de un parámetro con una función que no depende de parámetros. Estos subárboles poseen como raiz un nodo con una operación de multiplicación y dos nodos hijos. El primero de ellos sería un nodo hoja representando el parámetro. El segundo de ellos sería un nodo que representa el subárbol computacional correspondiente a la función utilizando la misma representación planteada por Koza \cite{zelinka2005analytic} pero con la peculiaridad de que sus hojas solo podrán almacenar variables, no parámetros.
+
+\begin{center}
+    \begin{tikzpicture}[
+            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+            squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=7mm}
+        ]
+        % Nodes
+        \node[roundnode]        (star)                            {$*$};
+        \node[squarednode]        (term_1)     [below left=of star]        {$a_i$};
+        \node[roundnode]        (term_n)     [below right=of star]        {$f_i(t, y(t))$};
+
+
+        %Lines
+        \draw [->] (star.south) -- (term_1.north);
+        \draw [->] (star.south) -- (term_n.north);
+    \end{tikzpicture}
+\end{center}
+
+
+Cada ecuación diferencial sería un hijo de un nodo que representa al sistema de ecuaciones diferenciales. Como ejemplo se puede utilizar el modelo poblacional SIR que es lineal con respecto a sus parámetros, por lo que su representación con la estructura propuesta sería:
+
+\begin{center}
+    \begin{tikzpicture}[
+            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+            squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm}
         ]
         % Nodes
         \node[roundnode]        (system)                            {$SYSTEM$};
@@ -104,11 +155,11 @@ Cada ecuación diferencial sería un hijo de un nodo que representa al sistema d
 
 Con esta nueva representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros. Por esta razón es la estructura que se utiliza para la representación de los modelos generados por el algoritmo de regresión simbólica detallado en este capítulo.
 
-En un método de regresión simbólica es necesario una función de ajuste que permita conocer que tan cercano es el modelo obtenido con respecto al modelo original, para esto se define el costo de un sistema que se explica en la sección siguiente.
+En un método de regresión simbólica es necesario una función de ajuste que permita conocer que tan cercano son los datos evaluados en el modelo obtenido con respecto a los datos originales, para esto se define el costo de un sistema que se explica en la sección siguiente.
 
 \section{Determinar costo de una solución}
 
-Se define el costo de una solución obtenida durante el método de la regresión simbólica como:
+Sea $n$ la cantidad de ecuaciones en el sistema y $m$ la cantidad de datos, se define el costo de un sistema de ecuaciones diferenciales $f$ como:
 
 $$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y_{i_j} - f_i(x_j))^2}{m}}{n},$$
 
@@ -116,13 +167,22 @@ con:
 
 $$f_i(x_j) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(x_j),$$
 
-donde $f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones que conforman la solución obtenida dados los puntos $(x_j, (y_{1_j}, y_{2_j}, \dots, y_{n_j}))$  con $1 < j < m$ siendo $m$ la cantidad de puntos, $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema.
+donde $f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones del sistema, $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema.
 
-Mientras más pequeño es el valor del costo, más se asemeja el sistema obtenido al sistema original ya que si es 0 significa que se ha encontrado un sistema que ajusta perfectamente los puntos.
+Mientras más cercano a 0 es el valor del costo, más se describe el fenómeno representado por los datos ya que si es 0 significa que se ha encontrado un sistema que ajusta perfectamente los puntos.
 
-Al valor de $C$ se le agrega un factor de peso, el cual es directamente propociornal a la cantidad de términos que posean las ecuaciones de la solución. Esto garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos posea menos peso.
+Al valor de $C$ se le agrega un factor de peso $P$, el cual es directamente propociornal a la cantidad de términos que posean las ecuaciones de la solución:
 
-Para que la diferencia $y_{i_j} - f_i(x_j)$ se la menor posible se ajustan los parámetros $a_{i_k}$ por cada una de las $f_i$. Para esto se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
+$$P = \begin{cases}
+        9999 * node\_count(f), & \text{si } node\_count(f) \geq MAX\_NODES \\
+        0,                     & \text{de otra forma}
+    \end{cases},$$
+
+donde $node\_count(f)$ es la cantidad de nodos presentes en la representación en forma de árbol computacional del sistema $f$.
+
+El parámetro $MAX\_NODES$ se define junto con los demás parámetros del algoritmo genético. Este factor de peso garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos tenga una mejor evaluacion en la función objetivo.
+
+Para que la sumatoria $\sum_{j=1}^{m}(y_{i_j} - f_i(x_j)) ^ 2$ sea la menor posible se debe minimizar la diferencia $y_{i_j} - f_i(x_j)$. Para esto se ajustan los parámetros $a_{i_k}$ presentes en cada una de las ecuaciones $f_i$. Por esta razón se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
 
 \begin{align*}
     A_i & = \begin{pmatrix}
@@ -147,9 +207,9 @@ Para que la diferencia $y_{i_j} - f_i(x_j)$ se la menor posible se ajustan los p
     \end{bmatrix}.
 \end{align*}
 
-Este sistema se resuelve utilizando el método de ajuste mínimo cuadrático de datos, explicado en el capítulo anterior.
+Este sistema se resuelve utilizando el método de ajuste mínimo cuadrático de datos, explicado en el capítulo \ref{chapter:preliminaries}.
 
-Por ejemplo, la segunda ecuación del modelo poblacional SIR analizado anteriormente es:
+Por ejemplo, la segunda ecuación del modelo poblacional SIR es:
 
 $$f_I (t,S,I,R) = a_{I_1} * g_{I_1}(t,S,I,R) + a_{I_2} * g_{I_2}(t,S,I,R),$$
 
@@ -197,31 +257,44 @@ entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten esta 
     \end{bmatrix}.
 \end{align*}
 
-Al resolver este sistema de ecuaciones sobredeterminados se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. De esta forma se encuentran los mejores parámetros para cada ecuación del sistema.
+Al resolver este sistema de ecuaciones sobredeterminados se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. Este método de ajuste mínimo cuadrado de datos se aplica para ajustar los parámetros de cada una de las ecuaciones del sistema.
 
-Como se plantea al inicio del capítulo, se propone como solución utilizar el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Entonces se necesitan definir las operaciones de mutación, cruzamiento y selección para poder utilizar esta metaheurística.
+Como se plantea al inicio del capítulo, se utiliza el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Para usar el algoritmo genético se necesitan definir las operaciones de mutación, cruzamiento y selección. En la siguiente sección se define la primera de estas operaciones.
 
-\section{Mutación}
+\section{Mutación}\label{section:mutation}
 
-La operación de mutación selecciona el subárbol representante de una ecuación aleatoria del sistema y luego se escoge una de las siguientes modificaciones:
+La operación de mutación selecciona el subárbol representante de una de las ecuaciones en el sistema y luego se escoge una de las siguientes modificaciones:
 
 \begin{itemize}
-    \item Eliminar un término de la ecuación:
+    \item Eliminar un término (sumando de la ecuación) de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, este criterio consiste en seleccionar un término y eliminarlo.
+
+          Por ejemplo si se tiene la ecuación
+
+          $$a_1 * y_1 + a_2 * -(y_1 * y_2),$$
+
+          la lista de términos correspondientes sería:
+
+          $$[a_1*y_1, a_2 * -(y_1 * y_2)].$$
+
+          Si se selecciona eliminar el segundo término, la ecuación resultante sería:
+
+          $$a_1 * y_1.$$
+
+          Este ejemplo se puede expresar en forma de árbol computacional de la siguiente manera:
 
           \begin{center}
               \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
-                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]      (plus)                             {$+$};
                       \node[roundnode]           (star1)   [below left=of plus]    {$*$};
                       \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
                       \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
-                      \node[roundnode_yellow]           (star2)   [below right=of plus]   {$*$};
+                      \node[roundnode_dashed]           (star2)   [below right=of plus]   {$*$};
                       \node[squarednode]         (a_2)    [below left=of star2]    {$a_2$};
                       \node[roundnode]           (neg)     [below=of star2]         {$-$};
                       \node[roundnode]           (star3)   [below=of neg]         {$*$};
@@ -243,13 +316,12 @@ La operación de mutación selecciona el subárbol representante de una ecuació
               \qquad
               \begin{adjustbox}{width=0.20\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
-                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]      (plus)                             {$+$};
                       \node[roundnode]           (star1)   [below =of plus]    {$*$};
                       \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
                       \node[squarednode]         (y_1)     [below right=of star1]         {$y_1$};
@@ -262,18 +334,31 @@ La operación de mutación selecciona el subárbol representante de una ecuació
               \end{adjustbox}
           \end{center}
 
-    \item Añadir un término a la ecuación:
+    \item Añadir un término a la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, este criterio consiste en crear un término y añadirlo.
+
+          Por ejemplo si se tiene la ecuación
+
+          $$a_1 * y_1,$$
+
+          la lista de términos correspondientes sería:
+
+          $$[a_1*y_1].$$
+
+          Si se selecciona añadir como segundo sumando el término $a_2 * y_2$, la ecuación resultante sería:
+
+          $$a_1 * y_1 + a_2 * y_2.$$
+
+          Este ejemplo se puede expresar en forma de árbol computacional de la siguiente manera:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
-                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]      (plus)                             {$+$};
                       \node[roundnode]           (star1)   [below =of plus]    {$*$};
                       \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
                       \node[squarednode]         (y_1)     [below right=of star1]         {$y_1$};
@@ -287,17 +372,16 @@ La operación de mutación selecciona el subárbol representante de una ecuació
               \qquad
               \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
-                      \node[roundnode_red]      (plus)                             {$+$};
+                      \node[roundnode]      (plus)                             {$+$};
                       \node[roundnode]           (star1)   [below left=of plus]    {$*$};
                       \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
                       \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
-                      \node[roundnode_yellow]           (star2)   [below right=of plus]   {$*$};
+                      \node[roundnode_dashed]           (star2)   [below right=of plus]   {$*$};
                       \node[squarednode]         (a_2)    [below=of star2]    {$a_2$};
                       \node[squarednode]           (y_2)     [below right=of star2]         {$y_2$};
 
@@ -312,28 +396,27 @@ La operación de mutación selecciona el subárbol representante de una ecuació
               \end{adjustbox}
           \end{center}
 
-    \item Mutar un término de la ecuación.
+    \item Mutar un término de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, este criterio consiste en seleccionar un término y dentro de su representación en forma de árbol computacional tomar un nodo y aplicarle una de las sisguientes modificaciones.
 \end{itemize}
 
-Si se escoge la mutación de un término de la ecuación en las opciones anteriores se pasa a seleccionar un nodo aleatorio dentro del subárbol que representa a $g_{i_k}$ y se aplica una de las siguientes modificaciones.
-
-Si el nuevo nodo representa una operación:
+Si el nodo representa una operación:
 
 \begin{itemize}
     \item Cambia la operación en el nodo por uno que posea la misma cantidad de parámetros del operador:
 
+          Por ejempo si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por una suma resultando $y_1 + (y_2 + y_3)$. Expresado en forma de árbol computacional sería:
+
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %               %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[roundnode_dashed]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
                       \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
@@ -348,15 +431,14 @@ Si el nuevo nodo representa una operación:
               \qquad
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
-                      \node[roundnode_yellow]      (plus_2)     [below right=of plus]   {$+$};
+                      \node[roundnode_dashed]      (plus_2)     [below right=of plus]   {$+$};
                       \node[squarednode]    (y_2)     [below left=of plus_2]     {$y_2$};
                       \node[squarednode]    (y_3)     [below right=of plus_2]    {$y_3$};
 
@@ -370,20 +452,21 @@ Si el nuevo nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Elimina el nodo, colocando en su lugar su primer hijo:
+    \item Elimina el nodo, colocando en su lugar su primer hijo.
+
+          Por ejempo si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por el minuendo resultando $y_1 + y_2$. Expresado en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[roundnode_dashed]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
                       \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
@@ -398,10 +481,9 @@ Si el nuevo nodo representa una operación:
               \qquad
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
@@ -416,20 +498,21 @@ Si el nuevo nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Cambia el nodo por un nuevo representando una operación aletoria colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado:
+    \item Cambia el nodo por uno nuevo representando una operación aletoria colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado.
+
+          Por ejempo si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por una multiplicación colocando como segundo factor la misma resta resultando $y_1 + y_4 * (y_2 - y_3)$. Expresado en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
-                      \node[roundnode_yellow]      (sub)     [below right=of plus]   {$-$};
+                      \node[roundnode_dashed]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
                       \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
@@ -444,17 +527,16 @@ Si el nuevo nodo representa una operación:
               \qquad
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
                       \node[roundnode]    (star)  [below right=of plus]   {$*$};
                       \node[squarednode]  (y_4)   [below left=of star]        {$y_4$};
-                      \node[roundnode_yellow]      (sub)     [below right=of star]   {$-$};
+                      \node[roundnode_dashed]      (sub)     [below right=of star]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
                       \node[squarednode]    (y_3)     [below right=of sub]    {$y_3$};
 
@@ -475,22 +557,23 @@ Si el nuevo nodo representa una operación:
 Si el nodo representa una variable:
 
 \begin{itemize}
-    \item Cambia la variable por otra permitida dentro de la ecuación:
+    \item Cambiar la variable por otra permitida dentro de la ecuación.
+
+          Por ejempo si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la sustraendo por $y_3$ resultando $y_1 + (y_2 - y_1)$. Expresado en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          squarednode_dashed/.style={rectangle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
                       \node[roundnode]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
-                      \node[squarednode_yellow]    (y_3)     [below right=of sub]    {$y_3$};
+                      \node[squarednode_dashed]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
@@ -503,17 +586,16 @@ Si el nodo representa una variable:
               \qquad
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          squarednode_dashed/.style={rectangle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
                       \node[roundnode]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
-                      \node[squarednode_yellow]    (y_1_2)     [below right=of sub]    {$y_1$};
+                      \node[squarednode_dashed]    (y_1_2)     [below right=of sub]    {$y_1$};
 
 
                       %   %Lines
@@ -525,22 +607,23 @@ Si el nodo representa una variable:
               \end{adjustbox}
           \end{center}
 
-    \item Cambiar la variable por un nodo que represente una operación aleatoria colocando como hijos variables que puedan existir en la ecuación y colocando como primer hijo la variable original seleccionada:
+    \item Cambiar la variable por un nodo que represente una operación  aleatoria donde el primer hijo es la variable seleccionada
+
+          Por ejempo si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir el sustraendo por una multiplicación donde el primer factor sea el mismo sustraendo resultando $y_1 + (y_2 - y_3 * y_2)$. Expresado en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          squarednode_dashed/.style={rectangle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
                       \node[squarednode]    (y_1)     [below left=of plus]    {$y_1$};
                       \node[roundnode]      (sub)     [below right=of plus]   {$-$};
                       \node[squarednode]    (y_2)     [below left=of sub]     {$y_2$};
-                      \node[squarednode_yellow]    (y_3)     [below right=of sub]    {$y_3$};
+                      \node[squarednode_dashed]    (y_3)     [below right=of sub]    {$y_3$};
 
 
                       %   %Lines
@@ -553,10 +636,9 @@ Si el nodo representa una variable:
               \qquad
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode_red/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          squarednode_dashed/.style={rectangle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       %Nodes
                       \node[roundnode]      (plus)                            {$+$};
@@ -564,7 +646,7 @@ Si el nodo representa una variable:
                       \node[roundnode]    (sub)  [below right=of plus]   {$-$};
                       \node[squarednode]  (y_2)   [below left=of sub]        {$y_2$};
                       \node[roundnode]      (star)     [below right=of sub]   {$*$};
-                      \node[squarednode_yellow]    (y_3)     [below left=of star]    {$y_3$};
+                      \node[squarednode_dashed]    (y_3)     [below left=of star]    {$y_3$};
                       \node[squarednode]    (y_2_2)     [below right=of star]     {$y_2$};
 
 
@@ -581,14 +663,22 @@ Si el nodo representa una variable:
 
 \end{itemize}
 
-Por ejemplo si se tiene el árbol
+Si se tiene el sistema
+
+\begin{align*}
+    S' & = - a_1 * S * I         \\
+    I' & = a_2 * S * I - a_3 * I \\
+    R' & = a_4 * I,
+\end{align*}
+
+que se representa en forma de árbol computacional como:
 
 \begin{center}
     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
         \begin{tikzpicture}[
-                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
             ]
             % Nodes
             \node[roundnode]        (system)                            {$SYSTEM$};
@@ -608,7 +698,7 @@ Por ejemplo si se tiene el árbol
             \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
             \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
 
-            \node[roundnode_yellow]        (star_I_3)    [below right=of plus_I]    {$*$};
+            \node[roundnode_dashed]        (star_I_3)    [below right=of plus_I]    {$*$};
             \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$a_3$};
             \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
             \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
@@ -648,23 +738,22 @@ Por ejemplo si se tiene el árbol
     \end{adjustbox}
 \end{center}
 
-que representa al modelo
+Se puede realizar la mutación de eliminar el segundo término de la segunda ecuación quedando como resultado el sistema
 
 \begin{align*}
-    S' & = - a_1 * S * I         \\
-    I' & = a_2 * S * I - a_3 * I \\
+    S' & = - a_1 * S * I \\
+    I' & = a_2 * S * I   \\
     R' & = a_4 * I,
 \end{align*}
 
-
-se puede realizar la mutación de eliminar el segundo término de la segunda ecuación quedando como resultado el árbol:
+que visto en forma de árbol computacional es:
 
 \begin{center}
     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
         \begin{tikzpicture}[
-                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
             ]
             % Nodes
             \node[roundnode]        (system)                            {$SYSTEM$};
@@ -714,19 +803,11 @@ se puede realizar la mutación de eliminar el segundo término de la segunda ecu
     \end{adjustbox}
 \end{center}
 
-que representa al sistema:
-
-\begin{align*}
-    S' & = - a_1 * S * I \\
-    I' & = a_2 * S * I   \\
-    R' & = a_4 * I.
-\end{align*}
-
 Otra de las operaciones que se deben definir con el fin de implementar un algoritmo genético es el cruzamiento, esta operación se específica en la siguiente sección.
 
-\section{Cruzamiento}
+\section{Cruzamiento}\label{section:xcross}
 
-La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la población de soluciones presentes en el algoritmo genético, definamos estos sistemas como A y B sin perder generalidad. Luego se selecciona un nodo aleatorio dentro del árbol A, impidiendo que la selección tome hojas que representen parámetros. En dependencia de la altura del nodo seleccionado se escoge un nodo en B siguiendo las siguientes reglas:
+La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la población de soluciones presentes en el algoritmo genético, se definen estos sistemas como A y B. Luego se selecciona un nodo aleatorio dentro del árbol A, impidiendo que la selección tome hojas que representen parámetros. En dependencia de la altura del nodo seleccionado se escoge un nodo en B siguiendo las siguientes reglas:
 
 \begin{itemize}
     \item Si el nodo seleccionado en A es el representante de la i-ésima ecuación en el sistema, se escoge el nodo representante de la i-ésima ecuación en el sistema B:
@@ -734,9 +815,9 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
           \begin{center}
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$A$};
@@ -748,7 +829,7 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
                       \node[squarednode]      (S_star_1_2)       [below left=of star_1_2]   {$y_1$};
                       \node[squarednode]      (I_star_1_2)      [below=of star_1_2]   {$y_2$};
 
-                      \node[roundnode_yellow]        (plus_2)     [below right=of system]        {$+$};
+                      \node[roundnode_dashed]        (plus_2)     [below right=of system]        {$+$};
                       \node[roundnode]        (star_2_1)    [below=of plus_2]    {$*$};
                       \node[squarednode]      (a_2)      [below=of star_2_1]    {$a_2$};
                       \node[squarednode]      (I_star_2_1)      [below right=of star_2_1]   {$y_2$};
@@ -769,9 +850,9 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
               \qquad
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$B$};
@@ -783,7 +864,7 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
                       \node[squarednode]      (I_plus_1_2)       [below left=of plus_1_2]   {$y_2$};
                       \node[squarednode]      (S_plus_1_2)      [below=of plus_1_2]   {$y_1$};
 
-                      \node[roundnode_yellow]        (plus_2)     [below right=of system]        {$+$};
+                      \node[roundnode_dashed]        (plus_2)     [below right=of system]        {$+$};
                       \node[roundnode]        (star_2_1)    [below=of plus_2]    {$*$};
                       \node[squarednode]      (a_4)      [below=of star_2_1]    {$b_2$};
                       \node[roundnode]        (sub_2_1)    [below right=of star_2_1]    {$-$};
@@ -812,15 +893,15 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
           \begin{center}
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$A$};
 
                       \node[roundnode]        (plus_1)     [below left=of system]        {$+$};
-                      \node[roundnode_yellow]        (star_1_1)    [below=of plus_1]    {$*$};
+                      \node[roundnode_dashed]        (star_1_1)    [below=of plus_1]    {$*$};
                       \node[squarednode]      (a_1)      [below left=of star_1_1]    {$a_1$};
                       \node[roundnode]        (star_1_2)    [below=of star_1_1]    {$*$};
                       \node[squarednode]      (S_star_1_2)       [below left=of star_1_2]   {$y_1$};
@@ -847,15 +928,15 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
               \qquad
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$B$};
 
                       \node[roundnode]        (plus_1)     [below left=of system]        {$+$};
-                      \node[roundnode_yellow]        (star_1_1)    [below=of plus_1]    {$*$};
+                      \node[roundnode_dashed]        (star_1_1)    [below=of plus_1]    {$*$};
                       \node[squarednode]      (a_3)      [below left=of star_1_1]    {$b_1$};
                       \node[roundnode]        (plus_1_2)    [below=of star_1_1]    {$+$};
                       \node[squarednode]      (I_plus_1_2)       [below left=of plus_1_2]   {$y_2$};
@@ -892,9 +973,9 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
           \begin{center}
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          squarednode_yellow/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          squarednode_dashed/.style={rectangle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$A$};
@@ -909,7 +990,7 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
                       \node[roundnode]        (plus_2)     [below right=of system]        {$+$};
                       \node[roundnode]        (star_2_1)    [below=of plus_2]    {$*$};
                       \node[squarednode]      (a_2)      [below=of star_2_1]    {$a_2$};
-                      \node[squarednode_yellow]      (I_star_2_1)      [below right=of star_2_1]   {$y_2$};
+                      \node[squarednode_dashed]      (I_star_2_1)      [below right=of star_2_1]   {$y_2$};
 
                       %Lines
                       \draw [->] (system.south) -- (plus_1.north);
@@ -927,9 +1008,9 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
               \qquad
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
                   \begin{tikzpicture}[
-                          roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                          squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                          roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                          roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                          squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                          roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
                       ]
                       % Nodes
                       \node[roundnode]        (system)                            {$B$};
@@ -944,7 +1025,7 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
                       \node[roundnode]        (plus_2)     [below right=of system]        {$+$};
                       \node[roundnode]        (star_2_1)    [below=of plus_2]    {$*$};
                       \node[squarednode]      (a_4)      [below=of star_2_1]    {$b_2$};
-                      \node[roundnode_yellow]        (sub_2_1)    [below right=of star_2_1]    {$-$};
+                      \node[roundnode_dashed]        (sub_2_1)    [below right=of star_2_1]    {$-$};
                       \node[squarednode]      (S_sub_2_1)       [below left=of sub_2_1]   {$y_1$};
                       \node[squarednode]      (I_sub_2_1)      [below=of sub_2_1]   {$y_2$};
 
@@ -967,16 +1048,24 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
 
 \end{itemize}
 
-Luego de que se selecciona un nodo en el sistema A y un nodo en el sistema B, se sustituye el subárbol del nodo del árbol B en el A resultado un nuevo sistema en lo que fue el sistema A.
+Luego de escoger los dos nodos, se remplaza el subárbol del nodo seleccionado en A por el subárbol del nodo seleccionado en B.
 
-Por ejemplo si se tienen los árboles:
+Por ejemplo si se tiene el sistema
+
+\begin{align*}
+    S' & = - a_1 * S * I         \\
+    I' & = a_2 * S * I - a_3 * I \\
+    R' & = a_4 * I,
+\end{align*}
+
+que se representa con el árbol computacional:
 
 \begin{center}
     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
         \begin{tikzpicture}[
-                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
             ]
             % Nodes
             \node[roundnode]        (system)                            {$A$};
@@ -989,7 +1078,7 @@ Por ejemplo si se tienen los árboles:
             \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
             \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-            \node[roundnode_yellow]        (plus_I)     [below=of system]        {$+$};
+            \node[roundnode_dashed]        (plus_I)     [below=of system]        {$+$};
             \node[roundnode]        (star_I_1)    [below left=1cm and 0.5cm of plus_I]    {$*$};
             \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a_2$};
             \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
@@ -1036,22 +1125,22 @@ Por ejemplo si se tienen los árboles:
     \end{adjustbox}
 \end{center}
 
-que representa el sistema:
+y el sistema
 
 \begin{align*}
-    S' & = - a_1 * S * I         \\
-    I' & = a_2 * S * I - a_3 * I \\
-    R' & = a_4 * I
+    S' & = b_1 * (S + I) \\
+    I' & = b_2 * S * I   \\
+    R' & = b_3 * S,
 \end{align*}
 
-y
+que visto en forma de árbol computacional es:
 
 \begin{center}
     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
         \begin{tikzpicture}[
-                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
             ]
             % Nodes
             \node[roundnode]        (system)                            {$B$};
@@ -1063,7 +1152,7 @@ y
             \node[squarednode]      (S_star_S)       [below left=of add_S_2]   {$S$};
             \node[squarednode]      (I_star_S)      [below=of add_S_2]   {$I$};
 
-            \node[roundnode_yellow]        (plus_I)     [below=of system]        {$+$};
+            \node[roundnode_dashed]        (plus_I)     [below=of system]        {$+$};
             \node[roundnode]        (star_I_1)    [below=of plus_I]    {$*$};
             \node[squarednode]      (alpha_star_I_1)      [below left=of star_I_1]    {$b_2$};
             \node[roundnode]        (star_I_2)    [below right=of star_I_1]    {$*$};
@@ -1099,23 +1188,22 @@ y
     \end{adjustbox}
 \end{center}
 
-que representa al sistema:
+y como resultado de la operación de cruzamiento los nodos seleccionados son los resaltados con líneas discontinuas, entonces el sistema resultante sería
 
 \begin{align*}
-    S' & = b_1 * (S + I) \\
+    S' & = - a_1 * S * I \\
     I' & = b_2 * S * I   \\
-    R' & = b_3 * S.
+    R' & = a_4 * I,
 \end{align*}
 
-Si como resultado de la operación de cruzamiento los nodos seleccionados son los resaltados en color amarillo, entonces el árbol resultante sería:
-
+que se representa con el árbol computacional:
 
 \begin{center}
     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
         \begin{tikzpicture}[
-                roundnode/.style={circle, draw=red!60, fill=red!5, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-                roundnode_yellow/.style={circle, draw=yellow!60, fill=yellow!5, very thick, minimum size=7mm},
+                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+                roundnode_dashed/.style={circle, draw, dashed, fill=gray!25, very thick, minimum size=7mm},
             ]
             % Nodes
             \node[roundnode]        (system)                            {$A$};
@@ -1128,7 +1216,7 @@ Si como resultado de la operación de cruzamiento los nodos seleccionados son lo
             \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
             \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-            \node[roundnode_yellow]        (plus_I)     [below=of system]        {$+$};
+            \node[roundnode_dashed]        (plus_I)     [below=of system]        {$+$};
             \node[roundnode]        (star_I_1)    [below=of plus_I]    {$*$};
             \node[squarednode]      (alpha_star_I_1)      [below left=of star_I_1]    {$b_2$};
             \node[roundnode]        (star_I_2)    [below right=of star_I_1]    {$*$};
@@ -1165,26 +1253,16 @@ Si como resultado de la operación de cruzamiento los nodos seleccionados son lo
     \end{adjustbox}
 \end{center}
 
-que representa el sistema:
+Con las operaciones de mutación y cruzamiento solo faltaría detallar la operación de selección para tener totalmente definido el algoritmo genético. Los detalles de esta última operación se presentan en la siguiente sección.
 
-\begin{align*}
-    S' & = - a_1 * S * I \\
-    I' & = b_2 * S * I   \\
-    R' & = a_4 * I
-\end{align*}
+\section{Selección de las soluciones que pasan a la siguiente generación}\label{section:selection}
 
-Con las operaciones de mutación y cruzamiento solo faltaría detallar la operación de selección para poder finalmente implementar un algoritmo genético. Los detalles de esta última operación se ven en la siguiente sección.
+Dada una población inicial en una generación, se selecciona un subconjunto de individuos de esta y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. A partir de estas operaciones aparece un nuevo subconjunto de individuos que se agregan a la población inicial de la generación formando un nuevo conjunto de individuos el cual se define como población total de la generación.
 
+De esta población total de la generación se seleccionan los individuos que mejor ajustan los datos. Se seleccionan también algunos individuos aleatorios con el fin de evitar mínimos locales en la búsqueda del mejor sistema. En total se seleccionan una cantidad igual a la presente en la población inicial.
 
-\section{Determinación de las soluciones que pasan a la siguiente generación}
+Como resultado de esta selección se obtiene una nueva población que será la población de la siguiente generación. Estas operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se repiten múltiples veces con el fin de realizar varias generaciones intentando obtener mejores soluciones cada vez.
 
-Dada una población inicial en una generación, se selecciona un subconjunto de individuos de esta y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. Luego estos nuevo subconjuntos se suman a la población inicial de la generación formando un nuevo conjunto de individuos el cual se define como población total de la generación.
+Una vez definida la forma de representar una solución como un árbol computacional, se plantean las operaciones de mutación y cruzamiento sobre estos árboles. Conociendo el costo de una solución se detalla un proceso de selección de individuos. Con estas operaciones se define un algoritmo genético y con este se puede realizar una regresión simbólica con el fin de obtener el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajuste un conjunto de datos.
 
-De esta población total de la generación se seleccionan los sistemas que mejor ajustan los datos. Son seleccionados también algunos individuos aleatorios con el fin de no caer en mínimos locales en la búsqueda del mejor sistema. La cantidad de soluciones seleccionadas en este proceso es igual a la cantidad presente en la población inicial.
-
-Como resultado de esta selección se obtiene una nueva población la cuál será la población inicial para la siguiente generación. Estas operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se pueden repetir múltiples veces con el fin de realizar numerosas generaciones obteniendo mejores soluciones cada vez.
-
-
-Una vez definida la forma de representar una solución como un árbol computacional, se pueden definir las operaciones de mutación y cruzamiento sobre estos árboles. Conociendo la forma de determinar que tan cercanos son los puntos obtenidos de una solución con respecto a los puntos originales se puede crear un proceso de selección de individuos. Con estas operaciones definidas se puede implementar un algoritmo genético y con este algoritmo se puede definir una regresión simbólica con el fin de obtener el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajuste un conjunto de datos.
-
-En el siguiente capítulo se muestran los resultados obtenidos al utilizar la regresión simbólica planteada para encontrar los sistemas de ecuaciones difenciales originales de varios conjuntos de puntos.
+En el siguiente capítulo se muestran los resultados obtenidos de aplicar la regresión simbólica planteada en varios conjuntos de puntos.
