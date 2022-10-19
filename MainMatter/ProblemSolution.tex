@@ -174,11 +174,11 @@ Mientras más cercano a 0 es el valor del costo, más se describe el fenómeno r
 Al valor de $C$ se le agrega un factor de peso $P$, el cual es directamente propociornal a la cantidad de términos que posean las ecuaciones de la solución:
 
 $$P = \begin{cases}
-        9999 * node\_count(f), & \text{si } node\_count(f) \geq MAX\_NODES \\
-        0,                     & \text{de otra forma}
+        Constant * node\_count(f), & \text{si } node\_count(f) \geq MAX\_NODES \\
+        0,                         & \text{de otra forma}
     \end{cases},$$
 
-donde $node\_count(f)$ es la cantidad de nodos presentes en la representación en forma de árbol computacional del sistema $f$.
+donde $node\_count(f)$ es la cantidad de nodos presentes en la representación en forma de árbol computacional del sistema $f$. $Constant$ es una constante definida en la implementación, en los experimentos realizados en el capítulo \ref{chapter:results} se utiliza un valor de 9999.
 
 El parámetro $MAX\_NODES$ se define junto con los demás parámetros del algoritmo genético. Este factor de peso garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos tenga una mejor evaluacion en la función objetivo.
 
