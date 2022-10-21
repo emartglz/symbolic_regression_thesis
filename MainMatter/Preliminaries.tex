@@ -124,7 +124,7 @@ Por un largo tiempo, la regresión simbólica sólo era de dominio de los seres 
 
 \section{Algoritmos genéticos}
 
-Un algoritmo genético es una metaheurística inspirada en el proceso natural de selección \cite{mitchell1998introduction}. Con estos algoritmos se generan soluciones de alta calidad en problemas de optimización y búsqueda. Es un método para pasar de una población de "cromosomas" o individuos (por ejemplo, cadenas de unos y ceros, palabras o árboles computacionales) a una nueva población mediante el uso de "selección natural" junto con los operadores inspirados en la genética de cruzamiento, mutación y selección. Cada cromosoma consta de "genes" o características (por ejemplo, bits, letras o nodos).
+Un algoritmo genético es una metaheurística inspirada en el proceso natural de selección \cite{mitchell1998introduction}. Con estos algoritmos se generan soluciones de alta calidad en problemas de optimización y búsqueda. Es un método para pasar de una población de ''cromosomas'' o individuos (por ejemplo, cadenas de unos y ceros, palabras o árboles computacionales) a una nueva población mediante el uso de ''selección natural'' junto con los operadores inspirados en la genética de cruzamiento, mutación y selección. Cada cromosoma consta de ''genes'' o características (por ejemplo, bits, letras o nodos).
 
 Los algoritmos genéticos se usan para resolver problemas de optimización de la forma $min f(x)$, donde $x$ pertenece a un conjunto $C$ dado. Se le llama solución a cualquier $x$ de $C$. En dependencia de la estructura de $C$, las soluciones pueden tener distintas formas, por ejemplo vectores de números reales como en los problemas de optimización de dimensión finita o pueden ser árboles como en el caso de la regresión simbólica.
 
@@ -147,6 +147,21 @@ Una vez culminado el proceso de modificación de la población antes mencionado,
 Estas operaciones de cruzamiento, mutación y selección dan como resultado la población de soluciones de la próxima generación. Generalmente, el acercamiento promedio de los individuos a la solución del problema habrá aumentado con este procedimiento, ya que los cromosomas más cercanos a la solución del problema fueron escogidos en la operación de selección.
 
 Con el fin de explorar de maneras distintas el espacio de búsqueda, vale la pena ajustar parámetros del algoritmo genético como la probabilidad de mutación, de cruzamiento y el tamaño de la población, para encontrar configuraciones adecuadas para la clase de problema en la que se trabaja. Estos parámetros típicamente interactúan entre sí de forma no lineal, por lo que no se puede optimizar uno a la vez. Hay mucha discusión y enfoques para la selección de parámetros de los algoritmos genéticos en la literatura de computación evolutiva pero no hay resultados concluyentes sobre lo que es mejor; la mayoría de los investigadores usan lo que funcionó bien en casos previamente informados. \cite{mitchell1998introduction}
+
+Los datos que se utilizan para encontrar una solución en el algoritmo genético pueden poseer ruido, altos niveles de ruido pueden ocasionar que el modelo seleccionado como solución esté alejado con respecto a la solución del problema. Para eliminar este ruido en los datos se pueden utilizan varias técnicas, una de estas son los Smoothing Splines.
+
+\section{Smoothing Splines}
+
+El método del spline es un tipo de regresión, el resultado del método es llamado spline y es una función definida por intervalos, donde la función de cada intervalo es un polinomio. Los extremos de los intervalos son llamados 'nudos' y el spline pasa por cada uno de los nudos seleccionados, esta selección varía la conformación del spline. El máximo grado de los polinomios utilizados define el grado del spline.
+
+Si un conjunto de datos $\{x_i, Y_i\}$ que describen el fenómeno $f$ es de la forma $Y_i = f(x_i) + \epsilon_i$ donde los $\epsilon_i$ son independientes de media 0 y valores aleatorios, entonces se dice que el conjunto de datos posee ruido. Si se aplica el método de splines a un conjunto de puntos que posee ruido y los nudos seleccionados coinciden con el conjunto de puntos, entonces el spline oscila a través de todos los puntos dados. Si se intenta encontrar una curva con poco ruido a partir de datos con ruido entonces se debe hacer una selección de nudos con una cantidad y posición distintas a la de los datos dados.
+
+Para no lidiar con la selección de nudos se utilizan los Smoothing Splines, este método plantea que los nudos son todos los puntos dados pero la curva resultante no pasa necesariamente por estos. El Smoothing Spline cúbico $\hat{f}$ que aproxima el fenómeno $f$ se define como el resultado del problema de minimización:
+
+$$\sum_{i=1}^n (Y_i - \hat{f}(x_i))^2 + \lambda \int \hat{f}''(x)^2 dx,$$
+
+donde $\{x_i, Y_i\}$ es un conjunto de puntos con ruido que describe a $f$ y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si este factor de suavizado es 0 entonces el Smoothing Spline coincide con el resultado de aplicar el método del spline donde los nudos coinciden con los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de regresión de mínimos cuadrados.
+
 
 En este capitulo se han definido conceptos presentes en la propuesta de solución que utiliza regresión simbólica mediante un algoritmo genético para la obtención de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros. Para usar un algoritmo genético es necesario entonces definir varios elementos:
 
