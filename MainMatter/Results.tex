@@ -1,10 +1,10 @@
 \chapter{Experimentos y resultados}\label{chapter:results}
 
-En este capítulo se presentan los experimentos realizados para evaluar el desempeño de la regresión simbólica propuesta en el capítulo anterior y sus resultados.
+En el presente capítulo se presentan los experimentos realizados para evaluar el desempeño de la regresión simbólica propuesta en el capítulo anterior y sus resultados.
 
 \section{Consideraciones de la etapa de experimentación}\label{section:experimental_considerations}
 
-El espacio de búsqueda en la regresión simbólica planteada en el anterior capítulo comprende a todos los sistemas de ecuaciones diferenciales donde la cantidad de ecuaciones es definida según los datos, y como se mencionaba la regresión simbólica es un problema NP-difícil por lo que resulta computacionalmente costoso utilizar este método. Por esta razón, se diseñó un marco experimental que fuese factible de ejecutar con recursos limitados. El equipo de cómputo donde se realizaron los experimentos posee las siguientes propiedades.
+El espacio de búsqueda en la regresión simbólica que se planteó en el anterior capítulo comprende a todos los sistemas de ecuaciones diferenciales donde la cantidad de ecuaciones se define según los datos, y como se enunció, la regresión simbólica es un problema NP-difícil por lo que resulta computacionalmente costoso utilizar el método. Dado que requiere muchos recursos y realización de operaciones de cómputo, se diseñó un marco experimental que fuese factible de ejecutar con recursos limitados. El equipo de cómputo donde se realizaron los experimentos posee las siguientes propiedades.
 
 
 \begin{itemize}
@@ -15,9 +15,9 @@ El espacio de búsqueda en la regresión simbólica planteada en el anterior cap
 
 La implementación de la solución se desarrolla en el lenguaje de programación \emph{Python} auxiliado por bibliotecas como \emph{numpy} y \emph{scipy} de código abierto implementadas en el mismo lenguaje.
 
-Cómo métrica se utiliza la función para determinar el costo de una solución definida en la sección \ref{section:solution_cost}. A menores valores de esta métrica implica que el sistema obtenido en la regresión simbólica se ajusta mejor a los datos.
+Como métrica se utiliza la función para determinar el costo de una solución definida en la sección \ref{section:solution_cost}. A menores valores de esta métrica implica que el sistema obtenido en la regresión simbólica se ajusta mejor a los datos.
 
-Cada experimento que aparece en la sección \ref{section:experiments} fue realizado 30 veces y se plantea el valor promedio que obtuvo la métrica utilizada en estas 30 ejecuciones del experimento. Además se indica el valor mínimo y máximo que alcanzó la métrica a lo largo de los 30 experimentos.
+Cada experimento que aparece en la sección \ref{section:experiments} se realizó 30 veces y se plantea el valor promedio que obtuvo la métrica utilizada en las 30 ejecuciones del experimento. Además se indica el valor mínimo y máximo que alcanzó la métrica a lo largo de los 30 experimentos.
 
 En la siguiente sección se precisa mejor cómo se generan los datos para realizar los distintos experimentos.
 
@@ -31,7 +31,7 @@ Los experimentos parten de la selección de un modelo conocido $f$, por ejemplo 
     R' & = b*I.
 \end{align*}
 
-Este se integra en un intervalo definido y se obtiene un conjunto de puntos que representan el valor de las distintas variables a lo largo del tiempo. Por ejemplo si se integra el modelo SIR con $0 \leq t \leq 20$ se obtienen las curvas en la imagen \ref{fig:SIR}.
+El sistema de ecuaciones diferenciales se integra en un intervalo definido y se obtiene un conjunto de puntos que representan el valor de las distintas variables a lo largo del tiempo. Por ejemplo, si se integra el modelo SIR con $0 \leq t \leq 20$ se obtienen las curvas en la imagen \ref{fig:SIR}.
 
 \begin{figure}[h]
     \centering
@@ -40,7 +40,7 @@ Este se integra en un intervalo definido y se obtiene un conjunto de puntos que 
     \label{fig:SIR}
 \end{figure}
 
-Luego se le agregan distintos valores de ruido a los puntos, este ruido puede tener un valor máximo de 0\%, 5\% o 10\% con respecto a cada muestra. Por ejemplo si escoge como ruido máximo 10\%, y se le agrega este ruido a los datos obtenidos del sistema SIR se tendrían las curvas que aparecen en la imagen \ref{fig:SIR_with_noise}.
+Luego se le agregan distintos valores de ruido a los puntos, el ruido puede tener un valor máximo de 0\%, 5\% o 10\% con respecto a cada muestra. Por ejemplo, si escoge como ruido máximo 10\% y se le agrega a los datos obtenidos del sistema SIR, se tendrían las curvas que aparecen en la imagen \ref{fig:SIR_with_noise}.
 
 \begin{figure}[h]
     \centering
@@ -49,7 +49,7 @@ Luego se le agregan distintos valores de ruido a los puntos, este ruido puede te
     \label{fig:SIR_with_noise}
 \end{figure}
 
-Estos datos son suavizados utilizando un Smoothing Spline en el que se varía su valor de suavizado para cada una de las variables. Por ejemplo, si se suavizan los datos anteriores utilizando un smoothing spline cúbico se obtendrían las curvas que aparecen en la imagen \ref{fig:SIR_noise_with_spline}.
+Los datos se suavizan utilizando un Smoothing Spline en el que se varía su valor de suavizado para cada una de las variables. Por ejemplo, si se suavizan los datos anteriores utilizando un smoothing spline cúbico se obtendrían las curvas que aparecen en la imagen \ref{fig:SIR_noise_with_spline}.
 
 \begin{figure}[h]
     \centering
@@ -58,7 +58,7 @@ Estos datos son suavizados utilizando un Smoothing Spline en el que se varía su
     \label{fig:SIR_noise_with_spline}
 \end{figure}
 
-Una vez que se tiene la función que define el spline de cada variable, se obtiene el valor de la primera derivada de cada una de ellas en distintos instantes de tiempo. Esto permite obtener una aproximación del valor del modelo original en ese instante de tiempo. Por ejemplo retomando el modelo SIR:
+Una vez que se tiene la función que define el spline de cada variable, se obtiene el valor de la primera derivada de cada una de ellas en distintos instantes de tiempo. La derivada permite obtener una aproximación del valor del modelo original en ese instante de tiempo. Por ejemplo retomando el modelo SIR:
 
 \begin{align*}
     S'(t, S, I, R) & \approx spline_S'(t)  \\
@@ -66,24 +66,24 @@ Una vez que se tiene la función que define el spline de cada variable, se obtie
     R'(t, S, I, R) & \approx spline_R'(t).
 \end{align*}
 
-Estas aproximaciones de las derivadas de las variables en distintos instantes de tiempo son las que se utilizan en el método de regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros. Los puntos que se le pasan como datos a la regresión simbólica son igualmente espaciados a lo largo de todo el intervalo de $t$.
+Las aproximaciones de las derivadas de las variables en distintos instantes de tiempo son las que se utilizan en el método de regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros. Los puntos que se le pasan como datos a la regresión simbólica son igualmente espaciados a lo largo de todo el intervalo de $t$.
 
-Con el propósito de evidenciar las consideraciones expuestas en \ref{section:experimental_considerations} y la descripción de esta sección, se presentan a continuación una serie de experimentos realizados.
+Con el propósito de evidenciar las consideraciones que se exponen en \ref{section:experimental_considerations} y la descripción de esta sección, se presentan a continuación una serie de experimentos realizados.
 
 \section{Experimentos realizados}\label{section:experiments}
 
-Todos los sistemas de ecuaciones diferenciales seleccionados son sistemas poblacionales lineales en los parámetros. La cantidad de variables en cada uno de estos modelos es distinta y va aumentando con respecto se avanza en el números del experimento.
+Todos los sistemas de ecuaciones diferenciales seleccionados son sistemas poblacionales lineales en los parámetros. La cantidad de variables en cada uno de los modelos es distinta y va aumentando conforme se avanza en el número del experimento.
 
 \subsection{Lotka-Volterra}
 
-El modelo de Lotka-Volterra está definido por el sistema:
+El modelo de Lotka-Volterra se define por el sistema:
 
 \begin{align*}
     X' & = X * (a - b * Y)   \\
     Y' & = -Y * (c - d * X).
 \end{align*}
 
-Se utilizaron como valores de los parámetros $a = 0.04$, $b = 0.0005$, $c = 0.2$ y $d = 0.004$ con punto inicial $(20, 20)$ y se integró en el intervalo $0 \leq t \leq 300$ para obtener los datos que aparecen en la figura \ref{fig:lotka_volterra}. De este conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $a = 0.04$, $b = 0.0005$, $c = 0.2$ y $d = 0.004$ con punto inicial $(20, 20)$ y se integró en el intervalo $0 \leq t \leq 300$ para obtener los datos que aparecen en la figura \ref{fig:lotka_volterra}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -92,7 +92,7 @@ Se utilizaron como valores de los parámetros $a = 0.04$, $b = 0.0005$, $c = 0.2
     \label{fig:lotka_volterra}
 \end{figure}
 
-Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_lotka_volterra}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_lotka_volterra}.
 
 \begin{table}[!h]
     \centering
@@ -114,7 +114,7 @@ Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en 
 
 \subsection{SIR}
 
-El modelo poblacional SIR está definido por el sistema:
+El modelo poblacional SIR se define por el sistema:
 
 \begin{align*}
     S' & = - a*I*S     \\
@@ -122,9 +122,9 @@ El modelo poblacional SIR está definido por el sistema:
     R' & = b*I.
 \end{align*}
 
-Se utilizaron como valores de los parámetros $a = 0.0003$ y $b = 0.1$ con punto inicial $(700, 300, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIR}. De este conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $a = 0.0003$ y $b = 0.1$ con punto inicial $(700, 300, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
-Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIR}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIR}.
 
 \begin{table}[!h]
     \centering
@@ -147,7 +147,7 @@ Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en 
 
 \subsection{SIRD}
 
-El modelo poblacional SIRD está definido por el sistema:
+El modelo poblacional SIRD se define por el sistema:
 
 \begin{align*}
     S' & = a - b * \frac{S * I}{S + I + R}             \\
@@ -156,7 +156,7 @@ El modelo poblacional SIRD está definido por el sistema:
     D' & = d * I
 \end{align*}
 
-Se utilizaron como valores de los parámetros $a = 250$, $b = 0.5$, $c = 0.1$ y $d = 0.2$ con punto inicial $(7000, 3000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SIRD}. De este conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $a = 250$, $b = 0.5$, $c = 0.1$ y $d = 0.2$ con punto inicial $(7000, 3000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SIRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -165,7 +165,7 @@ Se utilizaron como valores de los parámetros $a = 250$, $b = 0.5$, $c = 0.1$ y 
     \label{fig:SIRD}
 \end{figure}
 
-Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIRD}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIRD}.
 
 \begin{table}[!h]
     \centering
@@ -186,7 +186,7 @@ Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en 
 
 \subsection{SIQRD}
 
-El modelo poblacional SIQRD está definido por el sistema:
+El modelo poblacional SIQRD se define por el sistema:
 
 \begin{align*}
     S' & = -\beta * \frac{S * I}{S + I + Q + R + D} - \alpha * S + \delta * Q \\
@@ -196,7 +196,7 @@ El modelo poblacional SIQRD está definido por el sistema:
     D' & = \mu * I
 \end{align*}
 
-Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\delta = 0.1$, $\gamma = 0.1$ y $\mu = 0.05$ con punto inicial $(5000, 3000, 1000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIQRD}. De este conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\delta = 0.1$, $\gamma = 0.1$ y $\mu = 0.05$ con punto inicial $(5000, 3000, 1000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIQRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -205,7 +205,7 @@ Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\d
     \label{fig:SIQRD}
 \end{figure}
 
-Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIQRD}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIQRD}.
 
 \begin{table}[!h]
     \centering
@@ -227,7 +227,7 @@ Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en 
 
 \subsection{SVVEIR}
 
-El modelo poblacional SVVEIR está definido por el sistema:
+El modelo poblacional SVVEIR se define por el sistema:
 
 \begin{align*}
     N    & = S + V_1 + V_2 + E + I + R                                        \\
@@ -239,7 +239,7 @@ El modelo poblacional SVVEIR está definido por el sistema:
     R'   & = \gamma * I + \omega * V_2 - \mu * R
 \end{align*}
 
-Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\delta = 0.0005$, $\gamma = 0.05$, $\mu = 0.01$, $n = 0.2$, $\rho = 0.01$, $\omega = 0.05$ y $\sigma = 0.2$ con punto inicial $(5000, 1000, 0, 2000, 1000, 500)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SVVEIR}. De este conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\delta = 0.0005$, $\gamma = 0.05$, $\mu = 0.01$, $n = 0.2$, $\rho = 0.01$, $\omega = 0.05$ y $\sigma = 0.2$ con punto inicial $(5000, 1000, 0, 2000, 1000, 500)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SVVEIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -248,7 +248,7 @@ Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\d
     \label{fig:SVVEIR}
 \end{figure}
 
-Los resultados obtenidos durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SVVEIR}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SVVEIR}.
 
 \begin{table}[!h]
     \centering
