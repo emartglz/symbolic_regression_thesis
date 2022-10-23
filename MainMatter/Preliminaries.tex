@@ -1,10 +1,10 @@
 \chapter{Preliminares}\label{chapter:preliminaries}
 
-En el capítulo anterior se definió el objetivo de este trabajo, para ello se plantearon los conceptos de sistema de ecuaciones diferenciales lineales en los parámetros y la relación que existe entre ajustar un conjunto de datos y el algoritmo de mínimos cuadrados.
+En el capítulo anterior se definió el objetivo del presente trabajo, para ello se plantearon los conceptos de sistema de ecuaciones diferenciales lineales en los parámetros y la relación que existe entre ajustar un conjunto de datos y el algoritmo de mínimos cuadrados.
 
-En la sección 1.1 de este capítulo se plantea lo que es una ecuación diferencial, en la sección siguiente se define de forma más detallada qué es una ecuación diferencial con respecto a los parámetros. Una técnica importante que se utilizó para el desarrollo de este trabajo es la regresión, los detalles se pueden encontrar en la sección 1.3. Las características ajuste cuadrático y regresión simbólica aparecen en las dos secciones siguientes respectivamente. A continuación en el capítulo se puede ver cómo se utiliza la regresión simbólica directamente en un sistema de ecuaciones diferenciales. En la última sección de este capítulo se detalla qué es un algoritmo genético y se plantean ejemplos de situaciones en las que es útil esta metaheurística.
+En la sección 1.1 de este capítulo se plantea lo que es una ecuación diferencial, en la sección siguiente se define de forma más detallada qué es una ecuación diferencial lineal con respecto a los parámetros. Una técnica que se utilizó para el desarrollo del presente trabajo es la regresión, los detalles se pueden encontrar en la sección \ref{section:regression}. Las características ajuste cuadrático y regresión simbólica aparecen en las dos secciones siguientes, respectivamente. A continuación en el capítulo se puede ver cómo se utiliza la regresión simbólica directamente en un sistema de ecuaciones diferenciales. En la última sección del presente capítulo se detalla qué es un algoritmo genético y se plantean ejemplos de situaciones en las que es útil esta metaheurística.
 
-A continuación se plantea que es una ecuación diferencial y se muestra un ejemplo de esta.
+A continuación se plantea que es una ecuación diferencial y se muestra un ejemplo de este tipo de ecuaciones.
 
 \section{Ecuaciones diferenciales}
 
@@ -31,18 +31,18 @@ Una ecuación diferencial es lineal con respecto a los parámetro si es de la fo
 
 $$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t))$$
 
-donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro $a_i$.
+donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro $a_i$.
 
-Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad. Que el sistema sea lineal con repecto a los paráemtros permite modelar múltiples sistemas dinámicos poblaciones como el sistema de lotka volterra:
+Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad. Que el sistema sea lineal con repecto a los paráemtros permite modelar múltiples sistemas dinámicos poblacionales como el sistema de lotka volterra:
 
 $$X' = \alpha * X - \beta * X * Y$$
 $$Y' = \delta * X * Y - \gamma * Y$$
 
-Para encontrar estos sistemas se utilizan diversas técnicas ya que muchas veces solo se poseen muestras de algún fenómeno físico en concreto y no se conoce las ecuaciones que lo describen, una de estas técnicas es la regresión.
+Para encontrar sistemas de ecuaciones diferenciales se utilizan diversas técnicas ya que en ocasiones solo se poseen muestras de algún fenómeno físico en concreto y no se conocen las ecuaciones que lo describen, una de las técnicas utilizadas es la regresión.
 
-\section{Regresión}
+\section{Regresión}\label{section:regression}
 
-La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. Se explica la variable dependiente mientras que la independiente es la que se utiliza para explicar la variación de la variable dependiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independiente se le llama regresión múltiple \cite{mann2007introductory}.
+La regresión es un conjunto de procesos estadísticos para estimar las relaciones entre una o más variables dependientes y una o más variables independientes \cite{johnson2015applied}. Se explica la variable dependiente mientras que la independiente es la que se utiliza para explicar la variación de la variable dependiente. Se le llama regresión simple si solo se tienen dos variables, una dependiente y una independiente, en caso de que se posean más variables independientes se le llama regresión múltiple \cite{mann2007introductory}.
 
 El análisis de regresión se puede utilizar para la predicción y el pronóstico de datos y en algunas situaciones, se puede utilizar el análisis de regresión para inferir relaciones causales entre las variables independientes y dependientes \cite{mann2007introductory}.
 
@@ -52,17 +52,17 @@ La primera forma de regresión fue el método de mínimos cuadrados, que fue pub
 
 El método de mínimos cuadrados es un tipo de regresión que se utiliza para aproximar la solución de modelos en los que se conoce la función pero no sus parámetros. También se puede ver como un algoritmo para aproximar la solución de sistemas sobredeterminados, estos sistemas son conjuntos de ecuaciones en los que hay más ecuaciones que incógnitas.
 
-Este método funciona minimizando la suma de los cuadrados de la diferencia entre un valor observado y el valor ajustado proporcionado por la función. Se puede expresar como resolver el problema de optimización de encontrar los valores de $\beta$ que minimizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
+El algoritmo de ajuste mínimo cuadratico de datos funciona minimizando la suma de los cuadrados de la diferencia entre un valor observado y el valor ajustado que proporciona la función. Se puede expresar como: resolver el problema de optimización de encontrar los valores de $\beta$ que minimizan $S$ dado el modelo $f$ y los puntos $(xi, yi)$ donde:
 
 $$S = \sum_{i=1}^{n}(y_i - f(x_i, \beta))^2$$
 
-Teniendo estos parámetros, se puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores. Este método se utiliza cuando la función es conocida, pero hay ocasiones en la práctica en las que esto no ocurre, para encontrar la función se puede utilizar un método llamado regresión simbólica.
+Una vez se tengan los parámetros, se puede estimar la variable dependiente cuando las variables independientes toman un conjunto dado de valores. El ajuste mínimo cuadrático de datos se utiliza cuando la función es conocida, pero hay ocasiones en la práctica en las que función no se conoce, para encontrar la función se puede utilizar un método que se denomina regresión simbólica.
 
 \section{Regresión simbólica}
 
-La regresión simbólica se utiliza para encontrar dentro de un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos planteados. En este método, ningún modelo en particular se utiliza como punto de partida para la búsqueda del modelo que se desea encontrar. En su lugar se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables.
+La regresión simbólica se utiliza para encontrar dentro de un espacio de funciones el modelo que mejor se ajuste a un conjunto de datos planteados. En la regresión simbólica, ningún modelo en particular se utiliza como punto de partida para la búsqueda del modelo que se desea encontrar. En su lugar, se generan expresiones aleatorias que se forman combinando operaciones matemáticas, funciones analíticas, constantes y variables.
 
-La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza mostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros en estos modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema de optimización pero esto es costoso. Un ejemplo de un árbol computacional planteado por Koza es:
+La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic}. Koza mostró que la regresión simbólica puede usarse para descubrir modelos mediante la codificacion de expresiones matemáticas como árboles computacionales. En tales árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Los parámetros de los modelos usualmente se calculaban en el propio algoritmo o cada cierto tiempo se resolvía un problema de optimización volviendo computacionalmente costoso el método. Un ejemplo de un árbol computacional que planteó Koza es:
 
 \begin{center}
     \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
@@ -100,37 +100,37 @@ que representa la expresión:
 
 $$a_1 * y_1 + a_2 * -(y_1 * y_2)$$
 
-Al no requerir una especificación a priori de un modelo, la regresión simbólica no se ve afectada por el desconocimiento de la estructura del modelo. Este método intenta descubrir las relaciones presentes en el conjunto de datos. Para lograr este fin, se prueban múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
+Al no requerir una especificación a priori de un modelo, la regresión simbólica no se afecta por el desconocimiento de la estructura del modelo. El método intenta descubrir las relaciones presentes en el conjunto de datos. Para ello, se prueban múltiples modelos posibles evaluando su calidad con respecto a alguna métrica de interés, en lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana.
 
-Para evaluar que tan cercano está el modelo obtenido con respecto al modelo original se define una función de ajuste. Esta hace que los resultados obtenidos a lo largo de la regresión simbólica sean cada vez mejores ya que tiene en cuenta no solo las métricas de error (valores que definen cuan cerca están los resultados obtenidos a los resultados deseados), sino cualquier métrica que desee definir el usuario con el objetivo de obtener un resultado con características específicas, por ejemplo modelos más pequeños o con menor cantidad de parámetros. Esto facilita el análisis posterior de los resultados al permitir asociar en el modelo obtenido algunos parámetros a significados de la vida real, por ejemplo la cantidad de individuos que mueren en cada instante de tiempo en el sistema de lotka volterra.
+Para evaluar que tan cercano está el modelo obtenido con respecto al modelo original se define una función de ajuste. La función de ajuste hace que los resultados obtenidos a lo largo de la regresión simbólica se acerquen más a la solución deseada ya que tiene en cuenta no solo las métricas de error (valores que definen cuán cerca están los resultados obtenidos a los resultados deseados), sino cualquier métrica que desee definir el usuario con el objetivo de obtener un resultado con características específicas, por ejemplo modelos más pequeños o con menor cantidad de parámetros. Esto facilita el análisis posterior de los resultados al permitir, en el modelo obtenido, asociar algunos parámetros a significados de la vida real, por ejemplo la cantidad de individuos que mueren en cada instante de tiempo en el sistema de lotka volterra.
 
 La regresión simbólica tiene la desventaja de además de ser un problema NP-difícil \cite{virgolin2022symbolic}, tener un espacio de búsqueda mucho más grande que otros tipos de problemas de ajustes de datos. Por ejemplo, tanto en la regresión lineal como no lineal, el espacio de búsqueda es $R^m$ y en la regresión simbólica se pueden explorar todas las funciones que van de $R^m$ a $R^n$.
 
-Sin embargo, esta característica de poseer un espacio de búsqueda tan grande también tiene ventajas ya que el resultado pueden ser múltiples modelos y su correspondientes conjuntos de parámetros. Examinar esta colección de modelos resultantes permite al usuario identificar una solución que se ajuste mejor a alguna características en particular. Por ejemplo que el modelo posea ecuaciones con poca cantidad de parámetros o que la diferencia entre los datos evaluados en el modelo y los datos originales sea menor que un error específico.
+Sin embargo, la característica de poseer un espacio de búsqueda mayor a otros métodos también tiene ventajas, ya que el resultado pueden ser múltiples modelos y sus correspondientes conjuntos de parámetros. Examinar la colección de modelos resultantes permite al usuario identificar una solución que se ajuste mejor a algunas características en particular. Por ejemplo, que el modelo posea ecuaciones con poca cantidad de parámetros o que la diferencia entre los datos evaluados en el modelo y los datos originales sea menor que un error específico.
 
-En la siguiente sección se ponen ejemplos de como se ha utilizado la regresión simbólica para encontrar sistemas de ecuaciones diferenciales.
+En la siguiente sección se ponen ejemplos de cómo se utiliza la regresión simbólica para encontrar sistemas de ecuaciones diferenciales.
 
 \section{Regresión simbólica para EDOs}
 
-En el año 1994, John R. Koza planteó que la regresión simbólica se podía utilizar con múltiples objetivos como generar programas de forma autmática, crear árboles de desición de clasificación y crear funciones que generen números aleatorios de alta entropía. También Koza definió que se podía utilizar la regresión simbólica para encontrar sistemas de ecuaciones diferenciales de forma automática.\cite{koza1994genetic}
+En el año 1994, John R. Koza planteó que la regresión simbólica se podía utilizar con múltiples objetivos como generar programas de forma automática, crear árboles de decisión de clasificación y crear funciones que generen números aleatorios de alta entropía. También Koza definió que se podía utilizar la regresión simbólica para encontrar sistemas de ecuaciones diferenciales de forma automática.\cite{koza1994genetic}
 
-Se utilizó la regresión simbólica en el año 2008 junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parametros que mejor ajustase un conjunto de datos \cite{iba2008inference}.
+Se utilizó la regresión simbólica en el año 2008 junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que mejor ajustase un conjunto de datos \cite{iba2008inference}.
 
-Luego en el año 2014, un grupo de investigadores utilizaron este tipo de regresión para encontrar sistemas dinámicos, generando para cada ecuación del sistema un grupo de ecuaciones. Luego probaban distintas combinaciones de las ecuaciones de estos subconjuntos hasta encontrar la que mejor aproximase el conjunto de datos. \cite{gaucel2014learning}
+Luego en el año 2014, un grupo de investigadores utilizaron la regresión simbólica para encontrar sistemas dinámicos, generando para cada ecuación del sistema un grupo de ecuaciones. Luego probaban distintas combinaciones de las ecuaciones de los subconjuntos obtenidos hasta encontrar la que mejor aproximase el conjunto de datos. \cite{gaucel2014learning}
 
-La investigación realizada en el año 2008 fue utilizada en otro estudio correspondiente al año 2019. Los objetivos de ambas investigaciones son el mismo, en estudio más reciente se sustituye el método de mínimos cuadrados para encontrar los parámetros por un algoritmo de descenso por gradientes. \cite{kronberger2019identification}
+La investigación que se realizó en el año 2008 se utilizó en otro estudio correspondiente al año 2019. Los objetivos de ambas investigaciones son el mismo, en el estudio más reciente se sustituye el método de mínimos cuadrados para encontrar los parámetros por un algoritmo de descenso por gradientes. \cite{kronberger2019identification}
 
-Por un largo tiempo, la regresión simbólica sólo era de dominio de los seres humanos, pero estos estudios muestran cómo en las últimas décadas también se ha convertido en el dominio de los ordenadores. Hoy en día existen dos bien conocidos métodos para ser utilizados en la regresión simbólica por medio de ordenadores. El primero se llama evolución gramatical y el segundo algoritmos genéticos. \cite{zelinka2005analytic} Este último se explicará en la siguiente sección.
+Por un largo tiempo, la regresión simbólica solo era de dominio de los seres humanos, pero los estudios muestran cómo en las últimas décadas también se ha convertido en el dominio de los ordenadores. En la actualidad existen dos métodos que se utilizan en la regresión simbólica por medio de ordenadores. El primero se llama evolución gramatical y el segundo algoritmos genéticos. \cite{zelinka2005analytic} El último método se explicará en la siguiente sección.
 
 \section{Algoritmos genéticos}
 
-Un algoritmo genético es una metaheurística inspirada en el proceso natural de selección \cite{mitchell1998introduction}. Con estos algoritmos se generan soluciones de alta calidad en problemas de optimización y búsqueda. Es un método para pasar de una población de ''cromosomas'' o individuos (por ejemplo, cadenas de unos y ceros, palabras o árboles computacionales) a una nueva población mediante el uso de ''selección natural'' junto con los operadores inspirados en la genética de cruzamiento, mutación y selección. Cada cromosoma consta de ''genes'' o características (por ejemplo, bits, letras o nodos).
+Un algoritmo genético es una metaheurística inspirada en el proceso natural de selección \cite{mitchell1998introduction}. En el algoritmo se generan soluciones de alta calidad en problemas de optimización y búsqueda. Es un método para pasar de una población de ''cromosomas'' o individuos (por ejemplo, cadenas de unos y ceros, palabras o árboles computacionales) a una nueva población mediante el uso de ''selección natural'' junto con los operadores inspirados en la genética de cruzamiento, mutación y selección. Cada cromosoma consta de ''genes'' o características (por ejemplo, bits, letras o nodos).
 
 Los algoritmos genéticos se usan para resolver problemas de optimización de la forma $min f(x)$, donde $x$ pertenece a un conjunto $C$ dado. Se le llama solución a cualquier $x$ de $C$. En dependencia de la estructura de $C$, las soluciones pueden tener distintas formas, por ejemplo vectores de números reales como en los problemas de optimización de dimensión finita o pueden ser árboles como en el caso de la regresión simbólica.
 
-El algoritmo genético es un proceso iterativo, en el que se toma una población inicial de individuos y se le aplican modificaciones generando nuevos individuos. De esta población resultante se seleccionan algunos sujetos que pasarán a ser la población inicial de la siguiente iteración del método. La población de la primera iteración se genera creando individuos aleatoriamente. A cada iteración del algoritmo se le llama generación.
+El algoritmo genético es un proceso iterativo, en el que se toma una población inicial de individuos y se le aplican modificaciones generando nuevos individuos. De la población resultante se seleccionan algunos sujetos que pasarán a ser la población inicial de la siguiente iteración del método. La población de la primera iteración se genera creando individuos aleatoriamente. A cada iteración del algoritmo se le llama generación.
 
-Este proceso de creación de nuevas generaciones se repite hasta que se alcanza una condición de parada. Algunas condiciones de parada comunes son:
+El proceso de creación de nuevas generaciones se repite hasta que se alcanza una condición de parada. Algunas condiciones de parada comunes son:
 
 \begin{itemize}
     \item Se encuentra un individuo lo suficientemente cercano a la solución del problema.
@@ -140,30 +140,30 @@ Este proceso de creación de nuevas generaciones se repite hasta que se alcanza 
     \item Combinaciones de las anteriores.
 \end{itemize}
 
-Para el proceso de modificación de la población de una generación se utilizan dos operadores: la mutación y el cruzamiento. Estas operaciones se realizan sobre individuos aleatorios seleccionados de la población. La mutación realiza cambios aleatorios en algún gen de un individuo seleccionado y el cruzamiento intercambia genes aleatorios de dos individuos seleccionados, obteniendo dos nuevos cromosomas. Existen operaciones de cruzamiento en la que solo se obtiene un nuevo individuo como resultado de la operación, este tipo de cruzaminento es el utilizado en la propuesta de solución planteada en este trabajo.
+Para el proceso de modificación de la población de una generación se utilizan dos operadores: la mutación y el cruzamiento. Las operaciones se realizan sobre individuos aleatorios seleccionados de la población. La mutación realiza cambios aleatorios en algún gen de un individuo seleccionado y el cruzamiento intercambia genes aleatorios de dos individuos seleccionados, obteniendo dos nuevos cromosomas. Existen operaciones de cruzamiento en la que solo se obtiene un nuevo individuo como resultado de la operación, este tipo de cruzaminento se utiliza en la propuesta de solución planteada en este trabajo.
 
-Una vez culminado el proceso de modificación de la población antes mencionado, se pasa a la operación de selección. Esta escoge de la población inicial de la generación y del conjunto de individuos resultantes de las mutaciones y cruzamientos aquellos que se acerquen más a la solución del problema. También se escogen un conjunto de cromosomas aleatorios con el fin de no caer en mínimos locales en la búsqueda de la solución que más se acerque a la solución del problema. En total el proceso de selección escoge una cantidad de individuos igual a la población inicial de la generación.
+Una vez culminado el proceso de modificación de la población que se plantea anteriormente, se pasa a la operación de selección. La operación escoge de la población inicial de la generación y del conjunto de individuos resultantes de las mutaciones y cruzamientos aquellos que se acerquen más a la solución del problema. También se escogen un conjunto de cromosomas aleatorios con el fin de no caer en mínimos locales en la búsqueda de la solución que más se acerque a la solución del problema. En total, el proceso de selección escoge una cantidad de individuos igual a la población inicial de la generación.
 
-Estas operaciones de cruzamiento, mutación y selección dan como resultado la población de soluciones de la próxima generación. Generalmente, el acercamiento promedio de los individuos a la solución del problema habrá aumentado con este procedimiento, ya que los cromosomas más cercanos a la solución del problema fueron escogidos en la operación de selección.
+Las operaciones de cruzamiento, mutación y selección dan como resultado la población de soluciones de la próxima generación. La distancia del individuo con más acercamiento a la solución del problema no habrá aumentado en el procedimiento que se plantea, ya que los cromosomas más cercanos a la solución del problema fueron escogidos en la operación de selección.
 
-Con el fin de explorar de maneras distintas el espacio de búsqueda, vale la pena ajustar parámetros del algoritmo genético como la probabilidad de mutación, de cruzamiento y el tamaño de la población, para encontrar configuraciones adecuadas para la clase de problema en la que se trabaja. Estos parámetros típicamente interactúan entre sí de forma no lineal, por lo que no se puede optimizar uno a la vez. Hay mucha discusión y enfoques para la selección de parámetros de los algoritmos genéticos en la literatura de computación evolutiva pero no hay resultados concluyentes sobre lo que es mejor; la mayoría de los investigadores usan lo que funcionó bien en casos previamente informados. \cite{mitchell1998introduction}
+Con el fin de explorar de maneras distintas el espacio de búsqueda, vale la pena ajustar parámetros del algoritmo genético como la probabilidad de mutación, de cruzamiento y el tamaño de la población, para encontrar configuraciones adecuadas para la clase de problema en la que se trabaja. Los parámetros típicamente interactúan entre sí de forma no lineal, por lo que no se puede optimizar uno a la vez. Hay mucha discusión y enfoques para la selección de parámetros de los algoritmos genéticos en la literatura de computación evolutiva, pero no hay resultados concluyentes sobre lo que es mejor; la mayoría de los investigadores usan lo que funcionó bien en casos previamente informados. \cite{mitchell1998introduction}
 
-Los datos que se utilizan para encontrar una solución en el algoritmo genético pueden poseer ruido, altos niveles de ruido pueden ocasionar que el modelo seleccionado como solución esté alejado con respecto a la solución del problema. Para eliminar este ruido en los datos se pueden utilizan varias técnicas, una de estas son los Smoothing Splines.
+Los datos que se utilizan para encontrar una solución en el algoritmo genético pueden poseer ruido, altos niveles de ruido pueden ocasionar que el modelo seleccionado como solución se encuentre lejos con respecto a la solución del problema. Para eliminar el ruido en los datos se pueden utilizan varias técnicas, una de las técnicas son los Smoothing Splines.
 
 \section{Smoothing Splines}
 
-El método del spline es un tipo de regresión, el resultado del método es llamado spline y es una función definida por intervalos, donde la función de cada intervalo es un polinomio. Los extremos de los intervalos son llamados 'nudos' y el spline pasa por cada uno de los nudos seleccionados, esta selección varía la conformación del spline. El máximo grado de los polinomios utilizados define el grado del spline. \cite{ahlberg1967theory}
+El método del spline es un tipo de regresión, el resultado del método se denomina spline y es una función definida por intervalos, donde la función de cada intervalo es un polinomio. Los extremos de los intervalos se llaman ``nudos'' y el spline pasa por cada uno de los nudos seleccionados, la selección de los nudos varía la conformación del spline. El máximo grado de los polinomios que se utilizan define el grado del spline. \cite{ahlberg1967theory}
 
 Si un conjunto de datos $\{x_i, Y_i\}$ que describen el fenómeno $f$ es de la forma $Y_i = f(x_i) + \epsilon _i$ donde los $\epsilon _i$ son independientes de media 0 y valores aleatorios, entonces se dice que el conjunto de datos posee ruido. Si se aplica el método de splines a un conjunto de puntos que posee ruido y los nudos seleccionados coinciden con el conjunto de puntos, entonces el spline oscila a través de todos los puntos dados. Si se intenta encontrar una curva con poco ruido a partir de datos con ruido entonces se debe hacer una selección de nudos con una cantidad y posición distintas a la de los datos dados.
 
-Para no lidiar con la selección de nudos se utilizan los Smoothing Splines, este método plantea que los nudos son todos los puntos dados pero la curva resultante no pasa necesariamente por estos. El Smoothing Spline cúbico $\hat{f}$ que aproxima el fenómeno $f$ se define como el resultado del problema de minimización:
+Para no lidiar con la selección de nudos se utilizan los Smoothing Splines, el método plantea que los nudos son todos los puntos dados pero la curva resultante no pasa necesariamente por los nudos. El Smoothing Spline cúbico $\hat{f}$ que aproxima el fenómeno $f$ se define como el resultado del problema de minimización:
 
 $$\sum_{i=1}^n (Y_i - \hat{f}(x_i))^2 + \lambda \int \hat{f}''(x)^2 dx,$$
 
-donde $\{x_i, Y_i\}$ es un conjunto de puntos con ruido que describe a $f$ y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si este factor de suavizado es 0 entonces el Smoothing Spline coincide con el resultado de aplicar el método del spline donde los nudos coinciden con los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de regresión de mínimos cuadrados. \cite{green1993nonparametric}
+donde $\{x_i, Y_i\}$ es un conjunto de puntos con ruido que describe a $f$ y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si el factor de suavizado es 0, entonces el Smoothing Spline coincide con el resultado de aplicar el método del spline donde los nudos son iguales a los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de regresión de mínimos cuadrados. \cite{green1993nonparametric}
 
 
-En este capitulo se han definido conceptos presentes en la propuesta de solución que utiliza regresión simbólica mediante un algoritmo genético para la obtención de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros. Para usar un algoritmo genético es necesario entonces definir varios elementos:
+En el presente capitulo se definen conceptos presentes en la propuesta de solución que utiliza regresión simbólica mediante un algoritmo genético para la obtención de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros. Para usar un algoritmo genético es necesario entonces definir varios elementos:
 
 \begin{itemize}
     \item Cuáles son las posibles soluciones
@@ -173,4 +173,4 @@ En este capitulo se han definido conceptos presentes en la propuesta de solució
     \item Cómo determinar qué soluciones pasan a las próximas generaciones
 \end{itemize}
 
-Estos se defininen en el próximo capítulo.
+Estos elementos se defininen en el próximo capítulo.
