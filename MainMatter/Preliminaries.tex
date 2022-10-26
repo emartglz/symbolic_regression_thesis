@@ -170,7 +170,7 @@ Las operaciones de cruzamiento, mutación y selección dan como resultado la pob
 
 Si un conjunto de datos $\{x_i, Y_i\}$ que describen el fenómeno $f$ es de la forma $Y_i = f(x_i) + \epsilon _i$ donde los $\epsilon _i$ son valores aleatorios, independientes y con media 0, entonces se dice que el conjunto de datos posee ruido. Los datos que se utilizan para encontrar una solución en el algoritmo genético pueden poseer ruido. Altos niveles de ruido pueden ocasionar que el modelo seleccionado como solución no ajuste de forma correcta otros datos que describan el mismo fenómeno pero que no posean ruido. Para eliminar el término $\epsilon _i$ en los datos (eliminar el ruido en los datos) se pueden utilizan varias técnicas, una de estas técnicas son los Splines de suavizado.
 
-\section{Smoothing de suavizado}\label{section:smoothing_splines}
+\section{Spline de suavizado}\label{section:smoothing_splines}
 
 Un spline es una función definida por intervalos, donde la función de cada intervalo es un polinomio. El máximo grado de los polinomios que se utilizan define el grado del spline \cite{ahlberg1967theory}. Los extremos de los intervalos se llaman ``nudos'' y el spline pasa por cada uno de los nudos seleccionados.
 

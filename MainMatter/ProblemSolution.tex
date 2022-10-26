@@ -1,12 +1,13 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
-En el presente capítulo se plantea una forma de obtener, a partir de un conjunto de datos, un sistema de ecuaciones diferenciales lineales en los parámetros que se ajuste a los datos. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético.
+En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos, un sistema de ecuaciones diferenciales lineales en los parámetros que describa los datos observados. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los parámetros.
 
-La primera sección del capítulo detalla cómo se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En la sección siguiente se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección, respectivamente.
+La sección \ref{section:solution_representation} detalla cómo se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En \ref{section:solution_cost} se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección, respectivamente. A continuación se describe cómo representar sistemas de ecuaciones linales mediante árboles computacionales.
 
-\section{Cómo representar una solución}
 
-Teniendo un conjunto de datos de la forma $\{(t_i, y_i)\}$, se puede conocer la forma que debe tener el modelo que se intenta encontrar con el algoritmo. Por ejemplo, si cada elemento de los datos es de la forma:
+\section{Representación de Sistemas de EDOs mediante árboles}\label{section:solution_representation}
+
+A partir de datos de la forma $\{(t_i, y_i)\}$, se puede determinar la cantidad de ecuaciones que posee el sistema: una por cada dimensión que tenga el vector $y$. Por ejemplo, si cada elemento de los datos es de la forma:
 
 $$(t_i, y_{1_i}, y_{2_i}, y_{3_i}),$$
 
@@ -14,16 +15,16 @@ entonces se tiene la certeza de que el sistema de ecuaciones diferenciales que s
 
 $$y_1' = f_1(t, y_1, y_2, y_3)$$
 $$y_2' = f_2(t, y_1, y_2, y_3)$$
-$$y_3' = f_3(t, y_1, y_2, y_3)$$
+$$y_3' = f_3(t, y_1, y_2, y_3).$$
 
-Conociendo la cantidad de ecuaciones presentes en el sistema se puede afirmar que las soluciones candidatas a solución son una lista de $n$ elementos, siendo $n$ la cantidad de ecuaciones. La posición $i$ de la lista representa la función $f_i(t,y_1,y_2,y_3)$.
+Conociendo que el sistema debe tener $n$ ecuaciones se puede afirmar que las soluciones candidatas a solución son una lista de $n$ elementos. La posición $i$ de la lista representa la función $f_i(t,y_1,y_2, \dots, y_n)$.
 
 Por ejemplo, en el modelo poblacional SIR:
 
 \begin{align*}
-    S' & = - a*I*S     \\
-    I' & = a*I*S - b*I \\
-    R' & = b*I,
+    S' & = - aIS    \\
+    I' & = aIS - bI \\
+    R' & = bI,
 \end{align*}
 
 se puede plantear que:
@@ -34,155 +35,177 @@ se puede plantear que:
     R'(t) & = f_R(t, S, I, R).
 \end{align*}
 
-Entonces se puede representar con la lista:
+Este sistema se puede representar con la lista:
 
 $$[f_S(t, S, I, R), f_I(t, S, I, R), f_R(t, S, I, R)]$$
-$$= [-a*I*S, a*I*S - b*I, b*I].$$
+$$= [-aIS, aIS - bI, bI].$$
 
-Una expresión aritmética (como cada una de las funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces se puede representar en cada posición de la lista el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a la posición.
+Una expresión aritmética (como cada una de las posibles funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces en la posición $i$ de la lista, se puede representar el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a la ecuación $i$.
 
-Sin embargo con la representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Por lo que no resulta útil ya que en el algoritmo solo deben aparecer modelos que cumplan esta propiedad de linealidad. Para que la representación de las funciones en forma de árboles computacionales solo permita la linealidad con respecto a los parámetros se modifica la estructura del árbol de la siguiente manera.
+Sin embargo, con la representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros, esta linealidad es importante dado que el sistema que se busca como solución debe cumplir esta propiedad. La representación planteada por Koza no resulta útil ya que en el algoritmo genético que se propone solo deben aparecer modelos que cumplan esta propiedad de linealidad. Para que la representación de las funciones en forma de árboles computacionales solo permita la linealidad con respecto a los parámetros, en este trabajo se modifica la estructura del árbol de la siguiente manera.
 
-Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una sumatoria de multiplicaciones de parámetros con funciones que no dependen de parámetros
+Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una suma de multiplicaciones de parámetros con funciones que no dependen de parámetros:
 
 $$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t)),$$
 
-entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raíz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos).
+entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raíz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos) como se muestra en la figura \ref{tikzpicture:doe_node_example}.
 
-\begin{center}
-    \begin{tikzpicture}[
-            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
-            roundnode_transparent/.style={circle, very thick, minimum size=5mm}
-        ]
-        % Nodes
-        \node[roundnode]        (plus)                            {$+$};
-        \node[roundnode]        (term_1)     [below left=of plus]        {$a_1 * f_1(t, y(t))$};
-        \node[roundnode_transparent]        (term_dots)     [below =of plus]        {$\dots$};
-        \node[roundnode]        (term_n)     [below right=of plus]        {$a_n * f_n(t, y(t))$};
-
-
-        %Lines
-        \draw [->] (plus.south) -- (term_1.north);
-        % \draw [->] (plus.south) -- (term_dots.north);
-        \draw [->] (plus.south) -- (term_n.north);
-    \end{tikzpicture}
-\end{center}
+% \begin{center}
+%     \begin{tikzpicture}[
+%             roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+%             roundnode_transparent/.style={circle, very thick, minimum size=5mm}
+%         ]
+%         % Nodes
+%         \node[roundnode]        (plus)                            {$+$};
+%         \node[roundnode]        (term_1)     [below left=of plus]        {$a_1 * f_1(t, y(t))$};
+%         \node[roundnode_transparent]        (term_dots)     [below =of plus]        {$\dots$};
+%         \node[roundnode]        (term_n)     [below right=of plus]        {$a_n * f_n(t, y(t))$};
 
 
-Cada uno de los hijos es un subárbol que representa la multiplicación de un parámetro con una función que no depende de parámetros. Estos subárboles poseen como raíz un nodo con una operación de multiplicación y dos nodos hijos. El primero de ellos sería un nodo hoja representando el parámetro. El segundo de ellos sería un nodo que representa el subárbol computacional correspondiente a la función utilizando la misma representación que plantea Koza \cite{zelinka2005analytic} pero con la peculiaridad de que sus hojas solo podrán almacenar variables, no parámetros.
+%         %Lines
+%         \draw [->] (plus.south) -- (term_1.north);
+%         % \draw [->] (plus.south) -- (term_dots.north);
+%         \draw [->] (plus.south) -- (term_n.north);
+%     \end{tikzpicture}
+% \end{center}
 
-\begin{center}
-    \begin{tikzpicture}[
-            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
-            squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=7mm}
-        ]
-        % Nodes
-        \node[roundnode]        (star)                            {$*$};
-        \node[squarednode]        (term_1)     [below left=of star]        {$a_i$};
-        \node[roundnode]        (term_n)     [below right=of star]        {$f_i(t, y(t))$};
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{"figures/doe_node_example.pdf"}
+    \caption{Estructura del árbol de una ecuación diferencial lineal en los parámetros.}
+    \label{tikzpicture:doe_node_example}
+\end{figure}
+
+Cada uno de los hijos del nodo que representa la parte derecha de una ecuación diferencial es un subárbol que representa la multiplicación de un parámetro con una función que no depende de parámetros.
+
+Estos subárboles poseen como raíz un nodo con una operación de multiplicación y dos nodos hijos. El primero de ellos es un nodo hoja que representa el parámetro. El segundo hijo es un nodo que representa el subárbol computacional correspondiente a la función, utilizando la misma representación que plantea Koza \cite{zelinka2005analytic} pero con la peculiaridad de que sus hojas solo podrán almacenar variables, no parámetros como se muestra en la figura \ref{tikzpicture:doe_term_node_example}.
+
+% \begin{center}
+%     \begin{tikzpicture}[
+%             roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+%             squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=7mm}
+%         ]
+%         % Nodes
+%         \node[roundnode]        (star)                            {$*$};
+%         \node[squarednode]        (term_1)     [below left=of star]        {$a_i$};
+%         \node[roundnode]        (term_n)     [below right=of star]        {$f_i(t, y(t))$};
 
 
-        %Lines
-        \draw [->] (star.south) -- (term_1.north);
-        \draw [->] (star.south) -- (term_n.north);
-    \end{tikzpicture}
-\end{center}
+%         %Lines
+%         \draw [->] (star.south) -- (term_1.north);
+%         \draw [->] (star.south) -- (term_n.north);
+%     \end{tikzpicture}
+% \end{center}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{"figures/doe_term_node_example.pdf"}
+    \caption{Estructura del árbol de un término perteneciente a una ecuación diferencial lineal en los parámetros.}
+    \label{tikzpicture:doe_term_node_example}
+\end{figure}
 
 
-Cada ecuación diferencial sería un hijo de un nodo que representa al sistema de ecuaciones diferenciales. Como ejemplo se puede utilizar el modelo poblacional SIR que es lineal con respecto a sus parámetros, por lo que su representación con la estructura propuesta sería:
+Un sistema de ecuaciones diferenciales se puede representar como un árbol donde cada ecuación sea un hijo. Como ejemplo se puede utilizar el modelo poblacional SIR, que es lineal con respecto a sus parámetros, y su representación con la estructura propuesta sería la figura \ref{tikzpicture:sir_example}.
 
-\begin{center}
-    \begin{tikzpicture}[
-            roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
-            squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm}
-        ]
-        % Nodes
-        \node[roundnode]        (system)                            {$SYSTEM$};
+% \begin{center}
+%     \begin{tikzpicture}[
+%             roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+%             squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm}
+%         ]
+%         % Nodes
+%         \node[roundnode]        (system)                            {$SYSTEM$};
 
-        \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
-        \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
-        \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$a$};
-        \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
-        \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
-        \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
-        \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
+%         \node[roundnode]        (plus_S)     [below left=of system]        {$+$};
+%         \node[roundnode]        (star_S_1)    [below left=of plus_S]    {$*$};
+%         \node[squarednode]      (alpha_star_S_1)      [below left=of star_S_1]    {$a$};
+%         \node[roundnode]        (neg_star_S_1)    [below=of star_S_1]    {$-$};
+%         \node[roundnode]        (star_S_2)    [below=of neg_star_S_1]    {$*$};
+%         \node[squarednode]      (S_star_S)       [below left=of star_S_2]   {$S$};
+%         \node[squarednode]      (I_star_S)      [below=of star_S_2]   {$I$};
 
-        \node[roundnode]        (plus_I)     [below=of system]        {$+$};
-        \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
-        \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a$};
-        \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
-        \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
-        \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
+%         \node[roundnode]        (plus_I)     [below=of system]        {$+$};
+%         \node[roundnode]        (star_I_1)    [below left=of plus_I]    {$*$};
+%         \node[squarednode]      (alpha_star_I_1)      [below left=1cm and 0.5cm of star_I_1]    {$a$};
+%         \node[roundnode]        (star_I_2)    [below=of star_I_1]    {$*$};
+%         \node[squarednode]      (S_star_I)       [below left=1cm and 0.5cm of star_I_2]   {$S$};
+%         \node[squarednode]      (I_star_I_1)      [below=of star_I_2]   {$I$};
 
-        \node[roundnode]        (star_I_3)    [below right=of plus_I]    {$*$};
-        \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$b$};
-        \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
-        \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
+%         \node[roundnode]        (star_I_3)    [below right=of plus_I]    {$*$};
+%         \node[squarednode]      (beta_star_I_1)      [below=of star_I_3]    {$b$};
+%         \node[roundnode]        (neg_star_I_1)    [below right=1cm and 0.5cm of star_I_3]    {$-$};
+%         \node[squarednode]      (I_star_I_2)      [below=of neg_star_I_1]   {$I$};
 
-        \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
-        \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
-        \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$b$};
-        \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
+%         \node[roundnode]        (plus_R)     [below right=of system]        {$+$};
+%         \node[roundnode]        (star_R_1)    [below right=of plus_R]    {$*$};
+%         \node[squarednode]      (beta_star_R_1)      [below=of star_R_1]    {$b$};
+%         \node[squarednode]      (I_star_R)      [below right=of star_R_1]   {$I$};
 
-        %Lines
-        \draw [->] (system.south) -- (plus_S.north);
-        \draw[->] (system.south) -- (plus_I.north);
-        \draw[->] (system.south) -- (plus_R.north);
+%         %Lines
+%         \draw [->] (system.south) -- (plus_S.north);
+%         \draw[->] (system.south) -- (plus_I.north);
+%         \draw[->] (system.south) -- (plus_R.north);
 
-        \draw[->] (plus_S.south) -- (star_S_1.north);
-        \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
-        \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
-        \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
-        \draw[->] (star_S_2.south) -- (S_star_S.north);
-        \draw[->] (star_S_2.south) -- (I_star_S.north);
+%         \draw[->] (plus_S.south) -- (star_S_1.north);
+%         \draw[->] (star_S_1.south) -- (alpha_star_S_1.north);
+%         \draw[->] (star_S_1.south) -- (neg_star_S_1.north);
+%         \draw[->] (neg_star_S_1.south) -- (star_S_2.north);
+%         \draw[->] (star_S_2.south) -- (S_star_S.north);
+%         \draw[->] (star_S_2.south) -- (I_star_S.north);
 
-        \draw[->] (plus_I.south) -- (star_I_1.north);
-        \draw[->] (plus_I.south) -- (star_I_3.north);
-        \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
-        \draw[->] (star_I_1.south) -- (star_I_2.north);
-        \draw[->] (star_I_2.south) -- (S_star_I.north);
-        \draw[->] (star_I_2.south) -- (I_star_I_1.north);
+%         \draw[->] (plus_I.south) -- (star_I_1.north);
+%         \draw[->] (plus_I.south) -- (star_I_3.north);
+%         \draw[->] (star_I_1.south) -- (alpha_star_I_1.north);
+%         \draw[->] (star_I_1.south) -- (star_I_2.north);
+%         \draw[->] (star_I_2.south) -- (S_star_I.north);
+%         \draw[->] (star_I_2.south) -- (I_star_I_1.north);
 
-        \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
-        \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
-        \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
+%         \draw[->] (star_I_3.south) -- (beta_star_I_1.north);
+%         \draw[->] (star_I_3.south) -- (neg_star_I_1.north);
+%         \draw[->] (neg_star_I_1.south) -- (I_star_I_2.north);
 
-        \draw[->] (plus_R.south) -- (star_R_1.north);
-        \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
-        \draw[->] (star_R_1.south) -- (I_star_R.north);
-    \end{tikzpicture}
-\end{center}
+%         \draw[->] (plus_R.south) -- (star_R_1.north);
+%         \draw[->] (star_R_1.south) -- (beta_star_R_1.north);
+%         \draw[->] (star_R_1.south) -- (I_star_R.north);
+%     \end{tikzpicture}
+% \end{center}
 
-Con la nueva representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros. Esta es la estructura que se utiliza para la representación de los modelos que se generan en el algoritmo de regresión simbólica que se detalla en el presente capítulo.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{"figures/sir_example.pdf"}
+    \caption{Estructura del árbol que representa el modelo poblacional SIR.}
+    \label{tikzpicture:sir_example}
+\end{figure}
 
-En un método de regresión simbólica es necesaria una función de ajuste que permita conocer cuán cercanos son los datos evaluados en el modelo obtenido con respecto a los datos originales, para plantear la función de ajuste se define el costo de un sistema que se explica en la sección siguiente.
+Con esta representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros en los que intervengan un conjunto de operaciones prefijadas de antemano, que son los posibles nodos interiores. Esta representación se utiliza para la representación de los modelos que se generan en el algoritmo de regresión simbólica que se detalla en la secciones \ref{section:mutation} y \ref{section:xcross}.
+
+En un método de regresión simbólica es necesaria una función de ajuste que permita conocer cuán cercanos son los datos predichos por el modelo con respecto a los datos observados. En la siguiente sección se propone un método para evaluar cuán cercanos se encuentran los datos predichos y observados.
 
 \section{Determinar el costo de una solución}\label{section:solution_cost}
 
-Sea $n$ la cantidad de ecuaciones en el sistema y $m$ la cantidad de datos, se define el costo de un sistema de ecuaciones diferenciales $f$ como:
+A partir de un conjunto de datos $M = \{(t_i, y_i)\}$ se puede aproximar el valor de las derivadas de $y_i$ en cada instante $t_i$ utilizando el método de diferencias finitas \cite{gaucel2014learning}. Con este método se puede generar un nuevo conjunto de la forma $\{(x_i, y'_i)\}$ donde $x_i \in M$ y $y'_i$ es el vector de las aproximaciones de los valores de las derivadas de las variables $y_i$ en el instante $t_i$.
 
-$$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y_{i_j} - f_i(x_j))^2}{m}}{n},$$
+Si $n$ es la cantidad de ecuaciones en el sistema y $m$ es la cantidad de datos, se define el costo de un sistema de ecuaciones diferenciales $f$ como:
 
-con:
+$$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y'_{i_j} - f_i(x_j))^2}{m}}{n},$$
+
+donde:
 
 $$f_i(x_j) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(x_j),$$
 
-donde $f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones del sistema, $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema.
+y $f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones del sistema y $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema. Mientras más pequeño es el valor del costo, mejor se describen los datos mediante el sistema f.
 
-Mientras más cercano a 0 es el valor del costo, mejor se describe el fenómeno que se representa por los datos ya que si es 0 significa que se encontró un sistema que ajusta perfectamente los puntos.
-
-Al valor de $C$ se le agrega un factor de peso $P$, el cual es directamente proporcional a la cantidad de términos que posean las ecuaciones de la solución:
+Al valor de $C$ se le agrega un factor de peso $P$, el cual es directamente proporcional a la cantidad de términos que posean las ecuaciones de la solución \cite{gplearnbloat}:
 
 $$P = \begin{cases}
         Constant * node\_count(f), & \text{si } node\_count(f) \geq MAX\_NODES \\
-        0,                         & \text{de otra forma}
-    \end{cases},$$
+        0,                         & \text{en otro caso}
+    \end{cases}.$$
 
-donde $node\_count(f)$ es la cantidad de nodos presentes en la representación en forma de árbol computacional del sistema $f$. $Constant$ es una constante definida en la implementación, en los experimentos realizados en el capítulo \ref{chapter:results} se utiliza un valor de 9999.
+$node\_count(f)$ es la cantidad de nodos presentes en la representación en forma de árbol computacional del sistema $f$. $Constant$ es una constante definida en la implementación, en los experimentos realizados en el capítulo \ref{chapter:results} se utiliza un valor de 9999.
 
 El parámetro $MAX\_NODES$ se define junto con los demás parámetros del algoritmo genético. El factor de peso garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos tenga una mejor evaluación en la función objetivo.
 
-Para que la sumatoria $\sum_{j=1}^{m}(y_{i_j} - f_i(x_j)) ^ 2$ sea la menor posible se debe minimizar la diferencia $y_{i_j} - f_i(x_j)$. Para minimizar la diferencia se ajustan los parámetros $a_{i_k}$ presentes en cada una de las ecuaciones $f_i$. Es por ello que se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
+Para que la suma $\sum_{j=1}^{m}(y'_{i_j} - f_i(x_j)) ^ 2$ sea la menor posible se debe minimizar la diferencia $(y'_{i_j} - f_i(x_j))^2$. Para minimizar la diferencia se ajustan los parámetros $a_{i_k}$ presentes en cada una de las ecuaciones $f_i$. Es por ello que se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
 
 \begin{align*}
     A_i & = \begin{pmatrix}
@@ -200,16 +223,16 @@ Para que la sumatoria $\sum_{j=1}^{m}(y_{i_j} - f_i(x_j)) ^ 2$ sea la menor posi
     \end{bmatrix}
     \qquad
     B_i = \begin{bmatrix}
-        y_{i_1} \\
-        y_{i_2} \\
-        \vdots  \\
-        y_{i_m}
+        y'_{i_1} \\
+        y'_{i_2} \\
+        \vdots   \\
+        y'_{i_m}
     \end{bmatrix}.
 \end{align*}
 
-El sistema $A_i * x_i = B_i$ se resuelve utilizando el método de ajuste mínimo cuadrático de datos, explicado en el capítulo \ref{chapter:preliminaries}.
+El sistema $A_ix_i = B_i$ se resuelve utilizando el método de ajuste mínimo cuadrático de datos, descrito en el capítulo \ref{chapter:preliminaries}.
 
-Por ejemplo, la segunda ecuación del modelo poblacional SIR es:
+Por ejemplo, la segunda ecuación del modelo SIR es:
 
 $$f_I (t,S,I,R) = a_{I_1} * g_{I_1}(t,S,I,R) + a_{I_2} * g_{I_2}(t,S,I,R),$$
 
@@ -221,14 +244,16 @@ y
 
 $$g_{I_2}(t,S,I,R) = -I.$$
 
-Suponiendo que tenemos de entrada los puntos:
+Suponiendo que se tienen los puntos de la forma $\{(x_i, y'_i)\}$ donde $x_i$ es un vector representa los valores de $(t_i, S_i, I_i, R_i)$ y $y'_i$ es un vector que representa los valores de $(S_i', I_i', R_i')$:
 
-$$f_I(1, 4, 9, 6) = 5 $$
-$$f_I(2, 6, 8, 2) = 4 $$
-$$f_I(3, 3, 6, 8) = 10$$
-$$f_I(4, 5, 9, 8) = 1 $$
-$$f_I(5, 6, 3, 10) =7 $$
-$$f_I(6, 8, 5, 7) = 6 $$
+\begin{align*}
+    ((1, 4, 9, 6)  & ,  (0, 5, 0))  \\
+    ((2, 6, 8, 2)  & ,  (0, 4, 0))  \\
+    ((3, 3, 6, 8)  & ,  (0, 10, 0)) \\
+    ((4, 5, 9, 8)  & ,  (0, 1, 0))  \\
+    ((5, 6, 3, 10) & , (0, 7, 0))   \\
+    ((6, 8, 5, 7)  & ,  (0, 6, 0)), \\
+\end{align*}
 
 entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten la ecuación con los puntos planteados anteriormente formando el sistema de ecuaciones:
 
@@ -257,13 +282,13 @@ entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten la ec
     \end{bmatrix}.
 \end{align*}
 
-Al resolver el sistema de ecuaciones sobredeterminados se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. El método de ajuste mínimo cuadrático de datos se aplica para ajustar los parámetros de cada una de las ecuaciones del sistema.
+Al resolver el sistema de ecuaciones sobredeterminado se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. El método de ajuste mínimo cuadrático de datos se aplica para encontrar los parámetros de cada una de las ecuaciones del sistema.
 
-Como se plantea al inicio del capítulo, se utiliza el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Para usar el algoritmo genético se necesita definir las operaciones de mutación, cruzamiento y selección. En la siguiente sección se define la primera de las operaciones.
+Como se mencionó al inicio del capítulo, la propuesta de solución utiliza el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Para usar el algoritmo genético es necesario definir las operaciones de mutación, cruzamiento y selección. En la siguiente sección se define la primera de las operaciones.
 
 \section{Mutación}\label{section:mutation}
 
-La operación de mutación selecciona el subárbol representante de una de las ecuaciones en el sistema y luego se escoge una de las siguientes modificaciones:
+La operación de mutación genera un nuevo sistema de ecuaciones diferenciales modificando un sistema existente. Esta operación selecciona el subárbol representante de una de las ecuaciones en el sistema y luego se escoge una de las siguientes modificaciones:
 
 \begin{itemize}
     \item Eliminar un término (sumando de la ecuación) de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, el criterio consiste en seleccionar un término y eliminarlo.
@@ -396,13 +421,13 @@ La operación de mutación selecciona el subárbol representante de una de las e
               \end{adjustbox}
           \end{center}
 
-    \item Mutar un término de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, el criterio consiste en seleccionar un término y dentro de su representación en forma de árbol computacional tomar un nodo y aplicarle una de las siguientes modificaciones.
+    \item Mutar un término de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, el criterio consiste en seleccionar un término y dentro de su representación en forma de árbol computacional, tomar un nodo y aplicarle una de las siguientes modificaciones.
 \end{itemize}
 
 Si el nodo representa una operación:
 
 \begin{itemize}
-    \item Cambia la operación en el nodo por uno que posea la misma cantidad de parámetros del operador:
+    \item Se cambia la operación en el nodo por uno que posea la misma cantidad de argumentos del operador:
 
           Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por una suma resultando $y_1 + (y_2 + y_3)$. Si se expresa en forma de árbol computacional sería:
 
@@ -452,9 +477,9 @@ Si el nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Elimina el nodo, colocando en su lugar su primer hijo.
+    \item Se elimina el nodo, colocando en su lugar su primer hijo.
 
-          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por el minuendo resultando $y_1 + y_2$. Si se plantea en forma de árbol computacional sería:
+          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por el minuendo obteniéndose $y_1 + y_2$. Si se plantea en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -498,9 +523,9 @@ Si el nodo representa una operación:
               \end{adjustbox}
           \end{center}
 
-    \item Cambia el nodo por uno nuevo representando una operación aletoria colocando como hijos nuevos árboles de expresiones aleatorias y colocando como último hijo el nodo original seleccionado.
+    \item Se cambia el nodo por uno nuevo que represente una operación aleatoria colocando como hijos nuevos árboles de expresiones aleatorias y como último hijo el nodo original que se seleccionó.
 
-          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por una multiplicación colocando como segundo factor la misma resta resultando $y_1 + y_4 * (y_2 - y_3)$. Si se expresa en forma de árbol computacional sería:
+          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la resta por una multiplicación colocando como segundo factor la misma resta obteniéndose $y_1 + y_4 * (y_2 - y_3)$. Si se expresa en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -559,7 +584,7 @@ Si el nodo representa una variable:
 \begin{itemize}
     \item Cambiar la variable por otra permitida dentro de la ecuación.
 
-          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la sustraendo por $y_3$ resultando $y_1 + (y_2 - y_1)$. Si se plantea en forma de árbol computacional sería:
+          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la variable $y_3$ resultando $y_1 + (y_2 - y_1)$. Si se plantea en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -607,9 +632,9 @@ Si el nodo representa una variable:
               \end{adjustbox}
           \end{center}
 
-    \item Cambiar la variable por un nodo que represente una operación  aleatoria donde el primer hijo es la variable seleccionada
+    \item Cambiar la variable por un nodo que represente una operación  aleatoria donde el primer hijo es la variable seleccionada.
 
-          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir el sustraendo por una multiplicación donde el primer factor sea el mismo sustraendo resultando $y_1 + (y_2 - y_3 * y_2)$. Si se expresa en forma de árbol computacional sería:
+          Por ejempo, si se tiene el término $y_1 + (y_2 - y_3)$ se puede sustituir la variable $y_3$ por una multiplicación donde el primer factor sea la misma variable $y_3$ resultando $y_1 + (y_2 - y_3 * y_2)$. Si se expresa en forma de árbol computacional sería:
 
           \begin{center}
               \begin{adjustbox}{width=0.25\textwidth, keepaspectratio}
@@ -663,7 +688,7 @@ Si el nodo representa una variable:
 
 \end{itemize}
 
-Si se tiene el sistema
+Como ejemplo de una operación de mutación se puede tomar el sistema:
 
 \begin{align*}
     S' & = - a_1 * S * I         \\
@@ -803,11 +828,14 @@ que si se plantea en forma de árbol computacional es:
     \end{adjustbox}
 \end{center}
 
-Otra de las operaciones que se deben definir con el fin de implementar un algoritmo genético es el cruzamiento, la operación se especifica en la siguiente sección.
+Con estas modificaciones que pueden ocurrir en un sistema de ecuaciones diferenciales lineales en los parámetros se define la operación de mutación que se utiliza en el algoritmo genético que se emplea en este trabajo. Otra de las operaciones que se deben definir con el fin de implementar un algoritmo genético es el cruzamiento, que se describe en la siguiente sección.
 
 \section{Cruzamiento}\label{section:xcross}
 
-La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la población de soluciones presentes en el algoritmo genético, se definen los sistemas como A y B. Luego se selecciona un nodo aleatorio dentro del árbol A, impidiendo que la selección tome hojas que representen parámetros. En dependencia de la altura del nodo seleccionado se escoge un nodo en B siguiendo las siguientes reglas:
+En la operación de cruzamiento se obtiene un nuevo sistema de ecuaciones diferenciales combinando propiedades de dos sistemas existentes A y B. Esta operación selecciona un nodo aleatorio dentro del árbol A y un nodo dentro del árbol B siguiendo un conjunto de reglas. Una vez escogidos los nodos se remplaza el subárbol del nodo seleccionado en A por el subárbol del nodo seleccionado en B, resultando en A un nuevo sistema de ecuaciones diferenciales.
+
+Se impide que la selección tome hojas que representen parámetros. En dependencia de la altura del nodo seleccionado en A se escoge el nodo en B siguiendo las siguientes reglas:
+
 
 \begin{itemize}
     \item Si el nodo seleccionado en A es el representante de la i-ésima ecuación en el sistema, se escoge el nodo representante de la i-ésima ecuación en el sistema B:
@@ -888,7 +916,7 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
               \end{adjustbox}
           \end{center}
 
-    \item Si se selecciona en A un nodo representante de un término en la ecuación i-ésima ecuación, se escoge un nodo representante de un término en la i-ésima ecuación en el sistema B:
+    \item Si se selecciona en A un nodo representante de un término en la ecuación i-ésima, se escoge un nodo representante de un término en la i-ésima ecuación en el sistema B:
 
           \begin{center}
               \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
@@ -1047,8 +1075,6 @@ La operación de cruzamiento selecciona dos sistemas aleatorios dentro de la pob
           \end{center}
 
 \end{itemize}
-
-Luego de escoger los dos nodos, se remplaza el subárbol del nodo seleccionado en A por el subárbol del nodo seleccionado en B.
 
 Por ejemplo, si se tiene el sistema
 
@@ -1253,16 +1279,16 @@ que se representa con el árbol computacional:
     \end{adjustbox}
 \end{center}
 
-Una vez que se cuenta con la definición de las operaciones de mutación y cruzamiento solo faltaría detallar la operación de selección para tener totalmente definido el algoritmo genético. Los detalles de la última operación se presentan en la siguiente sección.
+Una vez definidas las operaciones de mutación y cruzamiento solo faltaría detallar la operación de selección para tener totalmente definido el algoritmo genético. Los detalles de la última operación se presentan en la siguiente sección.
 
 \section{Selección de las soluciones que pasan a la siguiente generación}\label{section:selection}
 
-Dada una población inicial en una generación, se selecciona un subconjunto de individuos de la población y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. A partir de las operaciones de mutación y cruzamineto aparece un nuevo subconjunto de individuos los cuales se agregan a la población inicial de la generación formando un nuevo conjunto de individuos el cual se define como población total de la generación.
+Dada una población inicial en una generación, se selecciona un subconjunto de individuos de la población y se mutan, y se toma otro subconjunto de individuos y se cruzan entre ellos. A partir de las operaciones de mutación y cruzamiento aparece un nuevo subconjunto de individuos. Este nuevo subconjunto se agrega a la población inicial de la generación, formando así un nuevo conjunto de individuos el cual se define como población total de la generación.
 
-De la población total de la generación se seleccionan los individuos que mejor ajustan los datos. Se seleccionan también algunos individuos aleatorios con el fin de evitar mínimos locales en la búsqueda del mejor sistema. En total se selecciona una cantidad igual a la presente en la población inicial.
+De la población total de la generación se seleccionan los individuos que mejor ajustan los datos. Se seleccionan también algunos individuos aleatorios con el fin de evitar mínimos locales en la búsqueda del mejor sistema. En total se selecciona de la población total de la generación una cantidad igual a la presente en la población inicial de la generación.
 
-Como resultado de la selección se obtiene una nueva población que será la población de la siguiente generación. Las operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se repiten múltiples veces con el fin de realizar varias generaciones intentando obtener mejores soluciones cada vez.
+Como resultado de la selección se obtiene una nueva población que será la población de la siguiente generación. Las operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se repiten un número fijo de veces que se define mediante un parámetro del algoritmo. Esta repetición se realiza con el fin de generar varias generaciones intentando obtener mejores soluciones cada vez.
 
-Una vez definida la forma de representar una solución como un árbol computacional, se plantean las operaciones de mutación y cruzamiento sobre los árboles. Conociendo el costo de una solución se detalla un proceso de selección de individuos. Con las operaciones se define un algoritmo genético y con la metaheurística se puede realizar una regresión simbólica con el fin de obtener el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajuste un conjunto de datos.
+En este capítulo se describió cómo representar un sistema de EDOs lineal con respecto a los parámetros, cómo calcular su costo para un conjunto de datos, así como la forma de cruzar y mutar estos sistemas. Con estos elementos se puede definir un algoritmo genético para determinar el sistema de EDOs lineal con respecto a los parámetros que mejor describa un conjunto de datos.
 
 En el siguiente capítulo se muestran los resultados obtenidos de aplicar la regresión simbólica que se plantea en varios conjuntos de puntos.
