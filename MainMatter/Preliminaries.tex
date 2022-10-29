@@ -66,43 +66,49 @@ Cuando se resuelve el problema de optimización, se obtiene el vector de paráme
 
 La regresión simbólica consiste en encontrar una expresión matemática, en forma simbólica, que ajuste, de la mejor manera posible, un conjunto de observaciones. La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic} quien mostró que puede usarse para descubrir modelos matemáticos mediante la codificacion de expresiones matemáticas como árboles computacionales.
 
-En estos árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Un ejemplo de un árbol computacional que planteó Koza es:
+En estos árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Por ejemplo, la expresión:
+
+$$a_1 y_1 + a_2 -(y_1 y_2),$$
+
+se representa con el árbol computacional que aparece en la figura \ref{tikzpicture:koza_tree_example}.
 
 \begin{center}
-    \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
-        \begin{tikzpicture}[
-                roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
-                squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
-            ]
-            %Nodes
-            \node[roundnode]      (plus)                             {$+$};
-            \node[roundnode]           (star1)   [below left=of plus]    {$*$};
-            \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
-            \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
-            \node[roundnode]           (star2)   [below right=of plus]   {$*$};
-            \node[squarednode]         (a_2)    [below left=of star2]    {$a_2$};
-            \node[roundnode]           (neg)     [below=of star2]         {$-$};
-            \node[roundnode]           (star3)   [below=of neg]         {$*$};
-            \node[squarednode]         (y_1_2)   [below=of star3]   {$y_1$};
-            \node[squarednode]         (y_2)     [below right=of star3]   {$y_2$};
+    % \begin{adjustbox}{width=0.35\textwidth, keepaspectratio}
+    %     \begin{tikzpicture}[
+    %             roundnode/.style={circle, draw, fill=gray!25, very thick, minimum size=7mm},
+    %             squarednode/.style={rectangle, draw, fill=gray!25, very thick, minimum size=5mm},
+    %         ]
+    %         %Nodes
+    %         \node[roundnode]      (plus)                             {$+$};
+    %         \node[roundnode]           (star1)   [below left=of plus]    {$*$};
+    %         \node[squarednode]         (a_1)   [below left=of star1]    {$a_1$};
+    %         \node[squarednode]         (y_1)     [below=of star1]         {$y_1$};
+    %         \node[roundnode]           (star2)   [below right=of plus]   {$*$};
+    %         \node[squarednode]         (a_2)    [below left=of star2]    {$a_2$};
+    %         \node[roundnode]           (neg)     [below=of star2]         {$-$};
+    %         \node[roundnode]           (star3)   [below=of neg]         {$*$};
+    %         \node[squarednode]         (y_1_2)   [below=of star3]   {$y_1$};
+    %         \node[squarednode]         (y_2)     [below right=of star3]   {$y_2$};
 
-            %Lines
-            \draw[->] (plus.south) -- (star1.north);
-            \draw[->] (plus.south) -- (star2.north);
-            \draw[->] (star1.south) -- (a_1.north);
-            \draw[->] (star1.south) -- (y_1.north);
-            \draw[->] (star2.south) -- (a_2.north);
-            \draw[->] (star2.south) -- (neg.north);
-            \draw[->] (neg.south) -- (star3.north);
-            \draw[->] (star3.south) -- (y_1_2.north);
-            \draw[->] (star3.south) -- (y_2.north);
-        \end{tikzpicture}%
-    \end{adjustbox}
+    %         %Lines
+    %         \draw[->] (plus.south) -- (star1.north);
+    %         \draw[->] (plus.south) -- (star2.north);
+    %         \draw[->] (star1.south) -- (a_1.north);
+    %         \draw[->] (star1.south) -- (y_1.north);
+    %         \draw[->] (star2.south) -- (a_2.north);
+    %         \draw[->] (star2.south) -- (neg.north);
+    %         \draw[->] (neg.south) -- (star3.north);
+    %         \draw[->] (star3.south) -- (y_1_2.north);
+    %         \draw[->] (star3.south) -- (y_2.north);
+    %     \end{tikzpicture}%
+    % \end{adjustbox}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.4\textwidth]{"figures/koza_tree_example.pdf"}
+        \caption{Ejemplo de árbol computacional que planteó Koza.}
+        \label{tikzpicture:koza_tree_example}
+    \end{figure}
 \end{center}
-
-que representa la expresión:
-
-$$a_1 y_1 + a_2 -(y_1 y_2)$$
 
 En lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana, en la regresión simbólica se consideran múltiples modelos evaluando su calidad con respecto a alguna métrica que es alguna variante del error cuadrático medio.
 
