@@ -193,9 +193,22 @@ Un spline de suavizado es un spline en el que los nudos son todos los puntos dad
 
 $$min \sum_{i=1}^n (Y_i - \hat{f}(x_i))^2 + \lambda \int \hat{f}''(x)^2 dx,$$
 
-donde $\{(x_i, Y_i)\}$ es un conjunto de puntos con ruido que describe a $f$, y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si el factor de suavizado es 0, entonces el spline de suavizado coincide con el el spline donde se escogen como nudos todos los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de mínimos cuadrados \cite{green1993nonparametric}.
+donde $\{(x_i, Y_i)\}$ es un conjunto de puntos con ruido que describe a $f$, y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si el factor de suavizado es 0, entonces el spline de suavizado coincide con el el spline donde se escogen como nudos todos los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de mínimos cuadrados \cite{green1993nonparametric}. En la figura \ref{fig:spline_0.1} se puede ver un spline de suavizado con $\lambda=0.9$ y en la figura \ref{fig:spline_1} se puede ver un spline de suavizado con $\lambda=0$
 
-MAÑANA GENERO LAS IMAGENES QUE VOY A PONER AQUI DE EJEMPLO
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/spline_0.1.pdf"}
+    \caption{Spline de suavizado con $\lambda = 0.9$.}
+    \label{fig:spline_0.1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/spline_1.pdf"}
+    \caption{Spline de suavizado con $\lambda = 0$.}
+    \label{fig:spline_1}
+\end{figure}
+
 
 Si se tiene un conjunto de puntos $\{(x_i, Y(x_i))\}$ con ruido, se puede utilizar un spline de suavizado cúbico para aproximar la función $Y$. Con este spline de suavizado se puede obtener una aproximación de $Y'$ y con esta derivada se puede emplear la regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que ajuste el conjunto de datos.
 
