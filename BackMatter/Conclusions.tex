@@ -1,4 +1,10 @@
 \chapter*{Conclusiones}\label{chapter:conclusions}
 \addcontentsline{toc}{chapter}{Conclusiones}
 
-y aqui van las conclusiones
+En este trabajo se planteó un sistema de regresión simbólica basada en algoritmos genéticos para encontrar un sistema de ecuaciones diferenciales lineales con respecto a los parámetros en el que es posible determinar qué variables intervienen en cada ecuación.
+
+Con este fin se definió cómo representar los sistemas de ecuaciones diferenciales en forma de árbol computacional de manera que solo se permitiese representar sistemas lineales con respecto a los parámetros. Para el uso del algoritmo genético se definieron las operaciones de mutación, cruzamiento y selección sobre estos árboles. Además se utilizó un spline de suavizado para eliminar el ruido en los datos.
+
+Se utilizó la propiedad de linealidad con respecto a los parámetros de los sistemas de ecuaciones para ajustar los parámetros en cada solución resolviendo un sistema de ecuaciones lineales.
+
+Para probar el funcionamiento del sistema creado se utilizaron datos generados a partir de 5 sistemas de ecucaciones diferenciales conocidos, comprobándose así la calidad de las soluciones obtenidas por la regresión simbólica.
