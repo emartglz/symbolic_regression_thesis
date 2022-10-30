@@ -3,54 +3,49 @@
 
 \qquad
 
-La modelación de fenómenos de la naturaleza, la ciencia, la tecnología y la sociedad mediante ecuaciones diferenciales va desde predecir comportamientos de enfermedades infecciosas \cite{weiss2013sir} hasta describir la dispersión de la temperatura en una superficie expuesta al sol \cite{p-transferencia-calor}. Para describir un fenómeno mediante ecuaciones diferenciales se generan modelos matemáticos que intentan predecir los datos observados, y se comprueba que estos modelos generen datos cercanos a dichas observaciones.
+Las ecuaciones diferenciales pueden usarse para modelar fenómenos de la naturaleza, la ciencia, la tecnología y la sociedad que incluyen desde la predicción de comportamientos de enfermedades infecciosas \cite{weiss2013sir} hasta describir la dispersión de la temperatura en una superficie expuesta al sol \cite{p-transferencia-calor}. Para describir un fenómeno mediante ecuaciones diferenciales se generan modelos matemáticos que intentan predecir los datos observados, y se comprueba si estos modelos generen datos cercanos a dichas observaciones.
 
-Una ecuación diferencial se dice que es lineal con respecto a los parámetros si se puede expresar de la forma:
+Una ecuación diferencial es lineal con respecto a los parámetros si se puede expresar de la forma:
 
 $$\frac{dY}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t)),$$
 
 donde los $a_i$ son parámetros y todas las funciones $f_i(t,y(t))$ son funciones que dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro. Esta definición se puede extender a sistemas de más de una ecuación. Los sistemas de ecuaciones diferenciales lineales con respecto a los parámetros se utilizan para modelar fenómenos como la interacción entre dos especies, una depredadora y otra presa \cite{Hoppensteadt:2006} o el impacto que tiene en la transmisión de una enfermedad la aplicación de un esquema de vacunas \cite{kuddus2021mathematical}.
 
-Encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que describe un conjunto de datos observados resulta útil para predecir y describir fenómenos. La obtención del modelo permite ver la relación entre las distintas variables y parámetros que tienen sitio en el fenómeno observado.
+Encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que describe un conjunto de datos observados resulta útil para predecir y describir fenómenos. La obtención del modelo permite analizar la relación entre las distintas variables y parámetros que ocurren en el fenómeno observado.
 
-Para encontrar modelos que describen conjunto de datos se desarrollan diversos métodos que son capaces de plantear de forma simbólica los sistemas que describen los datos, además se encuentran los valores de los parámetros presentes en los sistemas \cite{gplearn, schmidt2013eureqa}. Estos algoritmos desarrollados utilizan el método de regresión simbólica que es una técnica que permite encontrar un modelo matemático a partir de un conjunto de datos.
+Para encontrar de forma automática modelos que describen conjunto de datos se desarrollan diversos métodos que son capaces de plantear de forma simbólica los sistemas que describen los datos, además se encuentran los valores de los parámetros presentes en los sistemas \cite{gplearn, schmidt2013eureqa}. Estos algoritmos desarrollados utilizan el método de regresión simbólica que es una técnica que permite encontrar la expresión analítica de un modelo matemático que permita describir un conjunto de datos.
 
 Existen varias formas de resolver el problema de regresión simbólica en sistemas de ecuaciones diferenciales, ya puede ser mediante el uso de algoritmos genéticos y metaheurísticas \cite{koza1994genetic, schmidt2013eureqa}, usando el método SINDy \cite{brunton2016discovering} o usando redes neuronales \cite{udrescu2020ai}.
 
-En \cite{iba2008inference} se utilizó la regresión simbólica mediante el uso de algoritmos genéticos para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que mejor ajuste un conjunto de datos. En esta investigación se estiman los parámetros del sistema resolviendo un sistema de ecuaciones lineales dado que se asume que los datos no poseen ruido. Sin embargo esta forma de estimación de los parámetros no funciona de forma correcta si los datos presentan ruido.
+En \cite{iba2008inference} se utilizó la regresión simbólica con algoritmos genéticos para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que mejor ajuste un conjunto de datos. En esta misma investigación se estiman los parámetros del sistema resolviendo un sistema de ecuaciones lineales dado que se asume que los datos no poseen ruido. Sin embargo esta forma de estimación de los parámetros no funciona de forma correcta si los datos presentan ruido \cite{essays2019ordinary}.
 
-Para evadir el problema de que los datos posean ruido, en el presente trabajo se utiliza un spline de suavizado para generar un nuevo conjunto de datos a partir de los datos observados. Los datos generados a partir del spline son los utilizados en el método de regresión simbólica siguiendo un método similar al utilizado en \cite{iba2008inference}.
+Para evadir el problema de que los datos posean ruido, en el presente trabajo se utiliza un spline de suavizado \cite{green1993nonparametric} para generar un nuevo conjunto de datos a partir de los datos observados. Los datos generados a partir del spline son los utilizados en el método de regresión simbólica siguiendo un método similar al de \cite{iba2008inference}.
 
-Además no consta en la bibliografía consultada ningún método de regresión simbólica para encontrar sistemas de ecuaciones diferenciales que permita restringir las variables que pueden existir en cada ecuación del sistema.
+Existen técnicas de aprendizaje de máquinas que usando redes neuronales permite determinar propiedades de las funciones buscadas \cite{udrescu2020ai}. Si se tiene acceso a los resultados de estas técnicas, es posible restringir el espacio de búsqueda del algoritmo genético en el método implementado en el presente trabajo. No consta en la bibliografía consultada ningún método de regresión simbólica para encontrar sistemas de ecuaciones diferenciales que permita restringir las variables que pueden existir en cada ecuación del sistema.
 
 
 \subsection*{Objetivos}
 
-El objetivo general de este trabajo es diseñar e implementar un sistema de regresión simbólica para sistemas de ecuaciones diferenciales lineales con respecto a los parámetros (basada en algoritmos genéticos) en el que sea posible determinar qué variables intervienen en cada ecuación.
+El objetivo general de este trabajo es diseñar e implementar un sistema de regresión simbólica, basada en algoritmos genéticos, para sistemas de ecuaciones diferenciales lineales con respecto a los parámetros en el que sea posible determinar qué variables intervienen en cada ecuación.
 
-
-\subsubsection*{Objetivos específicos}
+Para lograr el objetivo general, se han trazado los siguientes objetivos específicos.
 
 \begin{enumerate}
     \item Consultar literatura especializada sobre el estado del arte del problema de regresión simbólica, específicamente las propuestas existentes para encontrar sistemas de ecuaciones diferenciales lineales con respecto a los parámetros.
-    \item Investigar como aplicar regresión simbólica para encontrar un sistema de ecuaciones diferenciales.
-    \item Investigar las caracterísitas de los algoritmos genéticos y cómo este método se puede aplicar a la regresión simbólica.
-    \item Investigar las características de los splines de suavizado y cómo este método se puede utilizar para eliminar ruido de un conjunto de datos.
-    \item Implementar un método de regresión simbólica utilizando algoritmos genéticos que permita eliminar ruido de un conjunto de datos mediante un spline de suavizado.
+    \item Determinar cómo aplicar regresión simbólica para encontrar un sistema de ecuaciones diferenciales.
+    \item Estudiar las caracterísitas de los algoritmos genéticos y cómo este método se puede aplicar a la regresión simbólica.
+    \item Examinar las características de los splines de suavizado y cómo este método se puede utilizar para eliminar ruido de un conjunto de datos.
+    \item Diseñar e implementar un método de regresión simbólica utilizando algoritmos genéticos que permita eliminar ruido de un conjunto de datos mediante un spline de suavizado.
     \item Crear un marco experimental que permita poner a prueba el funcionamiento de la regresión simbólica implementada para encontrar el modelo que describe un conjunto de datos.
     \item Analizar los resultados que se obtienen a través de un conjunto de métricas.
 \end{enumerate}
 
-Para cumplir el objetivo general de este trabajo se deben representar los sistemas de ecuaciones diferenciales lineales con respecto a los parámetros como árboles computacionales, diseñar las operaciones de cruzamiento y mutación del algoritmo genético que modifican estos árboles y definir el ``costo'' de cada uno de los árboles. Además permitir determinar qué variables intervienen en cada ecuación en el método de regresión simbólica.
+Para cumplir el objetivo general de este trabajo se propone representar los sistemas de ecuaciones diferenciales lineales con respecto a los parámetros como árboles computacionales, diseñar operaciones de cruzamiento y mutación del algoritmo genético que permitan modificar estos árboles y se calcula el ``costo'' de cada uno de los árboles a partir del error cuadrático que se comete al estimar los parámetros del modelo a los datos que se disponen. Además se propone un mecanismo que permita determinar qué variables intervienen en cada ecuación del sistema de ecuaciones diferenciales buscado.
 
-A continuación se describe la estructura de este documento.
+Este documento está organizado en 3 capítulos. En el capítulo \ref{chapter:preliminaries} se describen los conceptos utilizados a lo largo de la investigación. Se inicia con la definición de ecuación diferencial y de ecuación diferencial lineal con respecto a los parámetros. Luego se plantea qué es la regresión y se define el ajuste mínimo cuadrático de datos. Además se especifica qué es la regresión simbólica y cómo se puede aplicar para determinar sistemas de ecuaciones diferenciales. En este trabajo se resuelve la regresión simbólica mediante el uso de algoritmos genéticos, y este tipo de metaheurística también se describe en este capítulo así como los spline de suavizado.
 
-\section*{Estructura del documento}
+En el capítulo \ref{chapter:solution_proposal} se plantea la solución propuesta, para esto se describe la representación en forma de árbol computacional de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros. Además se define cómo determinar el costo de cada solución. Luego se describen las operaciones de cruzamiento y mutación, necesarias para el diseño de un algoritmo genético.
 
-El presente documento está organizado en 3 capítulos. En el capítulo \ref{chapter:preliminaries} se describen los conceptos utilizados a lo largo de la investigación. Se inicia con la definición de ecuación diferencial y de ecuación diferencial lineal con respecto a los parámetros. Luego se plantea qué es la regresión y se define el ajuste mínimo cuadrado de datos. Además se especifica qué es la regresión simbólica y cómo se puede aplicar la regresión simbólica en los sistemas de ecuaciones diferenciales. En este trabajo se resuelve la regresión simbólica mediante el uso de algoritmos genéticos, y este tipo de metaheurística se describe en \ref{chapter:preliminaries}. Luego se plantea qué es un spline y sus diferencias con respecto al spline de suavizado.
+En el capítulo \ref{chapter:results} se presentan los resultados de los distintos experimentos que se realizaron sobre varios modelos de ecuaciones diferenciales conocidos. Se describe el marco experimental utilizado en la etapa de experimentación y se analizan los resultados obtenidos.
 
-En el capítulo \ref{chapter:solution_proposal} se plantea la solución propuesta, para esto se describe la representación en forma de árbol computacional de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros. Además se define como determinar el costo de una solución de la regresión simbólica. Luego se describen las operaciones presentes en un algoritmo genético.
-
-En el capítulo \ref{chapter:results} se encuentran los resultados de los distintos experimentos realizados utilizando varios modelos de ecuaciones diferenciales conocidos. Se describe el marco experimental utilizado en la etapa de experimentación y se analizan los resultados obtenidos.
-
-Para finalizar el presente trabajo se muestran las conclusiones obtenidas a partir del cumplimiento de los objetivos propuestos. Se plantean recomendaciones y formas de continuar esta investigación en el futuro.
+Para finalizar, se plantean las conclusiones, recomendaciones y posibles líneas de trabajo futuro.
