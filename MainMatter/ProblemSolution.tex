@@ -1,6 +1,6 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
-En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de m ecuaciones diferenciales lineales en los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
+En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de $n$ ecuaciones diferenciales lineales con respecto los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
 
 La sección \ref{section:solution_representation} detalla cómo se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En \ref{section:solution_cost} se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección, respectivamente. A continuación se describe cómo representar sistemas de ecuaciones linales mediante árboles computacionales.
 
@@ -17,7 +17,7 @@ $$y_1' = f_1(t, y_1, \dots, y_n)$$
 $$\vdots$$
 $$y_n' = f_n(t, y_1, \dots, y_n)$$
 
-Como el sistema debe tener $n$ ecuaciones una forma de representar las soluciones candidatas es mediante una lista de $n$ elementos. La posición $i$ de la lista representa la función $f_i(t,y_1, \dots, y_n)$.
+Como el sistema debe tener $n$ ecuaciones, una forma de representar las soluciones candidatas es mediante una lista de $n$ elementos. La posición $i$ de la lista representa la función $f_i(t,y_1, \dots, y_n)$.
 
 Por ejemplo, el modelo poblacional SIR:
 
@@ -33,11 +33,9 @@ $$[-aIS, aIS - bI, bI],$$
 
 donde los elementos de la lista están separados por coma.
 
-Una expresión aritmética (como cada una de las posibles funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces en la posición $i$ de la lista, se puede representar el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a la ecuación $i$.
+Una expresión aritmética (como cada una de las posibles funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces, en la posición $i$ de la lista, se puede representar el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a la ecuación $i$.
 
-Sin embargo, con la representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Esta linealidad es importante dado que el sistema que se busca como solución debe cumplir esta propiedad.
-
-La representación planteada por Koza no resulta útil para representar sistemas lineales con respecto parámetros ya que en el algoritmo genético que se propone en este trabajo solo deben aparecer modelos que sean lineales con respecto a los parámetros. En este trabajo se modifica la estructura del árbol para garantizar que todos los árboles representen sistemas de ecuaciones diferenciales lineales con respecto a los parámetros.
+Sin embargo, con la representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Esta linealidad es importante dado que el sistema que se busca como solución debe cumplir esta propiedad. En este trabajo se modifica la estructura del árbol para garantizar que todos los árboles representen sistemas de ecuaciones diferenciales lineales con respecto a los parámetros.
 
 Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una suma de multiplicaciones de parámetros con funciones que no dependen de parámetros:
 
@@ -171,15 +169,23 @@ Un sistema de ecuaciones diferenciales se puede representar como un árbol donde
     \label{tikzpicture:sir_example}
 \end{figure}
 
-Con esta representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales en los parámetros en los que intervengan un conjunto de operaciones prefijadas de antemano, que son los posibles nodos interiores. Esta representación se utiliza para la representación de los modelos que se generan en el algoritmo de regresión simbólica que se detalla en la secciones \ref{section:mutation} y \ref{section:xcross}.
+Con esta representación se pueden expresar todos los sistemas de ecuaciones diferenciales lineales con respecto a los parámetros en los que intervengan un conjunto de operaciones prefijadas de antemano, que son los posibles nodos interiores. Esta representación se utiliza en los modelos que se generan en el algoritmo de regresión simbólica que se detalla en la secciones \ref{section:mutation} y \ref{section:xcross}.
 
-En un método de regresión simbólica es necesario tener una función de ajuste que permita conocer cuán cercanos son los datos predichos por el modelo con respecto a los datos observados. En la siguiente sección se propone un método para evaluar cuán cercanos se encuentran los datos predichos y observados.
+En un método de regresión simbólica es necesario tener una función de ajuste que permita conocer cuán cercanos son los datos predichos por el modelo a los datos observados. En la siguiente sección se propone un método para evaluar cuán cercanos se encuentran los datos predichos y los observados.
 
 \section{Determinar el costo de una solución}\label{section:solution_cost}
 
-A partir de un conjunto de datos $M = \{(t_j, y_i(t_j)), i = 1, \dots, n, j = 1, \dots, m\}$ donde la función $y_i$ es desconocida, se puede aproximar el valor de las derivadas de $y_i$ en cada instante $t_j$ utilizando el método de diferencias finitas \cite{gaucel2014learning} en caso de que $M$ no posea ruido. Si el conjunto de datos $M$ tiene ruido se puede aproximar la función $y_i$ mediante un spline de suavizado cúbico. Con este spline de suavizado se puede obtener una aproximación del valor de la derivada de la función $y_i$ en cada instante $t_j$.
+A partir de un conjunto de datos:
 
-Luego de aproximar la derivada de las funciones $y_i$ en cada instante $t_j$ se puede generar un nuevo conjunto de la forma $\{(x_j, y'_{i_j}), x_j \in M, i = 1, \dots, n\}$ donde $y'_{i_j}$ es el valor de la aproximación de la derivada de la función $y_i$ en el instante $t_j$.
+$$M = \{(t_j, y_i(t_j)), i = 1, \dots, n, j = 1, \dots, m\},$$
+
+donde la función $y_i$ es desconocida, se puede aproximar el valor de las derivadas de $y_i$ en cada instante $t_j$ utilizando el método de diferencias finitas \cite{gaucel2014learning}, en caso de que $M$ no posea ruido. Si el conjunto de datos $M$ tiene ruido se puede aproximar la función $y_i$ mediante un spline de suavizado cúbico. Con la expresión de este spline de suavizado se puede obtener una aproximación del valor de la derivada de la función $y_i$ en cada instante $t_j$.
+
+Luego de aproximar la derivada de las funciones $y_i$ en cada instante $t_j$ se puede generar un nuevo conjunto de la forma:
+
+$$\{(t_j, y_i(t_j), y'_{i}(t_j)), i = 1, \dots, n, j = 1, \dots, m\},$$
+
+donde $y'_{i}(t_j)$ es el valor de la aproximación de la derivada de la función $y_i$ en el instante $t_j$.
 
 Por ejemplo, si se tienen el conjunto de datos sin ruido:
 
@@ -199,19 +205,23 @@ y se desea conocer el valor aproximado de la derivada de la función $y$ en los 
 Con esta aproximación de la derivada se puede formar el nuevo conjunto de datos:
 
 \begin{align*}
-    \{ & ((1, 1), (3))    \\
-       & ((2, 4), (5)) \}
+    \{ & (1, (1), (3))    \\
+       & (2, (4), (5)) \}
 \end{align*}
 
-Se define el costo de un sistema de ecuaciones diferenciales $f$ para el conjunto de datos de la forma $\{(x_j, y'_j) \subset \mathbb{R}^{n+1} \times \mathbb{R}^n, j = 1, \dots, m\}$ como:
+Se define el costo de un sistema de ecuaciones diferenciales $f$ para el conjunto de datos de la forma:
 
-$$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y'_{i_j} - f_i(x_j))^2}{m}}{n},$$
+$$\{(t_j, y_i(t_j), y'_i(t_j)) \subset \mathbb{R} \times \mathbb{R}^{n} \times \mathbb{R}^n, i = 1, \dots, n, j = 1, \dots, m\}$$
+
+como:
+
+$$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y'_i(t_j) - f_i(t_j, y_i(t_j)))^2}{m}}{n},$$
 
 donde:
 
-$$f_i(x_j) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(x_j),$$
+$$f_i(t_j, y_i(t_j)) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(t_j, y_i(t_j)),$$
 
-$f_1, f_2, \dots, f_n$ son las partes derechas de las ecuaciones del sistema y $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema. Mientras más pequeño es el valor del costo, mejor se describen los datos mediante el sistema $f$.
+$f_1(t_j, y_i(t_j)), f_2(t_j, y_i(t_j)), \dots, f_n(t_j, y_i(t_j))$ son las partes derechas de las ecuaciones del sistema y $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema. Mientras más pequeño es el valor del costo, mejor se describen los datos mediante el sistema $f$.
 
 Al valor de $C$ se le agrega un factor de peso $P$, directamente proporcional a la cantidad de términos que posean las ecuaciones de la solución \cite{gplearnbloat}:
 
@@ -249,29 +259,29 @@ Para que la suma $\sum_{j=1}^{m}(y'_{i_j} - f_i(x_j)) ^ 2$ sea la menor posible 
     \end{bmatrix}.
 \end{align*}
 
-El sistema $A_ix_i = B_i$ se resuelve usando la descomposición svd.
+El sistema $A_ix_i = B_i$ se resuelve usando el comando:
+
+\texttt{numpy.linalg.lstsq},
+
+que emplea la descomposición SVD \cite{numpy-lstsq}.
 
 Por ejemplo, la segunda ecuación del modelo SIR es:
 
-$$f_I (t,S,I,R) = a_{I_1} * g_{I_1}(t,S,I,R) + a_{I_2} * g_{I_2}(t,S,I,R),$$
+$$f_I (t,S,I,R) = a_{I_1} * I * S + a_{I_2} * -I.$$
 
-donde:
+Si se tiene el conjunto de datos de la forma:
 
-$$g_{I_1}(t,S,I,R) = I*S$$
+$$\{(t_j, y_i(t_j), y'_i(t_j)) \subset \mathbb{R} \times \mathbb{R}^{3} \times \mathbb{R}^3, j = 1, \dots, 6\},$$
 
-y
-
-$$g_{I_2}(t,S,I,R) = -I.$$
-
-Si se tiene el conjunto de datos de la forma $\{(x_j, y'_j) \subset \mathbb{R}^{4} \times \mathbb{R}^3, j = 1, \dots, 6\}$, donde $x_j$ representa los valores de $(t_j, S(t_j), I(t_j), R(T_j))$ y $y'_j$ representa los valores aproximados de $(S'(x_j), I'(x_j), R'(x_j))$:
+donde $y_i(t_j)$ representa los valores de $(S(t_j), I(t_j), R(T_j))$ y $y'_j$ representa los valores aproximados de $(S'(t_j), I'(t_j), R'(t_j))$:
 
 \begin{align*}
-    \{ ((1, 4, 9, 6) & ,  (0, 5, 0))     \\
-    ((2, 6, 8, 2)    & ,  (0, 4, 0))     \\
-    ((3, 3, 6, 8)    & ,  (0, 10, 0))    \\
-    ((4, 5, 9, 8)    & ,  (0, 1, 0))     \\
-    ((5, 6, 3, 10)   & , (0, 7, 0))      \\
-    ((6, 8, 5, 7)    & ,  (0, 6, 0)) \},
+    \{ & (1, (4, 9, 6)  ,  (0, 5, 0))        \\
+       & (2, (6, 8, 2)     ,  (0, 4, 0))     \\
+       & (3, (3, 6, 8)     ,  (0, 10, 0))    \\
+       & (4, (5, 9, 8)     ,  (0, 1, 0))     \\
+       & (5, (6, 3, 10)    , (0, 7, 0))      \\
+       & (6, (8, 5, 7)     ,  (0, 6, 0)) \},
 \end{align*}
 
 entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten los datos descritos formando el sistema de ecuaciones:
@@ -301,6 +311,7 @@ entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten los d
     \end{bmatrix}.
 \end{align*}
 
+CAMBIAR LOS DATOS DE ESTE EJEMPLO
 Al resolver el sistema de ecuaciones sobredeterminado se obtienen los parámetros $a_{I_1}$ = -0.03570806 y $a_{I_2}$ = -0.84347764. Este método se aplica para encontrar los parámetros de cada una de las ecuaciones del sistema y así se obtienen todos los parámetros del sistema.
 
 Como se mencionó al inicio del capítulo, la propuesta de solución utiliza el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Para usar el algoritmo genético es necesario definir las operaciones de mutación, cruzamiento y selección. En la siguiente sección se describe la operación de mutación.
@@ -789,7 +800,7 @@ y se puede realizar la mutación de eliminar el segundo término de la segunda e
     R' & = a_4 * I,
 \end{align*}
 
-Este ejemplo se representa en forma de árbol computacional en la figura \ref{tikzpicture:mutation_sir}:
+Este ejemplo se representa en forma de árbol computacional en la figura \ref{tikzpicture:mutation_sir} de la página \pageref{tikzpicture:mutation_sir}.
 
 \begin{center}
     % \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
@@ -921,7 +932,7 @@ Este ejemplo se representa en forma de árbol computacional en la figura \ref{ti
 %     \end{adjustbox}
 % \end{center}
 
-Con estas modificaciones que se le pueden realizar a un sistema de ecuaciones diferenciales lineales en los parámetros se define la operación de mutación que se utiliza en el algoritmo genético que se emplea en este trabajo. Otra de las operaciones que se deben definir con el fin de implementar un algoritmo genético es el cruzamiento, que se describe en la siguiente sección.
+Con estas modificaciones que se le pueden realizar a un sistema de ecuaciones diferenciales lineales con respecto a los parámetros se define la operación de mutación que se utiliza en el algoritmo genético que se emplea en este trabajo. Otra de las operaciones que se deben definir con el fin de implementar un algoritmo genético es el cruzamiento, que se describe en la siguiente sección.
 
 \section{Cruzamiento}\label{section:xcross}
 
@@ -931,7 +942,7 @@ En dependencia del nodo seleccionado en A se escoge el nodo en B siguiendo las s
 
 
 \begin{itemize}
-    \item Si el nodo seleccionado en A es el representante de la i-ésima ecuación en el sistema, se escoge el nodo representante de la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_equation}.
+    \item Si el nodo seleccionado en A es el representante de la i-ésima ecuación en el sistema, se escoge el nodo representante de la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_equation} de la página \pageref{tikzpicture:cross_equation}.
 
           \begin{center}
               %   \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
@@ -1017,7 +1028,7 @@ En dependencia del nodo seleccionado en A se escoge el nodo en B siguiendo las s
               \end{figure}
           \end{center}
 
-    \item Si se selecciona en A un nodo representante de un término en la ecuación i-ésima, se escoge un nodo representante de un término en la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_term}.
+    \item Si se selecciona en A un nodo representante de un término en la ecuación i-ésima, se escoge un nodo representante de un término en la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_term} de la página \pageref{tikzpicture:cross_term}.
 
           \begin{center}
               %   \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
@@ -1104,7 +1115,7 @@ En dependencia del nodo seleccionado en A se escoge el nodo en B siguiendo las s
           \end{center}
 
 
-    \item Si el nodo seleccionado en A es el representante de una operación o una variable perteneciente a la i-ésima ecuación, se selecciona un nodo representante de una operación o una variable que pertenezca a algún término en la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_operation}.
+    \item Si el nodo seleccionado en A es el representante de una operación o una variable perteneciente a la i-ésima ecuación, se selecciona un nodo representante de una operación o una variable que pertenezca a algún término en la i-ésima ecuación en el sistema B. Se puede ver como ejemplo la figura \ref{tikzpicture:cross_operation} de la página \pageref{tikzpicture:cross_operation}.
 
           \begin{center}
               %   \begin{adjustbox}{width=0.4\textwidth, keepaspectratio}
@@ -1208,7 +1219,7 @@ y el sistema B:
     R' & = b_3 * S,
 \end{align*}
 
-donde su representación computacional aparece en la figura \ref{tikzpicture:cross_example_1},
+donde su representación computacional aparece en la figura \ref{tikzpicture:cross_example_1} de la página \pageref{tikzpicture:cross_example_1},
 
 \begin{center}
     % \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
@@ -1344,7 +1355,7 @@ y como resultado de la operación de cruzamiento se seleccionan los nodos que se
     R' & = a_4 * I,
 \end{align*}
 
-que se representa con el árbol computacional que aparece en la figura \ref{tikzpicture:cross_example_2}.
+que se representa con el árbol computacional que aparece en la figura \ref{tikzpicture:cross_example_2} de la página \pageref{tikzpicture:cross_example_2}.
 
 \begin{center}
     % \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
@@ -1413,9 +1424,9 @@ Una vez definidas las operaciones de mutación y cruzamiento solo faltaría deta
 
 Dada una población inicial de $N$ individuos en una generación, se muta un subconjunto de individuos, y otro subconjunto se seleccionan para usar la operación de cruzamiento a partir de ellos. Al aplicar estas dos operaciones aparece un nuevo subconjunto de individuos. Este nuevo subconjunto se agrega a la población inicial de la generación, formando así un nuevo conjunto de individuos el cual se define como población total de la generación.
 
-De la población total de la generación se seleccionan $M$ individuos que mejor ajustan los datos. Se seleccionan también $N - M$ individuos aleatorios con el fin de evitar mínimos locales en la búsqueda del mejor sistema. En total se selecciona de la población total de la generación una cantidad igual a la presente en la población inicial de la generación. Los valores de $N$ y $M$ que se utilizaron durante los experimentos que aparecen en el capítulo \ref{chapter:results} son 100 y 10, respectivamente.
+De la población total de la generación se seleccionan los $M$ individuos que mejor ajustan los datos. Se seleccionan también $N - M$ individuos aleatorios con el fin de evitar mínimos locales. Con estas dos selecciones se escoge de la población total de la generación una cantidad igual a la presente en la población inicial de la iteración. Los valores de $N$ y $M$ que se utilizaron durante los experimentos que aparecen en el capítulo \ref{chapter:results} son 100 y 10, respectivamente.
 
-Como resultado de la selección se obtiene una nueva población que será la población de la siguiente generación. Las operaciones de mutación y cruzamiento de la población inicial y luego selección de individuos se repiten un número fijo de veces que se define mediante el parámetro cantidad de generaciones. Esta repetición se realiza con el fin de generar varias generaciones intentando obtener mejores soluciones cada vez.
+Como resultado de la selección se obtiene una nueva población que será la población de la siguiente generación. Las operaciones mutación, cruzamiento y selección se repiten un número fijo de veces que se define mediante el parámetro cantidad de generaciones. Esta repetición se realiza con el fin de generar varias iteraciones intentando obtener mejores soluciones cada vez.
 
 En este capítulo se describió cómo representar, mediante árboles, un sistema de EDOs lineal con respecto a los parámetros, cómo calcular su costo para un conjunto de datos, así como la forma de cruzar y mutar estos sistemas. Con estos elementos se puede definir un algoritmo genético para determinar el sistema de EDOs lineal con respecto a los parámetros que mejor describa un conjunto de datos.
 
