@@ -2,7 +2,7 @@
 
 El objetivo de este trabajo es diseñar e implementar un sistema que permita encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajuste un conjunto de datos. Para ello se propone usar algoritmos genéticos para resolver un problema de regresión simbólica.
 
-En el algoritmo genético, los posibles sistemas se representan mediante árboles (que tienen una estructura dada, para garantizar que los sistemas siempre sean lineales en los parámetros) y sobre el espacio de estos árboles se aplica un algoritmo genético para determinar cuál de ellos es el que mejor ajusta los datos. Para determinar cuan cercano están los datos observados a los datos evaluados en uno de esos sistemas se resuelve un problema de ajuste mínimo cuadrático de datos, que al ser lineal los modelos, se reduce a la solución de un sistema de ecuaciones lineales. El método que se utiliza para la solución del problema mínimo cuadrático de datos asume que los datos son exactos (sin ruido). Cuando los datos observados tienen ruido el algoritmo obtiene sistemas con valores de ajustes que no interesan en el estudio. Para solucionar este valor en el ajuste lo que se hace es aproximar los datos con ruido con un spline de suavizado, y se aplica el método de ajuste mínimo cuadrático a los valores de los datos evaluados en el spline.
+En el algoritmo genético, los posibles sistemas se representan mediante árboles (que tienen una estructura dada, para garantizar que los sistemas siempre sean lineales con respecto a los parámetros) y sobre el espacio de estos árboles se aplica un algoritmo genético para determinar cuál de ellos es el que mejor ajusta los datos. Para determinar cuan cercano están los datos observados a los datos evaluados en uno de esos sistemas se resuelve un problema de ajuste mínimo cuadrático de datos, que al ser lineal los modelos, se reduce a la solución de un sistema de ecuaciones lineales. El método que se utiliza para la solución del problema mínimo cuadrático de datos asume que los datos son exactos (sin ruido). Cuando los datos observados tienen ruido el algoritmo obtiene sistemas con valores de ajustes que no interesan en el estudio. Para solucionar este valor en el ajuste lo que se hace es aproximar los datos con ruido con un spline de suavizado, y se aplica el método de ajuste mínimo cuadrático a los valores de los datos evaluados en el spline.
 
 En este capítulo se presentan las ecuaciones diferenciales lineales con respecto a los parámetros, el ajuste mínimo cuadrático de datos, la regresión simbólica, los algoritmos genéticos y los splines de suavizado.
 
@@ -34,7 +34,7 @@ donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ dependen de la 
 
 Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad.
 
-Con ecuaciones diferenciales lineales en los parámetros se pueden modelar diversas situaciones como sistemas dinámicos poblacionales como el sistema de Lotka Volterra \cite{Hoppensteadt:2006}:
+Con ecuaciones diferenciales lineales con respecto a los parámetros se pueden modelar diversas situaciones como sistemas dinámicos poblacionales como el sistema de Lotka Volterra \cite{Hoppensteadt:2006}:
 
 $$X' = \alpha * X - \beta * X * Y$$
 $$Y' = \delta * X * Y - \gamma * Y$$
@@ -155,7 +155,7 @@ $$f(t_i, y(t_i)) = y'(t_i)$$
 
 En \cite{gaucel2014learning, iba2008inference,kronberger2019identification} se aproxima el valor de la derivada de cada variable numéricamente por diferencias finitas. Con esta aproximación de la derivada se puede generar el conjunto $S$ y utilizar la regresión simbólica para encontrar una aproximación de $y$.
 
-En el año 2008 se utilizó la regresión simbólica junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que mejor ajustase un conjunto de datos \cite{iba2008inference}. Una de las ventajas de estos sistemas es que, si los datos no presentan ruido, para encontrar sus parámetros solo es necesario resolver un sistema de ecuaciones lineales sobredeterminado \cite{myers2012generalized}.
+En el año 2008 se utilizó la regresión simbólica junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajustase un conjunto de datos \cite{iba2008inference}. Una de las ventajas de estos sistemas es que, si los datos no presentan ruido, para encontrar sus parámetros solo es necesario resolver un sistema de ecuaciones lineales sobredeterminado \cite{myers2012generalized}.
 
 La vía seleccionada para resolver el problema de regresión simbólica es mediantes algoritmos genéticos, al igual que en \cite{koza1994genetic, iba2008inference, gaucel2014learning, kronberger2019identification}. En la siguiente sección se define este tipo de metaheurística.
 
@@ -183,7 +183,7 @@ Una vez realizado el proceso de modificación de la población mediante el uso d
 
 Las operaciones de cruzamiento, mutación y selección dan como resultado la población de soluciones de la próxima generación. Dado que los mejores individuos fueron escogidos en la operación de selección, la calidad de la mejor solución nunca empeora de una generación a otra.
 
-Para evaluar cuán bueno es un individuo de la población se utiliza un función de ajuste. En el caso de la regresión simbólica, esta función de ajuste calcula el error cuadrático de los datos. Como el espacio de búsqueda son los sistemas de ecuaciones diferenciales lineales en los parámetros, se pueden encontrar los parámetros presentes en el individuo mediante la solución de un sistema de ecuaciones lineales sobredeterminados, si los datos no presentan ruido.
+Para evaluar cuán bueno es un individuo de la población se utiliza un función de ajuste. En el caso de la regresión simbólica, esta función de ajuste calcula el error cuadrático de los datos. Como el espacio de búsqueda son los sistemas de ecuaciones diferenciales lineales con respecto a los parámetros, se pueden encontrar los parámetros presentes en el individuo mediante la solución de un sistema de ecuaciones lineales sobredeterminados, si los datos no presentan ruido.
 
 Si un conjunto de datos $\{(x_i, Y_i), i=1, \dots, n\}$ que describen el fenómeno $f$ es de la forma $Y_i = f(x_i) + \epsilon _i$ donde los $\epsilon _i$ son valores aleatorios, independientes y con media 0, entonces se dice que el conjunto de datos posee ruido. Si se utilizan datos con altos niveles de ruido en el método de regresión simbólica que se plantea en este trabajo, puede ocasionar que el modelo seleccionado como solución no ajuste de forma correcta los datos. Para eliminar el término $\epsilon _i$ en los datos (eliminar el ruido en los datos) se pueden utilizan varias técnicas, una de estas técnicas son los Splines de suavizado que se describen a continuación.
 
@@ -214,7 +214,7 @@ donde $\{(x_i, Y_i), i = 1, \dots, n\}$ es un conjunto de puntos con ruido que d
 \end{figure}
 
 
-Si se tiene un conjunto de puntos $\{(x_i, Y(x_i)), i = 1, \dots, n\}$ con ruido, se puede utilizar un spline de suavizado cúbico para aproximar la función $Y$. Con este spline de suavizado se puede obtener una aproximación de $Y'$ y con esta derivada se puede emplear la regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales en los parámetros que ajuste el conjunto de datos. Esta idea se describe en detalle en el capítulo \ref{chapter:solution_proposal}.
+Si se tiene un conjunto de puntos $\{(x_i, Y(x_i)), i = 1, \dots, n\}$ con ruido, se puede utilizar un spline de suavizado cúbico para aproximar la función $Y$. Con este spline de suavizado se puede obtener una aproximación de $Y'$ y con esta derivada se puede emplear la regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que ajuste el conjunto de datos. Esta idea se describe en detalle en el capítulo \ref{chapter:solution_proposal}.
 
 En este capítulo se definieron conceptos utilizados en la propuesta de solución. La solución que se propone utiliza un spline de suavizado para la obtención de una aproximación de las derivadas de un conjunto de datos dado. Con las aproximaciones de las derivadas, se utiliza la regresión simbólica mediante un algoritmo genético para la obtención de un sistema de ecuaciones diferenciales lineales con respecto a los parámetros que ajuste el conjunto de datos. Para usar un algoritmo genético es necesario definir varios elementos:
 
