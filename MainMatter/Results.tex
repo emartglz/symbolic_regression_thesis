@@ -2,7 +2,7 @@
 
 En este capítulo se presentan los experimentos realizados para evaluar el desempeño y los resultados de la regresión simbólica propuesta en este trabajo.
 
-En la sección \ref{section:experimental_considerations} se menciona como se diseñó el marco experimental para realizar distintos experimentos. En \ref{section:experimental_frame} se plantea la forma en la que se generaron los datos utilizados en los distintos experimentos y cómo se modeló la presencia de ruido en las muestras. En la sección \ref{section:experiments} se desarrollan los experimentos realizados y se aprecian sus resultados. En \ref{section:experiments_results} se analizan los resultados obtenido. A continuación se describen detalles acerca del diseño del marco experimental que se utilizó en la realización de los experimentos.
+En la sección \ref{section:experimental_considerations} se menciona cómo se diseñó el marco experimental para realizar distintos experimentos. En \ref{section:experimental_frame} se plantea la forma en la que se generaron los datos utilizados en los distintos experimentos y cómo se modeló la presencia de ruido en las muestras. En la sección \ref{section:experiments} se desarrollan los experimentos realizados y se aprecian sus resultados. En \ref{section:experiments_results} se analizan los resultados obtenido. A continuación se describen detalles acerca del diseño del marco experimental que se utilizó en la realización de los experimentos.
 
 \section{Consideraciones de la etapa de experimentación}\label{section:experimental_considerations}
 
@@ -18,9 +18,9 @@ La implementación de la solución se desarrolla en el lenguaje de programación
 
 Como métrica para evaluar la calidad de la solución generada por la regresión simbólica se utiliza el error cuadrático medio. Menores valores de esta métrica implica que el valor de los datos evaluados en el sistema obtenido en la regresión simbólica se acercan a los datos observados.
 
-Cada experimento que aparece en la sección \ref{section:experiments} se realizó 30 veces y se plantea el valor promedio que obtuvo la métrica utilizada en las 30 ejecuciones del experimento. Además se indica el valor mínimo y máximo que alcanzó la métrica a lo largo de los 30 experimentos. De igual forma se plantea cuántas veces en la realización de los 30 experimentos, el método de regresión simbólica encuentró un sistema igual al tomado para generar los datos.
+Cada experimento que aparece en la sección \ref{section:experiments} se realizó 30 veces y se plantea el valor promedio que obtuvo la métrica utilizada en las 30 ejecuciones del experimento. Además se indica el valor mínimo y máximo que alcanzó la métrica a lo largo de los 30 experimentos. De igual forma se plantea cuántas veces en la realización de los 30 experimentos, el método de regresión simbólica encontró un sistema igual al tomado para generar los datos.
 
-En la siguiente sección se precisa mejor cómo se generan los datos para realizar los distintos experimentos.
+En la siguiente sección se detalla mejor cómo se generan los datos para realizar los distintos experimentos.
 
 \section{Descripción del marco experimental}\label{section:experimental_frame}
 
@@ -32,7 +32,7 @@ Los experimentos inician con la selección de un modelo conocido $f$, por ejempl
     R' & = bI.
 \end{align*}
 
-El sistema de ecuaciones diferenciales se integra en un intervalo que se define mediante parámetros y se obtiene un conjunto de puntos que representan el valor de las distintas variables a lo largo del tiempo. Por ejemplo, si se integra el modelo SIR utilizando como parámetros $a = 0.0003$, $b = 0.1$ y con $0 \leq t \leq 20$ se obtienen las curvas en la imagen \ref{fig:SIR}.
+El sistema de ecuaciones diferenciales se integra en un intervalo que se define mediante parámetros y se obtiene un conjunto de puntos que representan el valor de las distintas variables a lo largo del tiempo. Por ejemplo, si se integra el modelo SIR utilizando como parámetros $a = 0.0003$, $b = 0.1$ y con $0 \leq t \leq 20$ se obtienen las curvas en la imagen \ref{fig:SIR} de la página \pageref{fig:SIR}.
 
 \begin{figure}[h]
     \centering
@@ -41,11 +41,11 @@ El sistema de ecuaciones diferenciales se integra en un intervalo que se define 
     \label{fig:SIR}
 \end{figure}
 
-Luego de que se tienen los datos de la forma $\{(t_i, y_i)\}$ generados por la integración del modelo, se le agregan distintos valores de ruido a los puntos. A cada muestra $y_i$ se le agrega un valor de ruido utilizando la fórmula:
+Cuando se tienen los datos de la forma $\{(t_i, y_i), i=1, \dots, n\}$ generados por la integración del modelo, se le agregan distintos valores de ruido a los puntos. A cada muestra $y_i$ se le agrega un valor de ruido utilizando la fórmula:
 
 $$y_{i_{noise}} = y_i + y_i * max\_noise * random\_standard\_normal(),$$
 
-donde $random\_standard\_normal()$ es una función que genera valores aleatorios, independientes y con media 0. $max\_noise$ es un parámetro con mínimo valor $0$ y máximo $1$ que define el ``ruido  máximo'' que se le agrega a cada muestra. Se puede ver el parámetro $max\_noise$ como el \% máximo del valor de cada muestra que se puede agregar como ruido. Durante los distintos experimentos se utilizaron como máximo ruido los valores de 0\%, 5\% o 10\% con respecto a cada muestra. Por ejemplo, si se agrega ruido a los datos obtenidos de la integración del sistema SIR utilizando el parámetro $max\_noise$ con valor $0.1$, se tendrían las curvas que aparecen en la imagen \ref{fig:SIR_with_noise}.
+donde $random\_standard\_normal()$ es una función que genera valores aleatorios normales, independientes, con media 0 y varianza 1. $Max\_noise$ es un parámetro con mínimo valor $0$ y máximo $1$ que define el ``ruido  máximo'' que se le agrega a cada muestra. Se puede ver el parámetro $max\_noise$ como el \% máximo del valor de cada muestra que se puede agregar como ruido. Durante los distintos experimentos se utilizaron como máximo ruido los valores de 0\%, 5\% o 10\% con respecto a cada muestra. Por ejemplo, si se agrega ruido a los datos obtenidos de la integración del sistema SIR utilizando el parámetro $max\_noise$ con valor $0.1$, se tendrían las curvas que aparecen en la imagen \ref{fig:SIR_with_noise} de la página \pageref{fig:SIR_with_noise}.
 
 \begin{figure}[h]
     \centering
@@ -54,7 +54,7 @@ donde $random\_standard\_normal()$ es una función que genera valores aleatorios
     \label{fig:SIR_with_noise}
 \end{figure}
 
-Se utiliza un spline de suavizado para eliminar el ruido en caso de que $max\_noise > 0$. El valor del parémtro de suavizado en el spline se varía para cada una de las variables. Por ejemplo, si se utiliza un spline de suavizado cúbico en los datos con ruido del sistema SIR se obtendrían las curvas que aparecen en la imagen \ref{fig:SIR_noise_with_spline}.
+Cuando el valor de $max\_noise$ es mayor que 0, se usa un spline de suavizado para eliminar el ruido. El valor del parámetro de suavizado en el spline se varía para cada una de las variables. Por ejemplo, si se utiliza un spline de suavizado cúbico en los datos con ruido del sistema SIR se obtendrían las curvas que aparecen en la imagen \ref{fig:SIR_noise_with_spline} de la página \pageref{fig:SIR_noise_with_spline}.
 
 \begin{figure}[h]
     \centering
@@ -63,17 +63,42 @@ Se utiliza un spline de suavizado para eliminar el ruido en caso de que $max\_no
     \label{fig:SIR_noise_with_spline}
 \end{figure}
 
-Una vez que se tiene el spline de suavizado, se puede aproximar el valor de la función $y$ que describen los datos que se generaron mediante la integración de un modelo $f$. Junto a la aproximación de la función se puede obtener la primera derivada del spline de suavizado. La derivada permite obtener una aproximación del valor de $f$.
+Una vez que se tiene el spline de suavizado, se puede aproximar el valor de la función $y_i$. Como lo que se busca es generar un conjunto de datos de la forma:
 
-Se pueden utilizar la aproximación de la función $y$ y las aproximaciones de $f$ mediante las derivadas del spline de suavizado para encontrar el sistema de ecuaciones diferenciales mediante el uso de la regresión simbólica.
+$$\{(t_i, y_i, y'_i), i=1, \dots, n\},$$
 
-Se presentan en las siguientes secciones los experimento en los que se utliza la regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros a partir de un conjunto de datos generado. Se utilizaron en total 5 modelos para la generación de los disintos conjuntos de datos.
+para obtener $f(t_i, y_i)$ mediante el uso de la regresión simbólica, se puede generar una aproximación del valor de $y'_i$ utilizando la primera derivada del spline.
+
+En las siguientes secciones se presentan los experimento en los que se utiliza la regresión simbólica para encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros a partir de un conjunto de datos generado. Se utilizaron en total 5 modelos para la generación de los disintos conjuntos de datos que fueron el sistema de lotka volterra \cite{Hoppensteadt:2006}, SIR \cite{weiss2013sir}, SIRD \cite{bailey1975mathematical}, SIQRD \cite{molter2021mathematical} y SVVEIR \cite{kuddus2021mathematical}.
 
 \section{Experimentos realizados}\label{section:experiments}
 
-Todos los sistemas de ecuaciones diferenciales seleccionados son sistemas lineales en los parámetros. La cantidad de ecuaciones en cada uno de los modelos es distinta. De cada modelo seleccionado se muesta una tabla que contiene la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento así como el mínimo y máximo valor que alcanzó el error cuadrático medio.
+Todos los sistemas de ecuaciones diferenciales seleccionados para los experimentos son sistemas lineales con respecto a los parámetros. La cantidad de ecuaciones en cada uno de los modelos es distinta. De cada modelo se muestra una tabla que contiene la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento así como el mínimo y máximo valor que alcanzó el error cuadrático medio.
 
-En otra tabla se detalla la media del error cuádratico medio entre los datos $y_{sr}$ generados por la integración del sistema encontrado en la regresión simbólica y datos utilizados durante el método de regresión simbólica. Esta media del error cuadrático media es sobre una cantidad de experimentos tomados de los 30 experimentos realizados, la cantidad de experimentos seleccionados se define en la fila ``cantidad de experimentos''. La diferencia de $y_{sr}$ con respecto $y_{original}$ a los generados por la integración del sistema original del experimento aparecen en la fila llamada ``orignal''. En la fila ``original con ruido'' aparece el error cuadrático medio de $y_{sr}$ y los datos $y_{noise}$ que se generan al agregar ruido al conjunto $y_{original}$, El ruido máximo agregado se define en las columnas de la tabla. La diferencia de $y_{sr}$ con respecto a los datos obtenidos a partir del spline de suavizado generado por los datos $y_{noise}$ se encuentra en la fila ``spline''. Como última fila en la tabla se muestra el error cuádratico medio entre los datos $y_{original}$ evaluados en el sistema obtenido en la regresión simbólica y los datos $y_{original}$ evaluados en el sistema obtenido utilizando otro método[LE TENGO QUE PREGUNTAR A OLIVIA CUÁL MÉTODO USÓ].
+Por cada experimento en el que se utiliza el modelo $f$, se genera un conjunto de datos $S$ de la forma $\{(t_i, y_i), i=1, \dots, n\}$ mediante la integración del modelo. Luego se crea el conjunto de datos $y_{noise_{x\%}}$ resultantes de agregarle ruido al conjunto $S$ con $max\_noise=x$ y se define $y_{spline_{x\%}}$ como los datos resultantes de la aproximación de la función $y$ a partir de los datos $y_{noise_{x\%}}$. Con todos estos datos se genera el sistema $\hat{f}$ utilizando la regresión simbólica. Se define el conjunto de datos $y_{sr_{x\%}}$ como los datos generados por la integración del sistema encontrado en la regresión simbólica. Además se tiene el sistema $f_{pso}$ como el resultado de aplicar el método $PSO$ \cite{p-pso-6} utilizando el conjunto $S$.
+
+De todos los experimentos en los que se utiliza el modelo $f$ solo se tuvieron en cuenta en los resultados un conjunto de los 30 experimentos realizado. Esta cantidad que se tiene en cuenta se define en la fila ``cantidad de sistemas'' de la tabla de resultados con la forma \ref{table:experiment_form} que aparece en la página \pageref{table:experiment_form}.
+
+\begin{table}
+    \centering
+    \caption{Estructura de tabla de resultados.}
+    \begin{tabular}{|c|c|}
+        \hline
+                             & \textbf{ruido de x\%}                                                      \\
+        \hline
+        cantidad de sistemas & $m$                                                                        \\
+        \hline
+        original             & $\frac{\frac{\sum_{i=1}^n (y_i-y_{sr_{x\%}})^2}{n}}{m}$                    \\
+        \hline
+        original con ruido   & $\frac{\frac{\sum_{i=1}^n (y_{noise_{x\%}}-y_{sr_{x\%}})^2}{n}}{m}$        \\
+        \hline
+        spline               & $\frac{\frac{\sum_{i=1}^n (y_{spline_{x\%}}-y_{sr_{x\%}})^2}{n}}{m}$       \\
+        \hline
+        otro método          & $\frac{\frac{\sum_{i=1}^n (f_{PSO}(t_i, y_i)-\hat{f}(t_i, y_i))^2}{n}}{m}$ \\
+        \hline
+    \end{tabular}
+    \label{table:experiment_form}
+\end{table}
 
 A continuación se muestra el experimento realizado a partir de la generación de los datos utlizando el sistema Lotka-Volterra.
 
@@ -86,7 +111,7 @@ El modelo de Lotka-Volterra es un sistema utilizado para describir las interacci
     Y' & = -Y (c - d X).
 \end{align*}
 
-Se utilizaron como valores de los parámetros $a = 0.04$, $b = 0.0005$, $c = 0.2$ y $d = 0.004$ con punto inicial $(20, 20)$ y se integró en el intervalo $0 \leq t \leq 300$ para obtener los datos que aparecen en la figura \ref{fig:lotka_volterra}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $a = 0.04$, $b = 0.0005$, $c = 0.2$ y $d = 0.004$ con punto inicial $(20, 20)$ y se integró en el intervalo $0 \leq t \leq 300$ para obtener los datos que aparecen en la figura \ref{fig:lotka_volterra} de la página \pageref{fig:lotka_volterra}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -99,7 +124,7 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
 
 \begin{table}[!h]
     \centering
-    \caption{Resultados obtenidos en el modelo Lotka-Volterra}
+    \caption{Resultados que se obtienen en el modelo Lotka-Volterra.}
 
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -132,11 +157,40 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
     \label{table:experiment_lotka_volterra}
 \end{table}
 
+Durante la realización de los experimentos el modelo de lotka-volterra, la regresión simbólica encontró el sistema que generó los datos pero con otros parámetros en 21 ocasiones cuando no se utilizaba ruido en los datos, 13 veces cuando se utilizó un ruido máximo de 5\% y 6 veces cuando se utilizó un ruido máximo de 10\%. En las figuras \ref{fig:final_plot_LV_0.0} de la página \pageref{fig:final_plot_LV_0.0}, \ref{fig:final_plot_LV_0.05} de la página \pageref{fig:final_plot_LV_0.05} y \ref{fig:final_plot_LV_0.1} de la página \pageref{fig:final_plot_LV_0.1} se pueden ver los datos originales comparados con los datos obtenidos del mejor resultado generado por la regresión simbólica.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_LV_0.0.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo lotka-volterra con ruido máximo de 0\%.}
+    \label{fig:final_plot_LV_0.0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_LV_0.05.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo lotka-volterra con ruido máximo de 5\%.}
+    \label{fig:final_plot_LV_0.05}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_LV_0.1.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo lotka-volterra con ruido máximo de 10\%.}
+    \label{fig:final_plot_LV_0.1}
+\end{figure}
+
+
+En el resto de experimentos realizados utilizando otros modelos, nunca se obtuvo como resultado de la regresión simbólica el modelo original que generó los datos.
+
+Si en lugar de utilizar como aproximación el método de diferencias finitas cuando los datos no poseen ruido, se utiliza el sistema original de Lotka-Volterra, se obtiene que la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento es $0.00721$. El valor máximo de la función de ajuste alcanzado fue de $0.21654$ y el mínimo de $6.35015e-16$, en este último la regresión simbólica obtuvo exactamente el sistema utilizado para generar los datos.
+
+
 A continuación se muestra el experimento realizado a partir de la generación de los datos utilizando el sistema SIR.
 
 \subsection{SIR}
 
-El modelo SIR es un sistema que se utiliza para describir la transmición de una enfermedad infecciosa causada por una bacteria, virus u hongos. \cite{weiss2013sir}. Se define el sistema como:
+El modelo SIR es un sistema que se utiliza para describir la transmición de una enfermedad infecciosa causada por una bacteria, virus u hongos. \cite{weiss2013sir}. El sistema se define como:
 
 \begin{align*}
     S' & = - aIS    \\
@@ -144,15 +198,15 @@ El modelo SIR es un sistema que se utiliza para describir la transmición de una
     R' & = bI,
 \end{align*}
 
-donde $S$ indica la cantidad de personas susceptibles, $I$ la cantidad de personas infectadas y $R$ la cantidad de personas recuperadas. Se utiliza el parámetro $a$ para indicar el índice de transmición y $b$ la índice de recuperación de la enfermedad.
+donde $S$ indica la cantidad de personas susceptibles, $I$ la cantidad de personas infectadas y $R$ la cantidad de personas recuperadas. Se utiliza el parámetro $a$ para indicar el índice de transmición y $b$ el índice de recuperación de la enfermedad.
 
-Se utilizaron como valores de los parámetros $a = 0.0003$ y $b = 0.1$ con punto inicial $(700, 300, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $a = 0.0003$ y $b = 0.1$ con punto inicial $(700, 300, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIR} de la página \pageref{fig:SIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
-Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIR}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento, utilizando solamente en cada ecuación las variables permitidas según el modelo, aparecen en la tabla \ref{table:experiment_SIR} de la página \pageref{table:experiment_SIR}. Si se permite cualquier variable del modelo en cualquier ecuación del sistema se obtienen los datos que aparecen en la tabla \ref{table:experiment_SIR_all} de la página \pageref{table:experiment_SIR_all}.
 
 \begin{table}[!h]
     \centering
-    \caption{Resultados obtenidos en el modelo SIR}
+    \caption{Resultados que se obtienen en el modelo SIR restringiendo las variables que aparecen en cada ecuación.}
     \begin{tabular}{|c|c|c|c|}
         \hline
                & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
@@ -183,13 +237,71 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
     \label{table:experiment_SIR}
 \end{table}
 
-Con este experimento se obtiene que los datos evaluados en el sistema generado por la regresión simbólica se acercan a los datos utilizados para la generación del sistema obtenido en la regresión simbólica no importa la cantidad de ruido utilizado. Los datos que se obtienen de la integración del sistema resulante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos.
+\begin{table}[!h]
+    \centering
+    \caption{Resultados que se obtienen en el modelo SIR sin restringir las variables que aparecen en cada ecuación.}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+               & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        media  & 0.24689               & 3.42671               & 5.1537                 \\
+        \hline
+        mínimo & 0.05612               & 0.7473                & 1.4416                 \\
+        \hline
+        máximo & 0.43011               & 13.57073              & 50.52157               \\
+        \hline
+    \end{tabular}
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+                             & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        cantidad de sistemas & 30                    & 30                    & 26                     \\
+        \hline
+        original             & 1.79636               & 69.15052              & 42.3377                \\
+        \hline
+        original con ruido   & 1.79636               & 76.12959              & 58.03488               \\
+        \hline
+        spline               & 1.79636               & 69.23198              & 42.15867               \\
+        \hline
+        otro método          & 31160.16998           & 27425.68474           & 35588.9792             \\
+        \hline
+    \end{tabular}
+    \label{table:experiment_SIR_all}
+\end{table}
+
+Durante la realización de los experimentos utilizando el modelo SIR nunca se obtuvo un sistema igual como resultado de la regresión simbólica. Pero el resultado ajustó los datos no importa la cantidad de ruido utilizado. Los datos que se obtienen de la integración del sistema resultante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos.
+
+En las figuras \ref{fig:final_plot_SIR_0.0} de la página \pageref{fig:final_plot_SIR_0.0}, \ref{fig:final_plot_SIR_0.05} de la página \pageref{fig:final_plot_SIR_0.05} y \ref{fig:final_plot_SIR_0.1} de la página \pageref{fig:final_plot_SIR_0.1} se pueden ver los datos originales comparados con los datos obtenidos del mejor resultado generado por la regresión simbólica restringiendo las variables que pueden existir en cada ecuación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIR_0.0.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIR con ruido máximo de 0\%.}
+    \label{fig:final_plot_SIR_0.0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIR_0.05.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIR con ruido máximo de 5\%.}
+    \label{fig:final_plot_SIR_0.05}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIR_0.1.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIR con ruido máximo de 10\%.}
+    \label{fig:final_plot_SIR_0.1}
+\end{figure}
+
+Si en lugar de utilizar como aproximación el método de diferencias finitas cuando los datos no poseen ruido, se utiliza el sistema original de SIR, se obtiene que la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento es $7.02137e-05$. El valor máximo de la función de ajuste alcanzado fue de $ 0.00116$ y el mínimo de $1.19509e-15$, en este último la regresión simbólica obtuvo exactamente el sistema utilizado para generar los datos.
 
 A continuación se muestra el experimento realizado a partir de la generación de datos utilizando el sistema SIRD.
 
 \subsection{SIRD}
 
-El modelo SIRD es un sistema similar al SIR pero que introduce como dato la cantidad de personas fallecidas $D$ \cite{bailey1975mathematical}. Se realizó una modificación al modelo SIRD mencionado en \cite{bailey1975mathematical} al añadir un parámetro representando la cantidad de personas que pasan a ser susceptibles en cada instante de tiempo. Se define el sistema como:
+El modelo SIRD es un sistema similar al SIR pero que introduce como dato la cantidad de personas fallecidas $D$ \cite{bailey1975mathematical}. Al modelo SIRD mencionado en \cite{bailey1975mathematical} se le realizó una modificación al añadir un parámetro representando la cantidad de personas que pasan a ser susceptibles en cada instante de tiempo. El sistema se define como:
 
 \begin{align*}
     S' & = a - b (\frac{S I}{S + I + R})         \\
@@ -209,20 +321,20 @@ Se utilizaron como valores de los parámetros $a = 250$, $b = 0.5$, $c = 0.1$ y 
     \label{fig:SIRD}
 \end{figure}
 
-Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIRD}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento, utilizando solamente en cada ecuación las variables permitidas según el modelo y además se agrega como varible $N=S + I + R$, aparecen en la tabla \ref{table:experiment_SIRD} de la página \pageref{table:experiment_SIRD}. Si se permite cualquier variable del modelo en cualquier ecuación del sistema se obtienen los datos que aparecen en la tabla \ref{table:experiment_SIRD_all} de la página \pageref{table:experiment_SIRD_all}.
 
 \begin{table}[!h]
     \centering
-    \caption{Resultados obtenidos en el modelo SIRD}
+    \caption{Resultados que se obtienen en el modelo SIRD restringiendo las variables que aparecen en cada ecuación.}
     \begin{tabular}{|c|c|c|c|}
         \hline
                & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
         \hline
-        media  & 84.34081              & 132.55477             & 63.33746               \\
+        media  & 47.66074              & 90.64233              & 244.82477              \\
         \hline
-        mínimo & 3.21345               & 9.82461               & 17.13992               \\
+        mínimo & 0.51207               & 10.05468              & 18.63161               \\
         \hline
-        máximo & 763.53435             & 661.49225             & 281.56297              \\
+        máximo & 133.55556             & 569.35212             & 2450.05618             \\
         \hline
     \end{tabular}
 
@@ -230,29 +342,87 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
         \hline
                              & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
         \hline
-        cantidad de sistemas & 21                    & 17                    & 22                     \\
+        cantidad de sistemas & 22                    & 20                    & 21                     \\
         \hline
-        original             & 478.47017             & 848.56429             & 967.76246              \\
+        original             & 520.90815             & 894.24332             & 851.17623              \\
         \hline
-        original con ruido   & 478.47017             & 875.75559             & 1030.02565             \\
+        original con ruido   & 520.90815             & 917.42578             & 910.64791              \\
         \hline
-        spline               & 478.47017             & 848.33054             & 965.09632              \\
+        spline               & 520.90815             & 894.29561             & 848.03264              \\
         \hline
-        otro método          & 639.35513             & 604.6624              & 540.61365              \\
+        otro método          & 596.93643             & 631.63455             & 735.58784              \\
         \hline
     \end{tabular}
     \label{table:experiment_SIRD}
 \end{table}
 
-Con este experimento se obtiene que los datos evaluados en el sistema generado por la regresión simbólica no se acercan a los datos utilizados para la generación del sistema obtenido en la regresión simbólica. El sistema SIRD utilizado es el único sistema entre todos los experimentos que posee un parámetro solo en una ecuación.
+\begin{table}[!h]
+    \centering
+    \caption{Resultados que se obtienen en el modelo SIRD sin restringir las variables que aparecen en cada ecuación.}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+               & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        media  & 18.06453              & 109.07249             & 40.10858               \\
+        \hline
+        mínimo & 0.86131               & 10.14889              & 13.82246               \\
+        \hline
+        máximo & 49.33228              & 2116.3281             & 193.21428              \\
+        \hline
+    \end{tabular}
 
-Los datos que se obtienen de la integración del sistema resulante de la regresión simbólica no se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento, la aparición de ruido afecta aún más el ajuste de los datos.
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+                             & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        cantidad de sistemas & 27                    & 26                    & 24                     \\
+        \hline
+        original             & 248.31329             & 579.93813             & 652.00833              \\
+        \hline
+        original con ruido   & 248.31329             & 616.80845             & 743.63415              \\
+        \hline
+        spline               & 248.31329             & 579.74029             & 644.37875              \\
+        \hline
+        otro método          & 672.43116             & 674.83326             & 504.66352              \\
+        \hline
+    \end{tabular}
+    \label{table:experiment_SIRD_all}
+\end{table}
+
+Durante la realización de los experimentos utilizando el modelo SIRD nunca se obtuvo un sistema igual como resultado de la regresión simbólica, además no se ajustan los datos no importa la cantidad de ruido. El sistema SIRD que se utiliza es el único sistema entre todos los experimentos que posee un término en una ecuación donde aparece un parámetro sin una expresión que lo acompañe.
+
+Los datos que se obtienen de la integración del sistema resultante de la regresión simbólica no se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento, la aparición de ruido afecta aún más el ajuste de los datos.
+
+En las figuras \ref{fig:final_plot_SIRD_0.0} de la página \pageref{fig:final_plot_SIRD_0.0}, \ref{fig:final_plot_SIRD_0.05} de la página \pageref{fig:final_plot_SIRD_0.05} y \ref{fig:final_plot_SIRD_0.1} de la página \pageref{fig:final_plot_SIRD_0.1} se pueden ver los datos originales comparados con los datos obtenidos del mejor resultado generado por la regresión simbólica restringiendo las variables que pueden existir en cada ecuación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIRD_0.0.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIRD con ruido máximo de 0\%.}
+    \label{fig:final_plot_SIRD_0.0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIRD_0.05.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIRD con ruido máximo de 5\%.}
+    \label{fig:final_plot_SIRD_0.05}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIRD_0.1.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIRD con ruido máximo de 10\%.}
+    \label{fig:final_plot_SIRD_0.1}
+\end{figure}
+
+Si en lugar de utilizar como aproximación el método de diferencias finitas cuando los datos no poseen ruido, se utiliza el sistema original de SIR, se obtiene que la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento es $29.94535$. El valor máximo de la función de ajuste alcanzado fue de $128.83451$ y el mínimo de $2.25834e-14$, en este último la regresión simbólica obtuvo exactamente el sistema utilizado para generar los datos.
 
 A continuación se muestra el experimento realizado a partir de la generación de datos utilizando el sistema SIQRD.
 
 \subsection{SIQRD}
 
-El modelo SIQRD añade al modelo SIRD la posibilidad de aislamiento de una persona, denotado por $Q$, esto modela la situación en que una persona se aisle para no contagiarse o no contagiar a otros \cite{molter2021mathematical}. Se define el sistema como:
+El modelo SIQRD añade al modelo SIRD la posibilidad de aislamiento de una persona, denotado por $Q$, esto modela la situación en que una persona se aisle para no contagiarse o no contagiar a otros \cite{molter2021mathematical}. El sistema se define como:
 
 \begin{align*}
     S' & = -\beta (\frac{S I}{S + I + Q + R + D}) - \alpha S + \delta Q \\
@@ -264,7 +434,7 @@ El modelo SIQRD añade al modelo SIRD la posibilidad de aislamiento de una perso
 
 donde $\alpha$ indica la relación con que una persona susceptible es enviada a aislamiento, $\beta$ es el índice de transmisión, $\delta$ indica la relación con que una persona en aislamiento social regresa al grupo de susceptibles, $\gamma$ indica el índice de recuperación y $\mu$ el índice de muerte a causa de la enfermedad.
 
-Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\delta = 0.1$, $\gamma = 0.1$ y $\mu = 0.05$ con punto inicial $(5000, 3000, 1000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIQRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\delta = 0.1$, $\gamma = 0.1$ y $\mu = 0.05$ con punto inicial $(5000, 3000, 1000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIQRD} de la página \pageref{fig:SIQRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -273,11 +443,11 @@ Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\d
     \label{fig:SIQRD}
 \end{figure}
 
-Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SIQRD}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento, utilizando solamente en cada ecuación las variables permitidas según el modelo y además se agrega como varible $N=S + I + Q + R + D$, aparecen en la tabla \ref{table:experiment_SIQRD} de la página \pageref{table:experiment_SIQRD}. Si se permite cualquier variable del modelo en cualquier ecuación del sistema se obtienen los datos que aparecen en la tabla \ref{table:experiment_SIQRD_all} de la página \pageref{table:experiment_SIQRD_all}.
 
 \begin{table}[!h]
     \centering
-    \caption{Resultados obtenidos en el modelo SIQRD}
+    \caption{Resultados que se obtienen en el modelo SIQRD restringiendo las variables que aparecen en cada ecuación.}
     \begin{tabular}{|c|c|c|c|}
         \hline
                & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
@@ -308,13 +478,81 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
     \label{table:experiment_SIQRD}
 \end{table}
 
-Con este experimento se obtiene que los datos evaluados en el sistema generado por la regresión simbólica se acercan a los datos utilizados para la generación del sistema obtenido en la regresión simbólica mientras los datos utilizados no posean ruido. Los datos que se obtienen de la integración del sistema resulante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos. Los datos que se obtienen de la integración del sistema obtenido a partir de un conjunto de datos con ruido máximo de 5\% obtiene peores resultados que si se utiliza como ruido máximo 10\%. Esto se puede deber a un mal ajuste del parámetro de suavizado utilizado en spline de suavizado.
+\begin{table}[!h]
+    \centering
+    \caption{Resultados que se obtienen en el modelo SIQRD sin restringir las variables que aparecen en cada ecuación.}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+               & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        media  & 5.00116               & 34.76361              & 33.05852               \\
+        \hline
+        mínimo & 2.43638               & 8.78968               & 13.28306               \\
+        \hline
+        máximo & 7.84816               & 80.32846              & 83.9451                \\
+        \hline
+    \end{tabular}
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+                             & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        cantidad de sistemas & 29                    & 20                    & 19                     \\
+        \hline
+        original             & 69.88262              & 357.61219             & 259.33185              \\
+        \hline
+        original con ruido   & 69.88262              & 372.24346             & 312.84906              \\
+        \hline
+        spline               & 69.88262              & 356.83797             & 253.63394              \\
+        \hline
+        otro método          & 730.13032             & 901.498               & 735.24475              \\
+        \hline
+    \end{tabular}
+    \label{table:experiment_SIQRD_all}
+\end{table}
+
+Con este experimento se obtiene que los sistemas generados por la regresión simbólica ajustan los datos mientras estos no posean ruido. Los datos que se obtienen de la integración del sistema resultante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos. Los datos que se obtienen de la integración del sistema obtenido a partir de un conjunto de datos con ruido máximo de 5\% obtiene peores resultados que si se utiliza como ruido máximo 10\%. Esto se puede deber a un mal ajuste del parámetro de suavizado utilizado en spline de suavizado.
+
+En las figuras \ref{fig:final_plot_SIQRD_0.0} de la página \pageref{fig:final_plot_SIQRD_0.0}, \ref{fig:final_plot_SIQRD_0.05} de la página \pageref{fig:final_plot_SIQRD_0.05} y \ref{fig:final_plot_SIQRD_0.1} de la página \pageref{fig:final_plot_SIQRD_0.1} se pueden ver los datos originales comparados con los datos obtenidos del mejor resultado generado por la regresión simbólica restringiendo las variables que pueden existir en cada ecuación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIQRD_0.0.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIQRD con ruido máximo de 0\%.}
+    \label{fig:final_plot_SIQRD_0.0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIQRD_0.05.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIQRD con ruido máximo de 5\%.}
+    \label{fig:final_plot_SIQRD_0.05}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SIQRD_0.1.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SIQRD con ruido máximo de 10\%.}
+    \label{fig:final_plot_SIQRD_0.1}
+\end{figure}
+
+Si en lugar de utilizar como aproximación el método de diferencias finitas cuando los datos no poseen ruido, se utiliza el sistema original de SIR, se obtiene que la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento es $6.01436$. El valor máximo de la función de ajuste alcanzado fue de $48.48072$ y el mínimo de $1.42392e-14$, en este último la regresión simbólica obtuvo el sistema:
+
+\begin{align*}
+    S' & = -0.1 * S -0.1 * S + -0.0001 * (I * S) + 0.1 * Q \\
+    I' & = -0.075 * I + 0.0001 * (S * I) -0.075 * I        \\
+    Q' & = -0.1 * Q + 0.2 * S                              \\
+    R' & = -0.1 * -I                                       \\
+    D' & = 0.025 * I + 0.025 * I,
+\end{align*}
+
+que es igual al sistema original si se asume $\frac{\beta}{N} = 0.0001$.
 
 A continuación se muestra el experimento realizado a partir de la generación de datos utilizando el sistema SVVEIR.
 
 \subsection{SVVEIR}
 
-El modelo SVVEIR describe un escenario de una posible enfermedad en la sociedad de Bangladesh. En el modelo se plantea un conjunto $S$ de individuos que no se han infectado aún, $V_1$ y $V_2$ son los individuos que han recibido la primera y segunda vacuna, respectivamente. Las personas infectadas pero que aún no han desarrollado síntomas se definen como expuestos y se encuentran representados por el conjunto $E$. Los parámetros $I$ y $R$ identifican los mismos conjuntos que en el modelo SIR. \cite{kuddus2021mathematical}. Se define el sistema como:
+El modelo SVVEIR describe un escenario de una posible enfermedad en la sociedad de Bangladesh. En el modelo se plantea un conjunto $S$ de individuos que no se han infectado aún, $V_1$ y $V_2$ son los individuos que han recibido la primera y segunda vacuna, respectivamente. Las personas infectadas pero que aún no han desarrollado síntomas se definen como expuestos y se encuentran representados por el conjunto $E$. Los parámetros $I$ y $R$ identifican los mismos conjuntos que en el modelo SIR \cite{kuddus2021mathematical}. El sistema se define como:
 
 
 \begin{align*}
@@ -327,9 +565,9 @@ El modelo SVVEIR describe un escenario de una posible enfermedad en la sociedad 
     R'   & = \gamma * I + \omega * V_2 - \mu * R,
 \end{align*}
 
-donde $\alpha$ indica la relación de personas expuestas que pasan a estar infectados, $\beta$ es el índice de transmisión de la enfermedad, $\delta$ es índice de muerte debido a la enfermedad mientras que $\mu$ es el índice de muerte por causas naturales. El índice de recuperación de la enfermedad se representa mediante el parámetro $\gamma$. El parámetro $n$ muestra el índice de personas susceptibles que reciben la primera dosis de la vacuna y $\rho$ describe la relación de personas con una sola dosis de la vacuna que regresas al grupo de susceptibles. La cantidad de personas que reciben la segunda dosis se refleja en el parámetro $\sigma$ y $\omega$ es el parámetro que muestra la relación de personas con dos dosis de la vacuna que pasan a recuperados.
+donde $\alpha$ indica la relación de personas expuestas que pasan a estar infectados, $\beta$ es el índice de transmisión de la enfermedad, $\delta$ es el índice de muerte debido a la enfermedad mientras que $\mu$ es el índice de muerte por causas naturales. El índice de recuperación de la enfermedad se representa mediante el parámetro $\gamma$. El parámetro $n$ muestra el índice de personas susceptibles que reciben la primera dosis de la vacuna y $\rho$ describe la relación de personas con una sola dosis de la vacuna que regresan al grupo de susceptibles. La cantidad de personas que reciben la segunda dosis se refleja en el parámetro $\sigma$ y $\omega$ es el parámetro que muestra la relación de personas con dos dosis de la vacuna que pasan a recuperados.
 
-Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\delta = 0.0005$, $\gamma = 0.05$, $\mu = 0.01$, $n = 0.2$, $\rho = 0.01$, $\omega = 0.05$ y $\sigma = 0.2$ con punto inicial $(5000, 1000, 0, 2000, 1000, 500)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SVVEIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
+Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\delta = 0.0005$, $\gamma = 0.05$, $\mu = 0.01$, $n = 0.2$, $\rho = 0.01$, $\omega = 0.05$ y $\sigma = 0.2$ con punto inicial $(5000, 1000, 0, 2000, 1000, 500)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SVVEIR} de la página \pageref{fig:SVVEIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
 
 \begin{figure}[h]
     \centering
@@ -338,11 +576,11 @@ Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\d
     \label{fig:SVVEIR}
 \end{figure}
 
-Los resultados que se obtienen durante las 30 ejecuciones del experimento aparecen en la tabla \ref{table:experiment_SVVEIR}.
+Los resultados que se obtienen durante las 30 ejecuciones del experimento, utilizando solamente en cada ecuación las variables permitidas según el modelo y además se agrega como varible $N=S + V_1 + V_2 + E + I + R$, aparecen en la tabla \ref{table:experiment_SVVEIR} de la página \pageref{table:experiment_SVVEIR}. Si se permite cualquier variable del modelo en cualquier ecuación del sistema se obtienen los datos que aparecen en la tabla \ref{table:experiment_SVVEIR_all} de la página \pageref{table:experiment_SVVEIR_all}.
 
 \begin{table}[!h]
     \centering
-    \caption{Resultados obtenidos en el modelo SVVEIR}
+    \caption{Resultados que se obtienen en el modelo SVVEIR restringiendo las variables que aparecen en cada ecuación.}
     \begin{tabular}{|c|c|c|c|}
         \hline
                & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
@@ -373,7 +611,65 @@ Los resultados que se obtienen durante las 30 ejecuciones del experimento aparec
     \label{table:experiment_SVVEIR}
 \end{table}
 
-Con este experimento se obtiene que los datos evaluados en el sistema generado por la regresión simbólica se acercan a los datos utilizados para la generación del sistema obtenido en la regresión simbólica mientras los datos utilizados no posean ruido. Los datos que se obtienen de la integración del sistema resulante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos.
+\begin{table}[!h]
+    \centering
+    \caption{Resultados que se obtienen en el modelo SVVEIR sin restringir las variables que aparecen en cada ecuación.}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+               & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        media  & 8.30945               & 15.87176              & 17.95833               \\
+        \hline
+        mínimo & 1.76748               & 10.78393              & 12.29942               \\
+        \hline
+        máximo & 45.85105              & 47.08811              & 44.09112               \\
+        \hline
+    \end{tabular}
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+                             & \textbf{ruido de 0\%} & \textbf{ruido de 5\%} & \textbf{ruido de 10\%} \\
+        \hline
+        cantidad de sistemas & 30                    & 28                    & 30                     \\
+        \hline
+        original             & 146.5678              & 215.51733             & 173.10665              \\
+        \hline
+        original con ruido   & 146.5678              & 234.37447             & 230.006                \\
+        \hline
+        spline               & 146.5678              & 216.31001             & 172.30783              \\
+        \hline
+        otro método          & 1433.89796            & 1355.59667            & 1654.19469             \\
+        \hline
+    \end{tabular}
+    \label{table:experiment_SVVEIR_all}
+\end{table}
+
+Con este experimento se obtiene que los sistemas generados por la regresión simbólica ajustan los datos mientras estos no posean ruido. Los datos que se obtienen de la integración del sistema resultante de la regresión simbólica se asemejan a los datos de la integración del sistema seleccionado para la realización del experimento pero la aparición de ruido afecta el ajuste de los datos.
+
+En las figuras \ref{fig:final_plot_SVVEIR_0.0} de la página \pageref{fig:final_plot_SVVEIR_0.0}, \ref{fig:final_plot_SVVEIR_0.05} de la página \pageref{fig:final_plot_SVVEIR_0.05} y \ref{fig:final_plot_SVVEIR_0.1} de la página \pageref{fig:final_plot_SVVEIR_0.1} se pueden ver los datos originales comparados con los datos obtenidos del mejor resultado generado por la regresión simbólica restringiendo las variables que pueden existir en cada ecuación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SVVEIR_0.0.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SVVEIR con ruido máximo de 0\%.}
+    \label{fig:final_plot_SVVEIR_0.0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SVVEIR_0.05.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SVVEIR con ruido máximo de 5\%.}
+    \label{fig:final_plot_SVVEIR_0.05}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{"figures/final_plot_SVVEIR_0.1.pdf"}
+    \caption{Modelo resultante utilizando datos generados a partir del modelo SVVEIR con ruido máximo de 10\%.}
+    \label{fig:final_plot_SVVEIR_0.1}
+\end{figure}
+
+Si en lugar de utilizar como aproximación el método de diferencias finitas cuando los datos no poseen ruido, se utiliza el sistema original de SIR, se obtiene que la media del valor de la función de ajuste a lo largo de las 30 ejecuciones del experimento es $3.68731$. El valor máximo de la función de ajuste alcanzado fue de $19.45527$ y el mínimo de $0.58707$, en este último la regresión simbólica no obtuvo el sistema original.
 
 En la siguiente sección se realiza un análisis de los resultados de todos los experimentos realizado.
 
@@ -385,6 +681,12 @@ Al generar el conjunto $y_{noise}$ a partir de agregar ruido a $y_{original}$ qu
 
 El error cuádratico médio de los datos $y_{spline}$ evaluados en el sistema $f_{aprox_{sr}}$ es mayor que el de los datos $y_{original}$ evaluados en el sistema $f_{aprox}$. Mientras mayor el ruido presente en $y_{noise}$ mayor es la diferencia entre los valore del ajuste.
 
-Si se integra el sistema $f_{aprox}$ se obtiene el conjunto de puntos $y_{aprox}$. El valor del error cuádratico medio entre los conjuntos $y_{aprox}$ y $y_{original}$ es menor en los sistemas que no poseen parámetros solos como un sumando en una ecuación.
+Si se integra el sistema $f_{aprox}$ se obtiene el conjunto de puntos $y_{aprox}$. El valor del error cuádratico medio entre los conjuntos $y_{aprox}$ y $y_{original}$ es menor en los sistemas que no poseen términos con un parámetro sin estar multiplicando una expresión.
 
-Si se definen los datos $y_{aprox_{sr}}$ como el resultado de la integración del sistema $f_{aprox_{sr}}$, se puede analizar como el error cuadrático medio entre los puntos $y_{aprox_{sr}}$ y $y_{spline}$ es igual que el error entre los puntos $y_{aprox_{sr}}$ y $y_{original}$.
+Si se definen los datos $y_{aprox_{sr}}$ como el resultado de la integración del sistema $f_{aprox_{sr}}$, se puede analizar como el error cuadrático medio entre los puntos $y_{aprox_{sr}}$ y $y_{spline}$ es igual que el error cuádratico medio entre los puntos $y_{aprox_{sr}}$ y $y_{original}$.
+
+En los sistemas con menos de 6 ecuaciones, los resultados de aplicar la restricción de las variables que pueden existir en cada ecuación son semejantes a los resultados obtenidos sin aplicar la restricción.
+
+En los experimentos utilizando los modelos SIR, SIRD, SIQRD y SVVEIR nunca se obtuvo el sistema original como resultado de la regresión simbólica, sin embargo si se obtuvieron sistemas que fueron capaces de ajustar los datos con valores en la función de ajuste cercanos a 0.
+
+La utilización del modelo original para la aproximación de $y'_{original}$ hace que se obtengan los resultados con el menor valor de ajuste, obtiéndose exactamente el sistema original en algunos experimentos correspondientes a los modelos Lotka-Volterra, SIR, SIRD y SIQRD.
