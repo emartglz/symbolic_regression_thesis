@@ -8,3 +8,11 @@ Con este fin se definió cómo representar los sistemas de ecuaciones diferencia
 Se utilizó la propiedad de linealidad con respecto a los parámetros de los sistemas de ecuaciones para ajustar los parámetros en cada solución resolviendo un sistema de ecuaciones lineales.
 
 Para probar el funcionamiento del sistema creado se utilizaron datos generados a partir de 5 sistemas de ecucaciones diferenciales conocidos, comprobándose así la calidad de las soluciones obtenidas por la regresión simbólica.
+
+El método de regresión simbólica implementado en este trabajo se puede utilizar aunque se desconozca el modelo original que describe un conjunto de datos, dado que genera sistemas que ajustan los datos en una cantidad de tiempo menor de 10 minutos. Además se pueden realizar varias ejecuciones del algoritmo modificando sus parámetros buscando mejores resultados. Además se recomienda restringir las variables que pueden existir en cada ecuación siempre que se posea información que permita dicha restricción.
+
+Para el cálculo de la aproximación del valor de $y'_i$ dado un conjunto de datos $\{(t_i, y_i), i=1, \dots, n\}$ se deben buscar métodos con menor valor de error ya que el sistema resultante de la regresión simbólica, si se aproxima el valor $y'_i$ mediante el método de diferencias finitas o la derivada del spline de suavizado, posee mayor valor en la función de ajuste que el sistema que se obtiene en la regresión simbólica si se calcula el valor de $y'_i$ como $f(t_i, y_i)$. Esto es un problema dado que no siempre se tiene el modelo $f$
+
+Si se utilizan valores por encima de 1000 en la cantidad máxima de generaciones o en la cantidad de individuos en la población inicial del algoritmo genético, el tiempo de ejecución se verá afectado tomando más de 1 hora si la cantidad de nodos que pueden existir en cada sistema es mayor que 50.
+
+A continuación se muestran algunas recomendaciones y posibles trabajos futuros.

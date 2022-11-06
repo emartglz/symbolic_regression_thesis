@@ -276,24 +276,24 @@ $$\{(t_j, y_i(t_j), y'_i(t_j)) \subset \mathbb{R} \times \mathbb{R}^{3} \times \
 donde $y_i(t_j)$ representa los valores de $(S(t_j), I(t_j), R(T_j))$ y $y'_j$ representa los valores aproximados de $(S'(t_j), I'(t_j), R'(t_j))$:
 
 \begin{align*}
-    \{  (0.0 & , \quad (700.0, \; 300.0, \; 0.0), \quad (-59.43, \; 31.0, \; 28.43))                \\
-    (0.07    & , \quad (695.84, \; 302.17, \; 1.99), \quad (-69.5, \; 36.17, \; 33.33))             \\
-    (0.13    & , \quad (691.67, \; 304.34, \; 3.99), \quad (-59.57, \; 30.71, \; 28.86))            \\
-    (0.2     & , \quad (687.5, \; 306.49, \; 6.01), \quad (-69.5, \; 35.83, \; 33.83))              \\
-    (0.26    & , \quad (683.33, \; 308.64, \; 8.04), \quad (-59.71, \; 30.43, \; 29.14))            \\
-    (0.33    & , \quad (679.15, \; 310.77, \; 10.08), \quad (-59.71, \; 30.29, \; 29.43))       \},
+    \{  (0.0 & , \quad (0.7, \; 0.3, \; 0.0), \quad (-0.0636, \; 0.0333, \; 0.0303))              \\
+    (0.066   & , \quad (0.6958, \; 0.3022, \; 0.002), \quad (-0.0621, \; 0.0318, \; 0.0303))      \\
+    (0.132   & , \quad (0.6917, \; 0.3043, \; 0.004), \quad (-0.0636, \; 0.0333, \; 0.0303))      \\
+    (0.198   & , \quad (0.6875, \; 0.3065, \; 0.006), \quad (-0.0636, \; 0.0318, \; 0.0303))      \\
+    (0.264   & , \quad (0.6833, \; 0.3086, \; 0.008), \quad (-0.0621, \; 0.0333, \; 0.0318))      \\
+    (0.33    & , \quad (0.6792, \; 0.3108, \; 0.0101), \quad (-0.0636, \; 0.0318, \; 0.0303)) \},
 \end{align*}
 
 entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten los datos descritos formando el sistema de ecuaciones:
 
 \begin{align*}
     A_I & = \begin{pmatrix}
-        210000.0  & -300.0  \\
-        210261.97 & -302.17 \\
-        210502.85 & -304.34 \\
-        210711.88 & -306.49 \\
-        210902.97 & -308.64 \\
-        211059.45 & -310.77 \\
+        0.21   & -0.3    \\
+        0.2103 & -0.3022 \\
+        0.2105 & -0.3043 \\
+        0.2107 & -0.3065 \\
+        0.2109 & -0.3086 \\
+        0.2111 & -0.3108 \\
     \end{pmatrix}
     \qquad
     x_I = \begin{bmatrix}
@@ -302,16 +302,16 @@ entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten los d
     \end{bmatrix}
     \qquad
     B_I = \begin{bmatrix}
-        31.0  \\
-        36.17 \\
-        30.71 \\
-        35.83 \\
-        30.43 \\
-        30.29 \\
+        0.0333 \\
+        0.0318 \\
+        0.0333 \\
+        0.0318 \\
+        0.0333 \\
+        0.0318 \\
     \end{bmatrix}.
 \end{align*}
 
-Al resolver el sistema de ecuaciones sobredeterminado se obtienen los parámetros $a_{I_1}$ = 0.00053658 y $a_{I_2}$ = 0.26386037. Este método se aplica para encontrar los parámetros de cada una de las ecuaciones del sistema y así se obtienen todos los parámetros del sistema.
+Al resolver el sistema de ecuaciones sobredeterminado se obtienen los parámetros $a_{I_1}$ = 0.28272349 y $a_{I_2}$ = 0.08836571. Este método se aplica para encontrar los parámetros de cada una de las ecuaciones del sistema y así se obtienen todos los parámetros del sistema.
 
 Como se mencionó al inicio del capítulo, la propuesta de solución utiliza el método de regresión simbólica mediante el uso de un algoritmo genético para encontrar el sistema que mejor ajuste un conjunto de puntos. Para usar el algoritmo genético es necesario definir las operaciones de mutación, cruzamiento y selección. En la siguiente sección se describe la operación de mutación.
 
