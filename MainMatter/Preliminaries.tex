@@ -13,29 +13,21 @@ En la sección \ref{section:differential_equation_lineal_in_params} se presentan
 La modelación a través de ecuaciones diferenciales posibilita tanto la descripción como la predicción del desarrollo de fenómenos \cite{zill2012first}. La transferencia de calor \cite{p-transferencia-calor}, la transferencia de masa \cite{p-transferencia-masa}, el desarrollo de una población \cite{p-desarrollo-poblacion}, las relaciones amorosas \cite{p-amor}, el desarrollo de enfermedades como el VIH-SIDA \cite{p-desarrollo-vih}, el cólera \cite{p-desarrollo-colera}, la peste bubónica \cite{p-desarrollo-peste} o el COVID-19 \cite{p-desarrollo-covid} se estudian utilizando sistemas de ecuaciones diferenciales.
 
 Una ecuación diferencial se define como una ecuación que contiene las derivadas de una o más variables dependientes, con respecto a una o más variables independientes \cite{gaucel2014learning}. Una ecuación diferencial ordinaria (EDO) es una que contiene derivadas de una función de una sola variable (por ejemplo, el tiempo). La forma general de una ecuación diferencial ordinaria es:
-
 $$y'(t)=f(t, y(t)), \qquad y(t_0) = y_0$$
-
 donde $y(t)$ es una función y $y_0$ es una condición inicial. A $f(t, y(t))$ se le llama parte derecha de la ecuación diferencial.
 
 La solución de una ecuación diferencial es una función que al ser sustituida en la ecuación hace que se satisfaga dicha ecuación. Si además, la ecuación diferencial es ordinaria, su parte derecha es continua en un intervalo cerrado y se tienen condiciones iniciales, entonces la solución de dicha ecuación diferencial existe y es única \cite{zill2012first}. Un ejemplo de ecuación diferencial ordinaria es:
-
 $$y' = x * y^{\frac{1}{2}}$$
-
-en donde la solución sería
-
+en donde la solución sería:
 $$y = \frac{1}{16} * x^4.$$
 
-Una ecuación diferencial puede tener parámetros, de ser así la función $f$ se escribe como $f(t, y(t), a)$ donde $a$ es un parámetro. Una ecuación diferencial es lineal con respecto a los parámetro si es de la forma
-
-$$\frac{dX}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t))$$
-
+Una ecuación diferencial puede tener parámetros, de ser así la función $f$ se escribe como $f(t, y(t), a)$ donde $a$ es un parámetro. Una ecuación diferencial es lineal con respecto a los parámetro si es de la forma:
+$$\frac{dX}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t)),$$
 donde los $a_i$ son parámetros y todas las funciones $f_i(t,y)$ dependen de la variable $t$, de la variable $y$, pero no dependen de ningún parámetro $a_i$.
 
 Esta definición se puede extender a sistemas de ecuaciones diferenciales si todas las ecuaciones cumplen esta propiedad.
 
 Con ecuaciones diferenciales lineales con respecto a los parámetros se pueden modelar diversas situaciones como sistemas dinámicos poblacionales como el sistema Lotka-Volterra \cite{Hoppensteadt:2006}:
-
 $$X' = \alpha * X - \beta * X * Y$$
 $$Y' = \delta * X * Y - \gamma * Y$$
 
@@ -51,15 +43,12 @@ El problema de la regresión consiste en \textit{ajustar los datos}: encontrar l
 \begin{equation*}
     e = min_{\theta \in \Theta} \; E(y_i, f_i),
 \end{equation*}
-
 donde $e$ es el error de ajuste \cite{statisticintroductions}. Mientras más pequeño es el valor de $e$, mejor se considera el ajuste.
 
 El método de ajuste mínimo cuadrático se utiliza para aproximar la solución de modelos en los que se conoce la forma general de la función que describe los datos observados, pero no los parámetros.
 
 Este método de ajuste se puede expresar como: resolver el problema de optimización de encontrar los valores de los $k$ parámetros $\theta_1, \theta_2, \dots, \theta_k$ que minimizan $S$ dado el modelo $f$ (que depende de los parámetros $\theta$) y los puntos $(xi, yi)$ donde:
-
 $$S = \frac{\sum_{i=1}^{n}(y_i - f(x_i, \theta))^2}{n}.$$
-
 $S$ recibe el nombre de error cuadrático medio.
 
 Cuando se resuelve el problema de optimización, se obtiene el vector de parámetros $\theta$ y se puede estimar la variable dependiente cuando las variables independientes toman cualquier valor, incluso si no pertenecen al conjunto inicial. El ajuste mínimo cuadrático de datos se utiliza cuando se conoce la forma general de la función que describe los datos observados, pero hay ocasiones en la práctica en las que la función no se conoce. Para encontrar la expresión analítica de la función que describe los datos observados se puede utilizar la regresión simbólica.
@@ -69,9 +58,7 @@ Cuando se resuelve el problema de optimización, se obtiene el vector de paráme
 La regresión simbólica consiste en encontrar una expresión matemática, en forma simbólica, que ajuste, de la mejor manera posible, un conjunto de observaciones. La introducción de la regresión simbólica generalmente se atribuye a John R. Koza \cite{zelinka2005analytic} quien mostró que puede usarse para descubrir modelos matemáticos mediante la codificacion de expresiones matemáticas como árboles computacionales.
 
 En estos árboles, los nodos internos representan funciones ($+$, $-$, $*$, etc) que se extraen de un conjunto predeterminado de posibilidades, y los nodos hojas representan variables o constantes ($x_1$, $x_2$, $\dots$, $-1$, $\pi$, etc). Por ejemplo, la expresión:
-
 $$a_1 y_1 + a_2 -(y_1 y_2),$$
-
 se representa con el árbol computacional que aparece en la figura \ref{tikzpicture:koza_tree_example}.
 
 \begin{center}
@@ -115,9 +102,7 @@ se representa con el árbol computacional que aparece en la figura \ref{tikzpict
 En lugar de imponer una estructura de modelo que se considere matemáticamente manejable desde una perspectiva humana, en la regresión simbólica se consideran múltiples modelos evaluando su calidad con respecto a alguna métrica que es alguna variante del error cuadrático medio.
 
 El problema de regresión simbólica se puede describir matemáticamente como dado un conjunto de datos $\{(x_i, y_i), i = 1, \dots, n\}$:
-
 $$\min_{f\in\mathbb{T}_F} \sum_{i=1}^n (f(x_i) - y_i)^2 + penalization(f),$$
-
 donde $T_F$ representa el conjunto de todas las funciones que se pueden representar mediante árboles y $penalization$ es una función que penaliza alguna característica en los modelos, por ejemplo, la cantidad de nodos del árbol.
 
 La regresión simbólica  es un problema NP-difícil \cite{virgolin2022symbolic}. Algunos de los enfoques usados para resolver el problema de regresión regresión simbólica son los algoritmos genéticos \cite{koza1994genetic, schmidt2013eureqa, gaucel2014learning}, recocido simulado \cite{turing_bot} y colonias de abejas \cite{multihive,karaboga2010artificial}. Dentro de los softwares utilizados para la regresión simbólica se encuentran \textit{gplearn} que es una biblioteca de código abierto desarrollada en el lenguaje de programación \textit{Python} \cite{gplearn}, \textit{Eureqa} es un sofware  comercial \cite{schmidt2013eureqa} y \textit{AI Feynman} es un método que utiliza redes neuronales y un acercamiento mediante el uso de la técnica divide y vencerás\cite{udrescu2020ai}.
@@ -129,35 +114,28 @@ Existen trabajos en los que se ha usado la regresión simbólica para determinar
 Los sistemas de ecuaciones diferenciales permiten modelar fenómenos que ocurren en la sociedad y en la naturaleza \cite{weiss2013sir, udrescu2020ai, kuddus2021mathematical}. En ocasiones no se conoce con precisión el modelo de ecuaciones que está relacionado con los datos que describen al fenómeno, y en esos casos sería util disponer de un mecanismo para encontrar este modelo.
 
 La regresión simbólica para EDO consiste en encontrar la parte derecha de una ecuación diferencial ordinaria, en forma simbólica, cuya solución sea una función que describa un conjunto de muestras. En este tipo de regresión simbólica, la función desconocida es el lado derecho de una ecuación diferencial. Se puede definir como que se tiene un conjunto de datos $\{(t_i, y_i), i = 1, \dots, n\}$ y se quiere encontrar la función $f(t, y(t))$ tal que la solución de:
-
 \begin{equation*}
     \frac{dy}{dt} = f(t, y(t)),
 \end{equation*}
-
 sea una función $y$ tal que $y(t_i) \approx y_i, \forall(t_i, y_i) \in N$. Esta definición se puede extender a sistemas de EDOs.
 
 El problema de regresión simbólica para EDOs se puede describir matemáticamente como dado un conjunto de datos $\{(t_i, y_i), i = 1, \dots, n\}$:
-
 $$\min_{f\in\mathbb{T}_F} \sum_{i=1}^n (y(t_i) - y_i)^2 + penalization(f)$$
 $$s.a: y' = f(t, y), y(t_0) = y_0,$$
-
 donde $T_F$ representa el conjunto de todas las funciones de dos varialbes que se pueden representar mediante árboles y $penalization$ es una función que penaliza alguna característica en los modelos.
 
 La regresión simbólica permite encontrar una aproximación de una función $h$ dado un conjunto de datos de la forma $\{(t_i, h(t_i)), i = 1, \dots, n\}$. Por lo que si se genera un conjunto de datos $S$ con la forma:
-
 $$\{((t_i, y(t_i)), f(t_i, y(t_i))), i = 1, \dots, n\},$$
-
 se puede utilizar la regresión simbólica para encontrar el valor de $f$.
 
 La función $f$ está definida como la derivada de la función $y$, por lo que:
-
 $$f(t_i, y(t_i)) = y'(t_i)$$
 
 En \cite{gaucel2014learning, iba2008inference,kronberger2019identification} se aproxima el valor de la derivada de cada variable numéricamente por diferencias finitas. Con esta aproximación de la derivada se puede generar el conjunto $S$ y utilizar la regresión simbólica para encontrar una aproximación de $y$.
 
 En el año 2008 se utilizó la regresión simbólica junto con el algoritmo de mínimos cuadrados para encontrar el sistema de ecuaciones diferenciales lineales con respecto a los parámetros que mejor ajustase un conjunto de datos \cite{iba2008inference}. Una de las ventajas de estos sistemas es que, si los datos no presentan ruido, para encontrar sus parámetros solo es necesario resolver un sistema de ecuaciones lineales sobredeterminado \cite{myers2012generalized}.
 
-La vía seleccionada para resolver el problema de regresión simbólica es mediantes algoritmos genéticos, al igual que en \cite{koza1994genetic, iba2008inference, gaucel2014learning, kronberger2019identification}. En la siguiente sección se define este tipo de metaheurística.
+La vía seleccionada para resolver el problema de regresión simbólica es mediante algoritmos genéticos, al igual que en \cite{gaucel2014learning, iba2008inference, koza1994genetic, kronberger2019identification}. En la siguiente sección se define este tipo de metaheurística.
 
 \section{Algoritmos genéticos}\label{section:genetic_algorithm}
 
@@ -190,13 +168,10 @@ Si un conjunto de datos $\{(x_i, Y_i), i=1, \dots, n\}$ que describen el fenóme
 \section{Spline de suavizado}\label{section:smoothing_splines}
 
 Un spline es una función definida por intervalos, donde la función de cada intervalo es un polinomio. El máximo grado de los polinomios que se utilizan define el grado del spline \cite{ahlberg1967theory}. Los extremos de los intervalos se llaman ``nudos'' y el spline pasa por cada uno de los nudos seleccionados. La forma general de un spline cúbico es la expresión paramétrica:
-
 $$S(t) = a_ix^3 + b_ix^2 + c_ix + d_i, \qquad t_i \leq t < t_{i+1}$$
 
 Un spline de suavizado es un spline en el que los nudos son todos los puntos dados pero la curva resultante no pasa necesariamente por los nudos. El spline de suavizado cúbico $\hat{f}$ que aproxima el fenómeno $f$ se define como el resultado del problema de encontrar los parámetros $a_i, b_i, c_i, d_i$ que minimizan:
-
 $$min \sum_{i=1}^n (Y_i - \hat{f}(x_i))^2 + \lambda \int \hat{f}''(x)^2 dx,$$
-
 donde $\{(x_i, Y_i), i = 1, \dots, n\}$ es un conjunto de puntos con ruido que describe a $f$, y $\lambda$ se define como factor de suavizado y es mayor igual que 0. Si el factor de suavizado es 0, entonces el spline de suavizado coincide con el el spline donde se escogen como nudos todos los datos. A medida que el valor de $\lambda$ aumenta, el resultado se acerca a la aproximación de los datos por el método de mínimos cuadrados \cite{green1993nonparametric}. En la figura \ref{fig:spline_0.1} se puede ver un spline de suavizado con $\lambda=0.9$ y en la figura \ref{fig:spline_1} se puede ver un spline de suavizado con $\lambda=0$
 
 \begin{figure}[h]

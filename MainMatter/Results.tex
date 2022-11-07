@@ -42,9 +42,7 @@ El sistema de ecuaciones diferenciales se integra en un intervalo predefinido y 
 \end{figure}
 
 Cuando se tienen los datos de la forma $\{(t_i, y_i), i=1, \dots, n\}$ generados por la integración del modelo, se le agregan distintos valores de ruido a los puntos. A cada muestra $y_i$ se le agrega un valor de ruido utilizando la fórmula:
-
 $$y_{i_{noise}} = y_i + y_i * max\_noise * random\_standard\_normal(),$$
-
 donde $random\_standard\_normal()$ es una función que genera valores aleatorios normales, independientes, con media 0 y varianza 1. $Max\_noise$ es un parámetro con mínimo valor $0$ y máximo $1$ que define el ``ruido  máximo'' que se le agrega a cada muestra. Se puede ver el parámetro $max\_noise$ como el \% máximo del valor de cada muestra que se puede agregar como ruido. Durante los distintos experimentos se utilizaron como máximo ruido los valores de 0\%, 5\% o 10\%.
 
 Por ejemplo, si se agrega ruido a los datos obtenidos de la integración del sistema SIR utilizando el parámetro $max\_noise$ con valor $0.1$, se tendrían las curvas que aparecen en la imagen \ref{fig:SIR_with_noise} de la página \pageref{fig:SIR_with_noise}.
@@ -66,9 +64,7 @@ Cuando el valor de $max\_noise$ es mayor que 0, se usa un spline de suavizado pa
 \end{figure}
 
 Una vez que se tiene el spline de suavizado, se puede aproximar el valor de la función $y_i$, evaluando el spline correspondiente al valor $t_i$. Como lo que se busca es generar un conjunto de datos de la forma:
-
 $$\{(t_i, y_i, y'_i), i=1, \dots, n\},$$
-
 para obtener $f(t_i, y_i)$ mediante el uso de la regresión simbólica, se puede generar una aproximación del valor de $y'_i$ utilizando la primera derivada del spline. Si el valor de $max\_noise$ es igual a 0, se aproxima el valor de $y'_i$ mediante el método de diferencias finitas.
 
 Se realizaron un subconjunto de experimentos utilizando como derivada el valor del modelo original $y'_i = f(t_i, y_i)$ para comprobar cuánto influye en el resultado de la regresión simbólica la aproximación de $y'_i$ mediante el método de diferencias finitas.
@@ -207,13 +203,11 @@ A continuación se muestra el experimento realizado a partir de la generación d
 \subsection{SIR}
 
 El modelo SIR es un sistema que se utiliza para describir la transmisión de una enfermedad infecciosa causada por una bacteria, virus u hongos. \cite{weiss2013sir}. El sistema se define como:
-
 \begin{align*}
     S' & = - aIS    \\
     I' & = aIS - bI \\
     R' & = bI,
 \end{align*}
-
 donde $S$ indica la cantidad de personas susceptibles, $I$ la cantidad de personas infectadas y $R$ la cantidad de personas recuperadas. Se utiliza el parámetro $a$ para indicar el índice de transmisión y $b$ el índice de recuperación de la enfermedad.
 
 Se utilizaron como valores de los parámetros $a = 0.0003$ y $b = 0.1$ con punto inicial $(0.7, 0.3, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIR} de la página \pageref{fig:SIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
@@ -329,14 +323,12 @@ A continuación se muestra el experimento realizado a partir de la generación d
 \subsection{SIRD}
 
 El modelo SIRD es un sistema similar al SIR pero que introduce como dato la cantidad de personas fallecidas $D$ \cite{bailey1975mathematical}. Al modelo SIRD mencionado en \cite{bailey1975mathematical} se le realizó una modificación al añadir un parámetro representando la cantidad de personas que pasan a ser susceptibles en cada instante de tiempo. El sistema se define como:
-
 \begin{align*}
     S' & = a - b (\frac{S I}{S + I + R})         \\
     I' & = b (\frac{S I}{S + I + R}) - c I - d I \\
     R' & = c I                                   \\
     D' & = d I,
 \end{align*}
-
 donde $a$ representa la cantidad de personas que pasan a ser susceptibles, $b$ es el índice de contagio de la enfermedad, $c$ es el índice de recuperación y $d$ es el índice de muerte a causa de la enfermedad.
 
 Se utilizaron como valores de los parámetros $a = 250$, $b = 0.5$, $c = 0.1$ y $d = 0.2$ con punto inicial $(7000, 3000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SIRD} de la página \pageref{fig:SIRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
@@ -466,7 +458,6 @@ A continuación se muestra el experimento realizado a partir de la generación d
 \subsection{SIQRD}
 
 El modelo SIQRD añade al modelo SIRD la posibilidad de aislamiento de una persona, denotado por $Q$, esto modela la situación en que una persona se aisle para no contagiarse o no contagiar a otros \cite{molter2021mathematical}. El sistema se define como:
-
 \begin{align*}
     S' & = -\beta (\frac{S I}{S + I + Q + R + D}) - \alpha S + \delta Q \\
     I' & = \beta (\frac{S I}{S + I + Q + R + D}) - \gamma I - \mu I     \\
@@ -474,7 +465,6 @@ El modelo SIQRD añade al modelo SIRD la posibilidad de aislamiento de una perso
     R' & = \gamma I                                                     \\
     D' & = \mu I,
 \end{align*}
-
 donde $\alpha$ indica la relación con que una persona susceptible es enviada a aislamiento, $\beta$ es el índice de transmisión, $\delta$ indica la relación con que una persona en aislamiento social regresa al grupo de susceptibles, $\gamma$ indica el índice de recuperación y $\mu$ el índice de muerte a causa de la enfermedad.
 
 Se utilizaron como valores de los parámetros $\alpha = 0.2$, $\beta = 0.9$, $\delta = 0.1$, $\gamma = 0.1$ y $\mu = 0.05$ con punto inicial $(5000, 3000, 1000, 0, 0)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la imagen \ref{fig:SIQRD} de la página \pageref{fig:SIQRD}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.
@@ -616,8 +606,6 @@ A continuación se muestra el experimento realizado a partir de la generación d
 \subsection{SVVEIR}
 
 El modelo SVVEIR describe un escenario de una posible enfermedad en la sociedad de Bangladesh. En el modelo se plantea un conjunto $S$ de individuos que no se han infectado aún, $V_1$ y $V_2$ son los individuos que han recibido la primera y segunda vacuna, respectivamente. Las personas infectadas pero que aún no han desarrollado síntomas se definen como expuestos y se encuentran representados por el conjunto $E$. Los parámetros $I$ y $R$ identifican los mismos conjuntos que en el modelo SIR \cite{kuddus2021mathematical}. El sistema se define como:
-
-
 \begin{align*}
     N    & = S + V_1 + V_2 + E + I + R                                        \\
     S'   & = \mu * N - \beta * \frac{I}{N} * S - n * S - \mu * S + \rho * V_1 \\
@@ -627,7 +615,6 @@ El modelo SVVEIR describe un escenario de una posible enfermedad en la sociedad 
     I'   & = \alpha * E - \gamma * I - \delta * I - \mu * I                   \\
     R'   & = \gamma * I + \omega * V_2 - \mu * R,
 \end{align*}
-
 donde $\alpha$ indica la relación de personas expuestas que pasan a estar infectados, $\beta$ es el índice de transmisión de la enfermedad, $\delta$ es el índice de muerte debido a la enfermedad mientras que $\mu$ es el índice de muerte por causas naturales. El índice de recuperación de la enfermedad se representa mediante el parámetro $\gamma$. El parámetro $n$ muestra el índice de personas susceptibles que reciben la primera dosis de la vacuna y $\rho$ describe la relación de personas con una sola dosis de la vacuna que regresan al grupo de susceptibles. La cantidad de personas que reciben la segunda dosis se refleja en el parámetro $\sigma$ y $\omega$ es el parámetro que muestra la relación de personas con dos dosis de la vacuna que pasan a recuperados.
 
 Se utilizaron como valores de los parámetros $\alpha = 0.1$, $\beta = 0.7$, $\delta = 0.0005$, $\gamma = 0.05$, $\mu = 0.01$, $n = 0.2$, $\rho = 0.01$, $\omega = 0.05$ y $\sigma = 0.2$ con punto inicial $(5000, 1000, 0, 2000, 1000, 500)$ y se integró en el intervalo $0 \leq t \leq 20$ para obtener los datos que aparecen en la figura \ref{fig:SVVEIR} de la página \pageref{fig:SVVEIR}. Del conjunto de puntos se seleccionaron 300 muestras como datos para el método de regresión simbólica.

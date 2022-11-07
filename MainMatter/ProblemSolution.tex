@@ -1,6 +1,6 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
-En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de $n$ ecuaciones diferenciales lineales con respecto los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
+En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de $n$ ecuaciones diferenciales lineales con respecto a los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
 
 La sección \ref{section:solution_representation} detalla cómo se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En \ref{section:solution_cost} se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección, respectivamente. A continuación se describe cómo representar sistemas de ecuaciones linales mediante árboles computacionales.
 
@@ -8,11 +8,8 @@ La sección \ref{section:solution_representation} detalla cómo se puede represe
 \section{Representación de Sistemas de EDOs mediante árboles}\label{section:solution_representation}
 
 A partir de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, se puede determinar la cantidad de ecuaciones que posee el sistema: una por cada dimensión que tenga el vector $y$. Por ejemplo, si cada elemento de los datos es de la forma:
-
 $$(t_i, y_{1_i}, \dots, y_{n_i}),$$
-
 entonces se tiene la certeza de que el sistema de ecuaciones diferenciales que se desea tiene $n$ ecuaciones, y que los sistemas de ecuaciones en el espacio de búsqueda del método deben tener la forma:
-
 $$y_1' = f_1(t, y_1, \dots, y_n)$$
 $$\vdots$$
 $$y_n' = f_n(t, y_1, \dots, y_n)$$
@@ -20,17 +17,13 @@ $$y_n' = f_n(t, y_1, \dots, y_n)$$
 Como el sistema debe tener $n$ ecuaciones, una forma de representar las soluciones candidatas es mediante una lista de $n$ elementos. La posición $i$ de la lista representa la función $f_i(t,y_1, \dots, y_n)$.
 
 Por ejemplo, el modelo poblacional SIR:
-
 \begin{align*}
     S' & = - aIS    \\
     I' & = aIS - bI \\
     R' & = bI,
 \end{align*}
-
 Se puede representar con la lista:
-
 $$[-aIS, aIS - bI, bI],$$
-
 donde los elementos de la lista están separados por coma.
 
 Una expresión aritmética (como cada una de las posibles funciones) se puede representar mediante un árbol, donde los nodos interiores son operadores y las hojas son variables. Entonces, en la posición $i$ de la lista, se puede representar el árbol computacional que describe la parte de la derecha de la ecuación diferencial correspondiente a la ecuación $i$.
@@ -38,9 +31,7 @@ Una expresión aritmética (como cada una de las posibles funciones) se puede re
 Sin embargo, con la representación descrita por Koza \cite{zelinka2005analytic}, no se plantea de forma explícita la linealidad de las ecuaciones diferenciales con respecto a los parámetros. Esta linealidad es importante dado que el sistema que se busca como solución debe cumplir esta propiedad. En este trabajo se modifica la estructura del árbol para garantizar que todos los árboles representen sistemas de ecuaciones diferenciales lineales con respecto a los parámetros.
 
 Como la parte derecha de una ecuación diferencial lineal con respecto a los parámetros es una suma de multiplicaciones de parámetros con funciones que no dependen de parámetros:
-
 $$\frac{dX_i}{dt} = \sum_{i=1}^{n} a_i * f_i(t, y(t)),$$
-
 entonces cada una de las partes derechas de las ecuaciones diferenciales se representan con un árbol en el que la raíz es un nodo con una operación especial de suma, que puede tener cualquier cantidad de sumandos (o de hijos) como se muestra en la figura \ref{tikzpicture:doe_node_example}.
 
 % \begin{center}
@@ -176,55 +167,40 @@ En un método de regresión simbólica es necesario tener una función de ajuste
 \section{Determinar el costo de una solución}\label{section:solution_cost}
 
 A partir de un conjunto de datos:
-
 $$M = \{(t_j, y_i(t_j)), i = 1, \dots, n, j = 1, \dots, m\},$$
-
 donde la función $y_i$ es desconocida, se puede aproximar el valor de las derivadas de $y_i$ en cada instante $t_j$ utilizando el método de diferencias finitas \cite{gaucel2014learning}, en caso de que $M$ no posea ruido. Si el conjunto de datos $M$ tiene ruido se puede aproximar la función $y_i$ mediante un spline de suavizado cúbico. Con la expresión de este spline de suavizado se puede obtener una aproximación del valor de la derivada de la función $y_i$ en cada instante $t_j$.
 
 Luego de aproximar la derivada de las funciones $y_i$ en cada instante $t_j$ se puede generar un nuevo conjunto de la forma:
-
 $$\{(t_j, y_i(t_j), y'_{i}(t_j)), i = 1, \dots, n, j = 1, \dots, m\},$$
-
 donde $y'_{i}(t_j)$ es el valor de la aproximación de la derivada de la función $y_i$ en el instante $t_j$.
 
 Por ejemplo, si se tienen el conjunto de datos sin ruido:
-
 \begin{align*}
     \{ & (1, 1)     \\
        & (2, 4)     \\
        & (3, 9) \},
 \end{align*}
-
 y se desea conocer el valor aproximado de la derivada de la función $y$ en los instantes $1$ y $2$ se puede utilizar el método de diferencias finitas para obtener los datos:
-
 \begin{align*}
     y'(1) & = \frac{y(2) - y(1)}{2 - 1} = 3  \\
     y'(2) & = \frac{y(3) - y(2)}{3 - 2} = 5.
 \end{align*}
 
 Con esta aproximación de la derivada se puede formar el nuevo conjunto de datos:
-
 \begin{align*}
     \{ & (1, (1), (3))    \\
        & (2, (4), (5)) \}
 \end{align*}
 
 Se define el costo de un sistema de ecuaciones diferenciales $f$ para el conjunto de datos de la forma:
-
 $$\{(t_j, y_i(t_j), y'_i(t_j)) \subset \mathbb{R} \times \mathbb{R}^{n} \times \mathbb{R}^n, i = 1, \dots, n, j = 1, \dots, m\}$$
-
 como:
-
 $$C = \frac{\sum_{i=1}^n\frac{\sum_{j=1}^{m}(y'_i(t_j) - f_i(t_j, y_i(t_j)))^2}{m}}{n},$$
-
 donde:
-
 $$f_i(t_j, y_i(t_j)) = \sum_{k=1}^{p_i} a_{i_k} * g_{i_k}(t_j, y_i(t_j)),$$
-
 $f_1(t_j, y_i(t_j)), f_2(t_j, y_i(t_j)), \dots, f_n(t_j, y_i(t_j))$ son las partes derechas de las ecuaciones del sistema y $p_i$ indica la cantidad de parámetros presentes en la ecuación $i$ del sistema. Mientras más pequeño es el valor del costo, mejor se describen los datos mediante el sistema $f$.
 
 Al valor de $C$ se le agrega un factor de peso $P$, directamente proporcional a la cantidad de términos que posean las ecuaciones de la solución \cite{gplearnbloat}:
-
 $$P = \begin{cases}
         Constant * node\_count(f), & \text{si } node\_count(f) \geq MAX\_NODES \\
         0,                         & \text{en otro caso}
@@ -235,7 +211,6 @@ $Node\_count(f)$ es la cantidad de nodos presentes en la representación en form
 El parámetro $MAX\_NODES$ se define junto con los demás parámetros del algoritmo genético y en los experimentos del capítulo \ref{chapter:results} se usaron valores entre 15 y 40. El factor de peso garantiza que si dos ecuaciones son capaces de generar los mismos puntos, la ecuación con menos términos tenga una mejor evaluación en la función objetivo.
 
 Para que la suma $\sum_{j=1}^{m}(y'_{i_j} - f_i(x_j)) ^ 2$ sea la menor posible se debe minimizar la diferencia $(y'_{i_j} - f_i(x_j))^2$, y para ello que se crea, por cada ecuación del sistema, un sistema de ecuaciones de la forma $A_i * x_i = B_i$ donde:
-
 \begin{align*}
     A_i & = \begin{pmatrix}
         g_{i_1}(x_1) & g_{i_2}(x_1) & \dots  & g_{i_k}(x_1) \\
@@ -266,15 +241,10 @@ El sistema $A_ix_i = B_i$ se resuelve usando el comando:
 que emplea la descomposición SVD \cite{numpy-lstsq}.
 
 Por ejemplo, la segunda ecuación del modelo SIR es:
-
 $$f_I (t,S,I,R) = a_{I_1} * I * S + a_{I_2} * -I.$$
-
 Si se tiene el conjunto de datos de la forma:
-
 $$\{(t_j, y_i(t_j), y'_i(t_j)) \subset \mathbb{R} \times \mathbb{R}^{3} \times \mathbb{R}^3, j = 1, \dots, 6\},$$
-
 donde $y_i(t_j)$ representa los valores de $(S(t_j), I(t_j), R(T_j))$ y $y'_j$ representa los valores aproximados de $(S'(t_j), I'(t_j), R'(t_j))$:
-
 \begin{align*}
     \{  (0.0 & , \quad (0.7, \; 0.3, \; 0.0), \quad (-0.0636, \; 0.0333, \; 0.0303))              \\
     (0.066   & , \quad (0.6958, \; 0.3022, \; 0.002), \quad (-0.0621, \; 0.0318, \; 0.0303))      \\
@@ -283,9 +253,7 @@ donde $y_i(t_j)$ representa los valores de $(S(t_j), I(t_j), R(T_j))$ y $y'_j$ r
     (0.264   & , \quad (0.6833, \; 0.3086, \; 0.008), \quad (-0.0621, \; 0.0333, \; 0.0318))      \\
     (0.33    & , \quad (0.6792, \; 0.3108, \; 0.0101), \quad (-0.0636, \; 0.0318, \; 0.0303)) \},
 \end{align*}
-
 entonces se puede encontrar los valores de $a_1$ y $a_2$ que mejor ajusten los datos descritos formando el sistema de ecuaciones:
-
 \begin{align*}
     A_I & = \begin{pmatrix}
         0.21   & -0.3    \\
@@ -322,20 +290,14 @@ La operación de mutación genera un nuevo sistema de ecuaciones diferenciales a
 \begin{itemize}
     \item Eliminar un término (sumando de la ecuación) de la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, el criterio consiste en seleccionar un término y eliminarlo.
 
-          Por ejemplo, si se tiene la ecuación
-
+          Por ejemplo, si se tiene la ecuación:
           $$a_1 * y_1 + a_2 * -(y_1 * y_2),$$
-
           la lista de términos correspondientes sería:
-
           $$[a_1*y_1, a_2 * -(y_1 * y_2)].$$
 
           Si se selecciona eliminar el segundo término, la lista de términos correspondiente a la ecuación resultaría:
-
           $$[a_1 * y_1],$$
-
           y la ecuación resultante sería:
-
           $$a_1 * y_1.$$
 
           El ejemplo en forma de árbol computacional se muestra en la figura \ref{tikzpicture:mutation_delete_term}.
@@ -405,20 +367,14 @@ La operación de mutación genera un nuevo sistema de ecuaciones diferenciales a
 
     \item Añadir un término a la ecuación. Si se toman los sumandos de la ecuación como una lista de términos, el criterio consiste en crear un término y añadirlo.
 
-          Por ejemplo, si se tiene la ecuación
-
+          Por ejemplo, si se tiene la ecuación:
           $$a_1 * y_1,$$
-
           la lista de términos correspondientes sería:
-
           $$[a_1*y_1].$$
 
           Si se selecciona añadir como segundo sumando el término $a_2 * y_2$, la lista de términos correspondiente a la ecuación resultaría:
-
           $$[a_1*y_1, a_2 * y_2],$$
-
           y la ecuación resultante sería:
-
           $$a_1 * y_1 + a_2 * y_2.$$
 
           El ejemplo en forma de árbol computacional se muestra en la figura \ref{tikzpicture:mutation_add_term}.
@@ -784,15 +740,12 @@ La operación de mutación genera un nuevo sistema de ecuaciones diferenciales a
 \end{itemize}
 
 Como ejemplo de una operación de mutación se puede tomar el sistema:
-
 \begin{align*}
     S' & = - a_1 * S * I         \\
     I' & = a_2 * S * I - a_3 * I \\
     R' & = a_4 * I,
 \end{align*}
-
-y se puede realizar la mutación de eliminar el segundo término de la segunda ecuación quedando como resultado el sistema
-
+y se puede realizar la mutación de eliminar el segundo término de la segunda ecuación quedando como resultado el sistema:
 \begin{align*}
     S' & = - a_1 * S * I \\
     I' & = a_2 * S * I   \\
@@ -1203,23 +1156,18 @@ En dependencia del nodo seleccionado en A se escoge el nodo en B siguiendo las s
 \end{itemize}
 
 Por ejemplo, si se tiene el sistema $A$:
-
 \begin{align*}
     S' & = - a_1 * S * I         \\
     I' & = a_2 * S * I - a_3 * I \\
     R' & = a_4 * I,
 \end{align*}
-
 y el sistema B:
-
 \begin{align*}
     S' & = b_1 * (S + I) \\
     I' & = b_2 * S * I   \\
     R' & = b_3 * S,
 \end{align*}
-
 donde su representación computacional aparece en la figura \ref{tikzpicture:cross_example_1} de la página \pageref{tikzpicture:cross_example_1},
-
 \begin{center}
     % \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
     %     \begin{tikzpicture}[
@@ -1292,7 +1240,6 @@ donde su representación computacional aparece en la figura \ref{tikzpicture:cro
         \label{tikzpicture:cross_example_1}
     \end{figure}
 \end{center}
-
 % \begin{center}
 %     \begin{adjustbox}{width=0.5\textwidth, keepaspectratio}
 %         \begin{tikzpicture}[
@@ -1345,15 +1292,12 @@ donde su representación computacional aparece en la figura \ref{tikzpicture:cro
 %         \end{tikzpicture}
 %     \end{adjustbox}
 % \end{center}
-
 y como resultado de la operación de cruzamiento se seleccionan los nodos que se resaltan con líneas discontinuas en la figura \ref{tikzpicture:cross_example_1}, entonces el sistema resultante $C$ sería:
-
 \begin{align*}
     S' & = - a_1 * S * I \\
     I' & = b_2 * S * I   \\
     R' & = a_4 * I,
 \end{align*}
-
 que se representa con el árbol computacional que aparece en la figura \ref{tikzpicture:cross_example_2} de la página \pageref{tikzpicture:cross_example_2}.
 
 \begin{center}
