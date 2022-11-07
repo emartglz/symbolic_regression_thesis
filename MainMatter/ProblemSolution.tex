@@ -1,6 +1,6 @@
 \chapter{Propuesta de solución}\label{chapter:solution_proposal}
 
-En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de $n$ ecuaciones diferenciales lineales con respecto a los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
+En este capítulo se plantea una forma de obtener, a partir de un conjunto de datos de la forma $\{(t_i, y_i), y \in \mathbb{R}^n, i = 1, \dots, K\}$, un sistema de $n$ ecuaciones diferenciales lineales con respecto a los parámetros que mejor los describa. El sistema se obtiene mediante el uso de la regresión simbólica utilizando un algoritmo genético. Para determinar cuán bien un sistema de ecuaciones diferenciales dado, describe al conjunto de datos, se resuelve un problema de mínimos cuadrados para estimar los mejores parámetros.
 
 La sección \ref{section:solution_representation} detalla cómo se puede representar un sistema de EDOs lineales en los parámetros mediante un árbol computacional. En \ref{section:solution_cost} se explica la función de ajuste que se tiene en cuenta en la regresión simbólica planteada. En las secciones \ref{section:mutation}, \ref{section:xcross} y \ref{section:selection} se detallan las operaciones necesarias para la aplicación de un algoritmo genético: la mutación, el cruzamiento y la selección, respectivamente. A continuación se describe cómo representar sistemas de ecuaciones linales mediante árboles computacionales.
 
@@ -888,7 +888,7 @@ Con estas modificaciones que se le pueden realizar a un sistema de ecuaciones di
 
 \section{Cruzamiento}\label{section:xcross}
 
-En la operación de cruzamiento se obtiene un nuevo sistema de ecuaciones diferenciales combinando propiedades de dos sistemas existentes A y B. Esta operación selecciona un nodo aleatorio dentro del árbol A que no represente un parámtro y un nodo dentro del árbol B que tampoco represente un parámetro, siguiendo un conjunto de reglas. Una vez escogidos los nodos se remplaza el subárbol del nodo seleccionado en A por el subárbol del nodo seleccionado en B, resultando en A un nuevo sistema de ecuaciones diferenciales.
+En la operación de cruzamiento se obtiene un nuevo sistema de ecuaciones diferenciales combinando propiedades de dos sistemas existentes A y B. Esta operación selecciona un nodo aleatorio dentro del árbol A que no represente un parámetro y un nodo dentro del árbol B que tampoco represente un parámetro, siguiendo un conjunto de reglas. Una vez escogidos los nodos se remplaza el subárbol del nodo seleccionado en A por el subárbol del nodo seleccionado en B, resultando en A un nuevo sistema de ecuaciones diferenciales.
 
 En dependencia del nodo seleccionado en A se escoge el nodo en B siguiendo las siguientes reglas:
 
