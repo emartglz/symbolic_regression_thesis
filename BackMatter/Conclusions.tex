@@ -1,7 +1,7 @@
 \chapter*{Conclusiones}\label{chapter:conclusions}
 \addcontentsline{toc}{chapter}{Conclusiones}
 
-En este trabajo se diseño e implementó un sistema de regresión simbólica basada en algoritmos genéticos para encontrar un sistema de ecuaciones diferenciales lineales con respecto a los parámetros en el que es posible determinar qué variables intervienen en cada ecuación.
+En este trabajo se diseñó e implementó un sistema de regresión simbólica basada en algoritmos genéticos para encontrar un sistema de ecuaciones diferenciales lineales con respecto a los parámetros en el que es posible determinar qué variables intervienen en cada ecuación.
 
 Con este fin se definió cómo representar los sistemas de ecuaciones diferenciales en forma de árbol computacional de manera que solo se permitiese representar sistemas lineales con respecto a los parámetros. Para el uso del algoritmo genético se definieron las operaciones de mutación, cruzamiento y selección sobre estos árboles. Además se utilizó un spline de suavizado para eliminar el ruido en los datos.
 
@@ -9,10 +9,12 @@ Se utilizó la propiedad de linealidad con respecto a los parámetros de los sis
 
 Para probar el funcionamiento del sistema creado se utilizaron datos generados a partir de 5 sistemas de ecucaciones diferenciales conocidos, comprobándose así la calidad de las soluciones obtenidas por la regresión simbólica.
 
-El método de regresión simbólica implementado en este trabajo se puede utilizar aunque se desconozca el modelo original que describe un conjunto de datos, dado que genera sistemas que ajustan los datos en una cantidad de tiempo menor de 10 minutos. Además se pueden realizar varias ejecuciones del algoritmo modificando sus parámetros buscando mejores resultados. Además se recomienda restringir las variables que pueden existir en cada ecuación siempre que se posea información que permita dicha restricción.
+El método de regresión simbólica implementado en este trabajo se puede utilizar aunque se desconozca el modelo original que describe un conjunto de datos, dado que genera sistemas que ajustan los datos en una cantidad de tiempo menor de 10 minutos. Además se pueden realizar varias ejecuciones del algoritmo modificando sus parámetros buscando mejores resultados. Además se recomienda restringir las variables que pueden existir en cada ecuación siempre que se posea información que permita dicha restricción y el sistema tenga más de 6 ecuaciones.
 
-Para el cálculo de la aproximación del valor de $y'_i$ dado un conjunto de datos $\{(t_i, y_i), i=1, \dots, n\}$ se deben buscar métodos con menor valor de error ya que el sistema resultante de la regresión simbólica, si se aproxima el valor $y'_i$ mediante el método de diferencias finitas o la derivada del spline de suavizado, posee mayor valor en la función de ajuste que el sistema que se obtiene en la regresión simbólica si se calcula el valor de $y'_i$ como $f(t_i, y_i)$. Esto es un problema dado que no siempre se tiene el modelo $f$
+Para el cálculo de la aproximación del valor de $y'_i$ dado un conjunto de datos $\{(t_i, y_i), i=1, \dots, n\}$ se deben buscar métodos con menor valor de error ya que el sistema resultante de la regresión simbólica, si se aproxima el valor $y'_i$ mediante el método de diferencias finitas o la derivada del spline de suavizado, posee mayor valor en la función de ajuste que el sistema que se obtiene en la regresión simbólica si se calcula el valor de $y'_i$ como $f(t_i, y_i)$. Esto es un problema dado que no siempre se tiene el modelo $f$.
 
 Si se utilizan valores por encima de 1000 en la cantidad máxima de generaciones o en la cantidad de individuos en la población inicial del algoritmo genético, el tiempo de ejecución se verá afectado tomando más de 1 hora si la cantidad de nodos que pueden existir en cada sistema es mayor que 50.
+
+El sistema que se implementó ajusta un conjunto de datos cuando no existen en el modelo original términos en los que aparezca un parámetro sin estar acompañado de una expresión, y cuando no existen divisiones con expresiones de muchos valores en el divisor. Además la presencia de ruido en los datos afecta el valor del ajuste. Los modelos encontrados en la regresión simbólica suelen ser mucho más complejos que el modelo original que genera los datos.
 
 A continuación se muestran algunas recomendaciones y posibles trabajos futuros.
